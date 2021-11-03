@@ -1,0 +1,8 @@
+paper.log
+paper.aux
+paper.pdf
+*.pdf
+paper.blg
+paper.tex
+paper.bbl
+paper.pag

@@ -1,0 +1,26 @@
+Package: OptimalGoldstandardDesigns
+Type: Package
+Title: Calculate optimal design parameters for two-stage group sequential
+    three-arm gold-standard non-inferiority designs
+Version: 0.1.0
+Author: Jan Meis
+Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
+Description: Calculate optimal design parameters for two-stage group sequential gold-standard designs
+    with or without binding or nonbinding futility boundaries.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat (>= 3.0.0),
+    tidyverse,
+    testthat,
+    fpCompare,
+    here,
+Depends:
+    nloptr,
+    mvtnorm,
+    doFuture,
+    doRNG,
+    foreach,
+Config/testthat/edition: 3
+RoxygenNote: 7.1.2
