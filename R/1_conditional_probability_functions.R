@@ -20,19 +20,19 @@ pmvnorm_ <- function(upper, lower, ...) {
 ## Everything below this line is not really relevant for optimal designs
 ## Some of these functions are used for presentational purposes
 
-emean_to_Z <- function(emean_TP, emean_TC, rho, nT1) {
+emean_to_Z <- function(emean_TP, emean_TC, gamma, nT1) {
   sqrt_nT1 <- sqrt(nT1)
   sqrt_nT1 * c(
-    TP = emean_TP / rho[[1]][["TP"]],
-    TC = emean_TC / rho[[1]][["TC"]]
+    TP = emean_TP / gamma[[1]][["TP"]],
+    TC = emean_TC / gamma[[1]][["TC"]]
   )
 }
 
-Z_to_emean <- function(Z, rho, nT1) {
+Z_to_emean <- function(Z, gamma, nT1) {
   sqrt_nT1 <- sqrt(nT1)
   list(
-    TP = Z[[1]] * rho[[1]][["TP"]] / sqrt_nT1,
-    TC = Z[[2]] * rho[[1]][["TC"]] / sqrt_nT1
+    TP = Z[[1]] * gamma[[1]][["TP"]] / sqrt_nT1,
+    TC = Z[[2]] * gamma[[1]][["TC"]] / sqrt_nT1
   )
 }
 
@@ -105,8 +105,8 @@ calc_conditional_power <- function(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futil
   }
 }
 
-calc_conditional_power_wrt_emean <- function(emean_TP, emean_TC, rho, nT1, mu, Sigma, b, nonsequential_futility = FALSE) {
-  Z <- emean_to_Z(emean_TP, emean_TC, rho, nT1)
+calc_conditional_power_wrt_emean <- function(emean_TP, emean_TC, gamma, nT1, mu, Sigma, b, nonsequential_futility = FALSE) {
+  Z <- emean_to_Z(emean_TP, emean_TC, gamma, nT1)
   Z_TP <- Z[["TP"]]
   Z_TC <- Z[["TC"]]
   calc_conditional_power(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futility)

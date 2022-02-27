@@ -1,8 +1,8 @@
 Package: OptimalGoldstandardDesigns
 Type: Package
 Title: Calculate optimal design parameters for two-stage group sequential
-    three-arm gold-standard non-inferiority designs
-Version: 0.1.0
+    three-arm gold-standard non-inferiority trials
+Version: 0.1.1
 Author: Jan Meis
 Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
 Description: Calculate optimal design parameters for two-stage group sequential gold-standard designs

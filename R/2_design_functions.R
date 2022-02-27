@@ -72,25 +72,25 @@ calc_c <- function(nT1, D) {
   return(cc)
 }
 
-#' Helper function to calculate rho from design object
+#' Helper function to calculate gamma from design object
 #'
 #' @param D
 #'
 #' @return
 #'
 #' @examples
-calc_rho <- function(D) {
+calc_gamma <- function(D) {
   sigma <- D$sigma
   ccc <- D$ccc
-  rho <- list()
-  rho[[1]] <- list()
-  rho[[2]] <- list()
+  gamma <- list()
+  gamma[[1]] <- list()
+  gamma[[2]] <- list()
   for (g in c("P", "C")) {
     for (s in 1:(length(ccc))) {
-      rho[[s]][[paste0("T", g)]] <- sqrt(sigma[["T"]] / ccc[[s]][["T"]] + sigma[[g]] / ccc[[s]][[g]])
+      gamma[[s]][[paste0("T", g)]] <- sqrt(sigma[["T"]] / ccc[[s]][["T"]] + sigma[[g]] / ccc[[s]][[g]])
     }
   }
-  return(rho)
+  return(gamma)
 }
 
 #' Helper function to covariance matrix Sigma from design object
@@ -104,26 +104,26 @@ calc_rho <- function(D) {
 calc_Sigma <- function(D) {
   sigma <- D$sigma
   ccc <- D$ccc
-  rho <- D$rho
+  gamma <- D$gamma
 
   Sigma <- matrix(0, ncol = 4, nrow = 4)
   Sigma[1, ] <-
     c(
       1,
-      rho[[2]][["TP"]] / rho[[1]][["TP"]],
-      sigma[["T"]] / (ccc[[1]][["T"]] * rho[[1]][["TP"]] * rho[[1]][["TC"]]),
-      sigma[["T"]] / (ccc[[2]][["T"]] * rho[[1]][["TP"]] * rho[[2]][["TC"]])
+      gamma[[2]][["TP"]] / gamma[[1]][["TP"]],
+      sigma[["T"]] / (ccc[[1]][["T"]] * gamma[[1]][["TP"]] * gamma[[1]][["TC"]]),
+      sigma[["T"]] / (ccc[[2]][["T"]] * gamma[[1]][["TP"]] * gamma[[2]][["TC"]])
     )
   Sigma[2, c(2, 3, 4)] <-
     c(
       1,
-      sigma[["T"]] / (ccc[[2]][["T"]] * rho[[2]][["TP"]] * rho[[1]][["TC"]]),
-      sigma[["T"]] / (ccc[[2]][["T"]] * rho[[2]][["TP"]] * rho[[2]][["TC"]])
+      sigma[["T"]] / (ccc[[2]][["T"]] * gamma[[2]][["TP"]] * gamma[[1]][["TC"]]),
+      sigma[["T"]] / (ccc[[2]][["T"]] * gamma[[2]][["TP"]] * gamma[[2]][["TC"]])
     )
   Sigma[3, c(3, 4)] <-
     c(
       1,
-      rho[[2]][["TC"]] / rho[[1]][["TC"]]
+      gamma[[2]][["TC"]] / gamma[[1]][["TC"]]
     )
   Sigma[4, c(4)] <-
     c(1)
@@ -142,23 +142,23 @@ calc_Sigma <- function(D) {
 #'
 #' @examples
 calc_mu_wo_nT1 <- function(D) {
-  rho <- D$rho
+  gamma <- D$gamma
   mu <- D$mu
 
   mu_wo_nT1 <- list()
   mu_wo_nT1[["H0"]] <-
     c(
-      mu[["H0"]][["TP"]] / rho[[1]][["TP"]],
-      mu[["H0"]][["TP"]] / rho[[2]][["TP"]],
-      mu[["H0"]][["TC"]] / rho[[1]][["TC"]],
-      mu[["H0"]][["TC"]] / rho[[2]][["TC"]]
+      mu[["H0"]][["TP"]] / gamma[[1]][["TP"]],
+      mu[["H0"]][["TP"]] / gamma[[2]][["TP"]],
+      mu[["H0"]][["TC"]] / gamma[[1]][["TC"]],
+      mu[["H0"]][["TC"]] / gamma[[2]][["TC"]]
     )
   mu_wo_nT1[["H1"]] <-
     c(
-      mu[["H1"]][["TP"]] / rho[[1]][["TP"]],
-      mu[["H1"]][["TP"]] / rho[[2]][["TP"]],
-      mu[["H1"]][["TC"]] / rho[[1]][["TC"]],
-      mu[["H1"]][["TC"]] / rho[[2]][["TC"]]
+      mu[["H1"]][["TP"]] / gamma[[1]][["TP"]],
+      mu[["H1"]][["TP"]] / gamma[[2]][["TP"]],
+      mu[["H1"]][["TC"]] / gamma[[1]][["TC"]],
+      mu[["H1"]][["TC"]] / gamma[[2]][["TC"]]
     )
   return(mu_wo_nT1)
 }
@@ -172,23 +172,23 @@ calc_mu_wo_nT1 <- function(D) {
 #' @examples
 calc_mu_vec <- function(D) {
   sqrt_nT1 <- sqrt(D$n[[1]][["T"]])
-  rho <- D$rho
+  gamma <- D$gamma
   mu <- D$mu
 
   mu_vec <- list()
   mu_vec[["H0"]] <-
     sqrt_nT1 * c(
-      mu[["H0"]][["TP"]] / rho[[1]][["TP"]],
-      mu[["H0"]][["TP"]] / rho[[2]][["TP"]],
-      mu[["H0"]][["TC"]] / rho[[1]][["TC"]],
-      mu[["H0"]][["TC"]] / rho[[2]][["TC"]]
+      mu[["H0"]][["TP"]] / gamma[[1]][["TP"]],
+      mu[["H0"]][["TP"]] / gamma[[2]][["TP"]],
+      mu[["H0"]][["TC"]] / gamma[[1]][["TC"]],
+      mu[["H0"]][["TC"]] / gamma[[2]][["TC"]]
     )
   mu_vec[["H1"]] <-
     sqrt_nT1 * c(
-      mu[["H1"]][["TP"]] / rho[[1]][["TP"]],
-      mu[["H1"]][["TP"]] / rho[[2]][["TP"]],
-      mu[["H1"]][["TC"]] / rho[[1]][["TC"]],
-      mu[["H1"]][["TC"]] / rho[[2]][["TC"]]
+      mu[["H1"]][["TP"]] / gamma[[1]][["TP"]],
+      mu[["H1"]][["TP"]] / gamma[[2]][["TP"]],
+      mu[["H1"]][["TC"]] / gamma[[1]][["TC"]],
+      mu[["H1"]][["TC"]] / gamma[[2]][["TC"]]
     )
 
   mu_vec[["H00"]] <- mu_vec[["H0"]]
@@ -196,17 +196,17 @@ calc_mu_vec <- function(D) {
 
   mu_vec[["H01"]] <-
     sqrt_nT1 * c(
-      mu[["H0"]][["TP"]] / rho[[1]][["TP"]],
-      mu[["H0"]][["TP"]] / rho[[2]][["TP"]],
-      mu[["H1"]][["TC"]] / rho[[1]][["TC"]],
-      mu[["H1"]][["TC"]] / rho[[2]][["TC"]]
+      mu[["H0"]][["TP"]] / gamma[[1]][["TP"]],
+      mu[["H0"]][["TP"]] / gamma[[2]][["TP"]],
+      mu[["H1"]][["TC"]] / gamma[[1]][["TC"]],
+      mu[["H1"]][["TC"]] / gamma[[2]][["TC"]]
     )
   mu_vec[["H10"]] <-
     sqrt_nT1 * c(
-      mu[["H1"]][["TP"]] / rho[[1]][["TP"]],
-      mu[["H1"]][["TP"]] / rho[[2]][["TP"]],
-      mu[["H0"]][["TC"]] / rho[[1]][["TC"]],
-      mu[["H0"]][["TC"]] / rho[[2]][["TC"]]
+      mu[["H1"]][["TP"]] / gamma[[1]][["TP"]],
+      mu[["H1"]][["TP"]] / gamma[[2]][["TP"]],
+      mu[["H0"]][["TC"]] / gamma[[1]][["TC"]],
+      mu[["H0"]][["TC"]] / gamma[[2]][["TC"]]
     )
 
   return(mu_vec)
@@ -786,7 +786,7 @@ calc_alpha_wrt_muH0TP_vectorized <- function(muH0TP, D) {
 
 worst_type_I_error <- function(b2TCefficacy, D) {
   sqrt_nT1 <- sqrt(calc_nT1_wrt_b2TCefficacy(b2TCefficacy, D))
-  D$tmp <- sqrt_nT1 / c(D$rho[[1]][["TP"]], D$rho[[2]][["TP"]])
+  D$tmp <- sqrt_nT1 / c(D$gamma[[1]][["TP"]], D$gamma[[2]][["TP"]])
   D$b[[2]][["TC"]]["efficacy"] <- b2TCefficacy
 
 
@@ -897,7 +897,26 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
 }
 
 
-#' Design 6
+#' Penalized, weighted expected sample size
+#'
+#' This functions serves as an objective function to evaluate the performance of design parameters for a
+#' gold-standard non-inferiority design.
+#'
+#' It allows the calculation of a weighted average of expected sample sizes under 4 different combinations of
+#' point hypotheses:
+#' - H_0 for T vs. P & H_0 for H_0 for T vs. C
+#' - H_0 for T vs. P & H_1 for H_0 for T vs. C
+#' - H_1 for T vs. P & H_0 for H_0 for T vs. C
+#' - H_1 for T vs. P & H_1 for H_0 for T vs. C
+#' The procedure allows for arbitrary combinations of weights for the four combinations of hypothesis. The weights four
+#' weighting factors are denoted w0TP_w0TC, w0TP_w1TC, w1TP_w0TC and w1TP_w1TC in the function definition.
+#'
+#' Additionally, the sample sizes under the respective hypothesis can be equipped with a penalty term for placebo group
+#' patients. This penalty factor is denoted by kappa in the function definition.
+#'
+#' The procedure allows sample size calculations with respect to either normally or t-distributed test statistics.
+#' It's possible to evaluate the objective for single-stage designs, although the weighting factors are ignored in this
+#' case, as all trial realizations have
 #'
 #' @param x
 #' @param D
@@ -907,7 +926,7 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
 #' @export
 #'
 #' @examples
-objective_closed_testing <-
+pwess <-
   function(x,
            D,
            return_everything = FALSE) {
@@ -937,7 +956,7 @@ objective_closed_testing <-
 
     # Calculate covariance matrix Sigma
     D$ccc <- calc_cumc(D)
-    D$rho <- calc_rho(D)
+    D$gamma <- calc_gamma(D)
     D$Sigma <- calc_Sigma(D)
     D$mu_wo_nT1 <- calc_mu_wo_nT1(D)
 
@@ -1094,7 +1113,7 @@ objective_nonbinding_futility <-
 
     # Calculate covariance matrix Sigma
     D$ccc <- calc_cumc(D)
-    D$rho <- calc_rho(D)
+    D$gamma <- calc_gamma(D)
     D$Sigma <- calc_Sigma(D)
     D$mu_wo_nT1 <- calc_mu_wo_nT1(D)
 
@@ -1220,7 +1239,7 @@ objective_nonbinding_futility <-
 #' @export
 #'
 #' @examples
-objective_single_stage <-
+penalized_sample_size_single_stage <-
   function(x,
            D,
            return_everything = FALSE) {
@@ -1241,20 +1260,20 @@ objective_single_stage <-
 
 
     # Calculate covariance matrix Sigma
-    rho <- list()
-    rho[[1]] <- list()
+    gamma <- list()
+    gamma[[1]] <- list()
     for (g in c("P", "C")) {
       for (s in 1:(length(D$cc))) {
-        rho[[s]][[paste0("T", g)]] <- sqrt(D$sigma[["T"]] / D$cc[[s]][["T"]] + D$sigma[[g]] / D$cc[[s]][[g]])
+        gamma[[s]][[paste0("T", g)]] <- sqrt(D$sigma[["T"]] / D$cc[[s]][["T"]] + D$sigma[[g]] / D$cc[[s]][[g]])
       }
     }
-    D$rho <- rho
+    D$gamma <- gamma
 
     Sigma <- matrix(0, ncol = 2, nrow = 2)
     Sigma[1, ] <-
       c(
         1,
-        D$sigma[["T"]] / (D$cc[[1]][["T"]] * rho[[1]][["TP"]] * rho[[1]][["TC"]])
+        D$sigma[["T"]] / (D$cc[[1]][["T"]] * gamma[[1]][["TP"]] * gamma[[1]][["TC"]])
       )
     Sigma[2, 2] <- 1
     Sigma[lower.tri(Sigma, diag = T)] <-
@@ -1266,13 +1285,13 @@ objective_single_stage <-
       mu_vec <- list()
       mu_vec[["H0"]] <-
         sqrt_nT * c(
-          D$mu[["H0"]][["TP"]] / D$rho[[1]][["TP"]],
-          D$mu[["H0"]][["TC"]] / D$rho[[1]][["TC"]]
+          D$mu[["H0"]][["TP"]] / D$gamma[[1]][["TP"]],
+          D$mu[["H0"]][["TC"]] / D$gamma[[1]][["TC"]]
         )
       mu_vec[["H1"]] <-
         sqrt_nT * c(
-          D$mu[["H1"]][["TP"]] / D$rho[[1]][["TP"]],
-          D$mu[["H1"]][["TC"]] / D$rho[[1]][["TC"]]
+          D$mu[["H1"]][["TP"]] / D$gamma[[1]][["TP"]],
+          D$mu[["H1"]][["TC"]] / D$gamma[[1]][["TC"]]
         )
 
       mu_ <- mu_vec[["H1"]]
@@ -1317,13 +1336,13 @@ objective_single_stage <-
     mu_vec <- list()
     mu_vec[["H0"]] <-
       sqrt_nT * c(
-        D$mu[["H0"]][["TP"]] / D$rho[[1]][["TP"]],
-        D$mu[["H0"]][["TC"]] / D$rho[[1]][["TC"]]
+        D$mu[["H0"]][["TP"]] / D$gamma[[1]][["TP"]],
+        D$mu[["H0"]][["TC"]] / D$gamma[[1]][["TC"]]
       )
     mu_vec[["H1"]] <-
       sqrt_nT * c(
-        D$mu[["H1"]][["TP"]] / D$rho[[1]][["TP"]],
-        D$mu[["H1"]][["TC"]] / D$rho[[1]][["TC"]]
+        D$mu[["H1"]][["TP"]] / D$gamma[[1]][["TP"]],
+        D$mu[["H1"]][["TC"]] / D$gamma[[1]][["TC"]]
       )
 
     D$mu_vec <- mu_vec

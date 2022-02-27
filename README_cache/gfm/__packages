@@ -1,9 +1,7 @@
 base
-nloptr
-mvtnorm
-foreach
-future
-doFuture
-rngtools
-doRNG
-OptimalGoldstandardDesigns
+methods
+datasets
+utils
+grDevices
+graphics
+stats
