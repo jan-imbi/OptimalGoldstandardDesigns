@@ -1,0 +1,1 @@
+#' @param nT2 seonc stage sample size of the treatment group.

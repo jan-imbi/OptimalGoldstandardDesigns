@@ -1,0 +1,1 @@
+#' @param nC1 first stage sample size of the control group.

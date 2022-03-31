@@ -1,0 +1,1 @@
+#' @param nP2 second stage sample size of the placebo group.

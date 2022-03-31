@@ -1,0 +1,1 @@
+#' @param var list containing the variances of the three groups.
