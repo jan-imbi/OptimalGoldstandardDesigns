@@ -9,7 +9,7 @@
 #' @template nT1
 #'
 #' @return Z statistic Vector
-#' @export
+#' @include pmv_upper_smaller_slower_fix.R
 meandiff_to_Z <- function(meandiff_TP, meandiff_TC, gamma, nT1) {
   sqrt_nT1 <- sqrt(nT1)
   sqrt_nT1 * c(
@@ -61,7 +61,6 @@ calc_conditional_power <- function(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futil
         (permutation %*% mu)[1:2], (permutation %*% mu)[3:4],
         permutation %*% Sigma %*% t(permutation)
       )
-
       return(pmvnorm_(
         mean = cmean[[2]],
         sigma = csigma[2, 2],

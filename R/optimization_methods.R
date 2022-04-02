@@ -1,12 +1,275 @@
-#' Optimal design parameters for design 1
+#' Title
 #'
-#' @param start
-#' @param D
+#' @param cT2 
+#' @param cP1 
+#' @param cP2 
+#' @param cC1 
+#' @param cC2 
+#' @param bTP1f 
+#' @param bTP1e 
+#' @param bTC1f 
+#' @param bTC1e 
+#' @param alpha 
+#' @param beta 
+#' @param alternative_TP 
+#' @param alternative_TC 
+#' @param Delta 
+#' @param varT 
+#' @param varP 
+#' @param varC 
+#' @param lambda 
+#' @param kappa 
+#' @param nonbinding_futility 
+#' @param nonsequential_futility 
+#' @param round_n 
+#' @param inner_tol_objective 
+#' @param mvnorm_algorithm 
+#' @param nloptr_x0 
+#' @param nloptr_lb 
+#' @param nloptr_ub 
+#' @param nloptr_opts 
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' 1 + 1
+#' 
+#' @include design_helper_functions.R
+#' @include design_helper_functions_nonsequential_futility.R
+optimize_design_twostage <-
+  function(cT2 = 1,
+           cP1 = .25,
+           cP2 = .25,
+           cC1 = 1,
+           cC2 = 1,
+           bTP1f = 0,
+           bTP1e = 2.3,
+           bTC1f = 0,
+           bTC1e = 2.3,
+           alpha = .05,
+           beta = .2,
+           alternative_TP = .4,
+           alternative_TC = 0,
+           Delta = .2,
+           varT = 1,
+           varP = 1,
+           varC = 1,
+           lambda = 1,
+           kappa = 0,
+           nonbinding_futility = TRUE,
+           nonsequential_futility = FALSE,
+           round_n = TRUE,
+           inner_tol_objective = 1e-7,
+           mvnorm_algorithm = mvtnorm::Miwa(steps = 4097, checkCorr = FALSE, maxval = 1e3),
+           nloptr_x0 = NULL,
+           nloptr_lb = NULL,
+           nloptr_ub = NULL,
+           nloptr_opts = list(
+             algorithm = "NLOPT_LN_SBPLX",
+             xtol_rel = inner_tol_objective / 9,
+             maxeval = 500
+           )) {
+    arguments <- c(as.list(environment()))
+    quoted_arguments <- arguments[sapply(c(a, a), is.call)]
+    
+    determine_x0 <- !missing(nloptr_x0)
+    determine_lb <- !missing(nloptr_lb)
+    determine_ub <- !missing(nloptr_ub)
+    
+    if (determine_x0){
+      nloptr_x0 <- list()
+    }
+    if (determine_lb){
+      nloptr_lb <- list()
+    }
+    if (determine_ub){
+      nloptr_ub <- list()
+    }
+    quotes <- list()
+    quote_idx <- 1L
+    if (missing(cT2)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 1
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- 1 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- 20
+      quotes[[quote_idx]] <- quote(cT2 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(cP1)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- .25
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- .25 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- .25 * 20
+      quotes[[quote_idx]] <- quote(cP1 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(cP2)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- .25
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- .25 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- .25 * 20
+      quotes[[quote_idx]] <- quote(cP2 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(cC1)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 1
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- 1 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- 20
+      quotes[[quote_idx]] <- quote(cC1 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(cC2)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 1
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- 1 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- 20
+      quotes[[quote_idx]] <- quote(cC2 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(bTP1e)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 2.3
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- qnorm(1-alpha)
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- 6
+      quotes[[quote_idx]] <- quote(bTP1e <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(bTP1f)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 0
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- -6
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- qnorm(1-alpha)
+      quotes[[quote_idx]] <- quote(bTP1f <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(bTC1e)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 2.3
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- qnorm(1-alpha)
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- 6
+      quotes[[quote_idx]] <- quote(bTC1e <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(bTC1f)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 0
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- -6
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- qnorm(1-alpha)
+      quotes[[quote_idx]] <- quote(bTC1f <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    D_half2<- list(
+      type_I_error = alpha,
+      type_II_error = beta,
+      mu = list("H0" = list("TP" = 0, "TC" = 0), "H1" = list("TP" = alternative_TP, "TC" = alternative_TC + Delta)),
+      var = list("T" = varT, "P" = varP, "C" = varC),
+      lambda = lambda,
+      kappa = kappa,
+      nonbinding_futility = nonbinding_futility,
+      nonsequential_futility = nonsequential_futility,
+      round_n = FALSE,
+      tol = inner_tol_objective,
+      mvnorm_algorithm = mvnorm_algorithm,
+      return_everything = FALSE
+    )
+    opt_fun <- function(x){
+      for (i in seq_along(x)){
+        eval(quotes[[i]])
+      }
+      for (i in seq_along(quoted_arguments)){
+        eval(quoted_arguments[[i]])
+      }
+      D <-
+        append(list(stagec = list(
+          list("T" = 1, "P" = cP1, "C" = cC1),
+          list("T" = cT2, "P" = cP2, "C" = cC2)
+        ),
+        b = list(
+          list(
+            "TP" = list("efficacy" = bTP1e, "futility" = bTP1f),
+            "TC" = list("efficacy" = bTC1e, "futility" = bTC1f)
+          ),
+          list(
+            "TP" = list("efficacy" = NA_real_),
+            "TC" = list("efficacy" = NA_real_)
+          )
+        )),
+        D_half2)
+      objective_twostage(D)
+    }
+    opt <- nloptr(
+      x0 = nloptr_x0,
+      eval_f = opt_fun,
+      lb = nloptr_lb,
+      ub = nloptr_ub,
+      opts = nloptr_opts)
+    x <- opt$solution
+    for (i in seq_along(x)){
+      eval(quotes[[i]])
+    }
+    for (i in seq_along(quoted_arguments)){
+      eval(quoted_arguments[[i]])
+    }
+    
+    D_half2$round_n <- round_n
+    D_half2$return_everything <- TRUE
+    D <-
+      append(list(stagec = list(
+        list("T" = 1, "P" = cP1, "C" = cC1),
+        list("T" = cT2, "P" = cP2, "C" = cC2)
+      ),
+      b = list(
+        list(
+          "TP" = list("efficacy" = bTP1e, "futility" = bTP1f),
+          "TC" = list("efficacy" = bTC1e, "futility" = bTC1f)
+        ),
+        list(
+          "TP" = list("efficacy" = NA_real_),
+          "TC" = list("efficacy" = NA_real_)
+        )
+      )),
+      D_half2)
+    opt_design <- objective_twostage(D)
+    return(opt_design)
+  }
+
+
+
+
+
+
+
+#' Optimal design parameters for design 1
+#'
+#' @param start
+#' @param D
+#'
+#' @return optimal design
+#' @export
+#'
+#' @examples
+#' 1 + 1
+#' 
 #' @importFrom nloptr nloptr
 opt_objective_single_stage <- function(start = NULL, D = create_Design()) {
   if (is.null(start)) {
@@ -224,6 +487,13 @@ opt_objective_nonbinding_futility <- function(start = NULL, D = create_Design( m
   return(opt)
 }
 
+
+
+
+
+
+
+
 #' Optimal design parameters for design 6
 #'
 #' @param start
@@ -286,6 +556,10 @@ opt_objective_closed_testing <- function(start = NULL, D = create_Design(maxeval
 }
 
 
+
+
+
+
 #' Optimal design parameters for design 5
 #'
 #' @param start
@@ -345,6 +619,13 @@ opt_objective_fully_sequential <- function(start = NULL, D = create_Design(maxev
     )
   return(opt)
 }
+
+
+
+
+
+
+
 
 #' Optimizes designs 1 through 6 in succession, using the previous optimum as the starting point for the next design.
 #'
@@ -521,3 +802,6 @@ init_successive_optimum_designs <- function(boundaryvals = list(), ncores = NULL
   }
   return(bind_rows(erg))
 }
+
+
+

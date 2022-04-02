@@ -16,6 +16,9 @@ Suggests:
     testthat,
     fpCompare,
     here,
+    knitr,
+    rmarkdown,
+    covr
 Depends:
     nloptr,
     mvtnorm,
@@ -24,3 +27,14 @@ Depends:
     foreach,
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
+Collate: 
+    'pmv_upper_smaller_slower_fix.R'
+    'conditional_probability_functions.R'
+    'global_constants.R'
+    'design_helper_functions.R'
+    'design_helper_functions_nonsequential_futility.R'
+    'objective_functions.R'
+    'optimization_methods.R'
+    'table_format_functions.R'
+VignetteBuilder: knitr
+URL: https://jan-imbi.github.io/OptimalGoldstandardDesigns/
