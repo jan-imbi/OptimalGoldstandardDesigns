@@ -7,7 +7,7 @@
 #' @param cC2 
 #' @param bTP1f 
 #' @param bTP1e 
-#' @param bTC1f 
+#' @param i 
 #' @param bTC1e 
 #' @param alpha 
 #' @param beta 
@@ -17,11 +17,10 @@
 #' @param varT 
 #' @param varP 
 #' @param varC 
-#' @param lambda 
-#' @param kappa 
 #' @param nonbinding_futility 
-#' @param nonsequential_futility 
+#' @param always_both_futility_tests 
 #' @param round_n 
+#' @param objective 
 #' @param inner_tol_objective 
 #' @param mvnorm_algorithm 
 #' @param nloptr_x0 
@@ -36,7 +35,6 @@
 #' 1 + 1
 #' 
 #' @include design_helper_functions.R
-#' @include design_helper_functions_nonsequential_futility.R
 optimize_design_twostage <-
   function(cT2 = 1,
            cP1 = .25,
@@ -47,7 +45,7 @@ optimize_design_twostage <-
            bTP1e = 2.3,
            bTC1f = 0,
            bTC1e = 2.3,
-           alpha = .05,
+           alpha = .025,
            beta = .2,
            alternative_TP = .4,
            alternative_TC = 0,
@@ -55,27 +53,45 @@ optimize_design_twostage <-
            varT = 1,
            varP = 1,
            varC = 1,
+           nonbinding_futility = TRUE,
+           always_both_futility_tests = TRUE,
+           round_n = TRUE,
            lambda = 1,
            kappa = 0,
-           nonbinding_futility = TRUE,
-           nonsequential_futility = FALSE,
-           round_n = TRUE,
+           nu = 0,
+           objective = quote(
+             sqrt(lambda) ^ 2 * ASN[["H11"]] +
+               (1 - sqrt(lambda)) * sqrt(lambda) * ASN[["H10"]] +
+               (1 - sqrt(lambda)) * sqrt(lambda) * ASN[["H01"]] +
+               (1 - sqrt(lambda)) ^ 2 * ASN[["H00"]] +
+               kappa *
+               (
+                 sqrt(lambda) ^ 2 * ASNP[["H11"]] +
+                   (1 - sqrt(lambda)) * sqrt(lambda) * ASNP[["H10"]] +
+                   (1 - sqrt(lambda)) * sqrt(lambda) * ASNP[["H01"]] +
+                   (1 - sqrt(lambda)) ^ 2 * ASNP[["H00"]] +
+                   nu * cumn[[2]][["P"]]
+               ) +
+               nu * (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])
+             ),
            inner_tol_objective = 1e-7,
-           mvnorm_algorithm = mvtnorm::Miwa(steps = 4097, checkCorr = FALSE, maxval = 1e3),
+           mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
            nloptr_x0 = NULL,
            nloptr_lb = NULL,
            nloptr_ub = NULL,
            nloptr_opts = list(
              algorithm = "NLOPT_LN_SBPLX",
-             xtol_rel = inner_tol_objective / 9,
+             xtol_rel = .1, # inner_tol_objective / 9
              maxeval = 500
-           )) {
+           ),
+           ...) {
     arguments <- c(as.list(environment()))
-    quoted_arguments <- arguments[sapply(c(a, a), is.call)]
+    quoted_arguments <- arguments[sapply(arguments, is.call)]
+    quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
     
-    determine_x0 <- !missing(nloptr_x0)
-    determine_lb <- !missing(nloptr_lb)
-    determine_ub <- !missing(nloptr_ub)
+    determine_x0 <- missing(nloptr_x0)
+    determine_lb <- missing(nloptr_lb)
+    determine_ub <- missing(nloptr_ub)
     
     if (determine_x0){
       nloptr_x0 <- list()
@@ -183,14 +199,17 @@ optimize_design_twostage <-
       type_II_error = beta,
       mu = list("H0" = list("TP" = 0, "TC" = 0), "H1" = list("TP" = alternative_TP, "TC" = alternative_TC + Delta)),
       var = list("T" = varT, "P" = varP, "C" = varC),
+      nonbinding_futility = nonbinding_futility,
+      always_both_futility_tests = always_both_futility_tests,
+      round_n = FALSE,
       lambda = lambda,
       kappa = kappa,
-      nonbinding_futility = nonbinding_futility,
-      nonsequential_futility = nonsequential_futility,
-      round_n = FALSE,
+      nu = nu,
+      objective = objective,
       tol = inner_tol_objective,
       mvnorm_algorithm = mvnorm_algorithm,
-      return_everything = FALSE
+      return_everything = FALSE,
+      ...
     )
     opt_fun <- function(x){
       for (i in seq_along(x)){
@@ -217,6 +236,10 @@ optimize_design_twostage <-
         D_half2)
       objective_twostage(D)
     }
+    
+    nloptr_x0 <- unlist(nloptr_x0)
+    nloptr_lb <- unlist(nloptr_lb)
+    nloptr_ub <- unlist(nloptr_ub)
     opt <- nloptr(
       x0 = nloptr_x0,
       eval_f = opt_fun,
@@ -250,13 +273,11 @@ optimize_design_twostage <-
       )),
       D_half2)
     opt_design <- objective_twostage(D)
+    
+    
+    class(opt_design) <- c("GoldStandardDesign", class(opt_design))
     return(opt_design)
   }
-
-
-
-
-
 
 
 #' Optimal design parameters for design 1
@@ -802,6 +823,3 @@ init_successive_optimum_designs <- function(boundaryvals = list(), ncores = NULL
   }
   return(bind_rows(erg))
 }
-
-
-

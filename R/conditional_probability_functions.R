@@ -40,7 +40,7 @@ conditionalSigma <- function(x_a, mu_a, mu_b, Sigma) {
   return(Sigma_b - t(Sigma_c) %*% solve(Sigma_a) %*% Sigma_c)
 }
 
-calc_conditional_power <- function(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futility = FALSE) {
+calc_conditional_power <- function(Z_TP, Z_TC, mu, Sigma, b, always_both_futility_tests = FALSE) {
   if (Z_TP <= b[[1]][["TP"]][["futility"]]) {
     return(0)
   } else if (b[[1]][["TP"]][["efficacy"]] < Z_TP) {
@@ -69,7 +69,7 @@ calc_conditional_power <- function(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futil
       )[1])
     }
   } else {
-    if (isTRUE(nonsequential_futility)) {
+    if (isTRUE(always_both_futility_tests)) {
       if (Z_TC <= b[[1]][["TC"]][["futility"]]) {
         return(0)
       }
@@ -94,14 +94,14 @@ calc_conditional_power <- function(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futil
   }
 }
 
-calc_conditional_power_wrt_meandiff <- function(meandiff_TP, meandiff_TC, gamma, nT1, mu, Sigma, b, nonsequential_futility = FALSE) {
+calc_conditional_power_wrt_meandiff <- function(meandiff_TP, meandiff_TC, gamma, nT1, mu, Sigma, b, always_both_futility_tests = FALSE) {
   Z <- meandiff_to_Z(meandiff_TP, meandiff_TC, gamma, nT1)
   Z_TP <- Z[["TP"]]
   Z_TC <- Z[["TC"]]
-  calc_conditional_power(Z_TP, Z_TC, mu, Sigma, b, nonsequential_futility)
+  calc_conditional_power(Z_TP, Z_TC, mu, Sigma, b, always_both_futility_tests)
 }
 
-calc_conditional_alpha <- function(groups = "TC", Z, mu, Sigma, b, nonsequential_futility = FALSE) {
+calc_conditional_alpha <- function(groups = "TC", Z, mu, Sigma, b, always_both_futility_tests = FALSE) {
   stopifnot(groups %in% c("TP", "TC"))
 
   if (Z <= b[[1]][[groups]][["futility"]]) {

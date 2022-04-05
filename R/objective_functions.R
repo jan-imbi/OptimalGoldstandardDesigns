@@ -1,7 +1,7 @@
 #' Objective function for two-stage designs
 #'
 #' @template D
-#' @include design_helper_functions_nonsequential_futility.R
+#' @include design_helper_functions_design5.R
 objective_twostage <- function(D)
 {
   # Quote this because might need reevaluation when D$round_n == TRUE
@@ -19,18 +19,18 @@ objective_twostage <- function(D)
   alpha_TP <- TP_local$alpha
   D$b[[2]][["TP"]][["efficacy"]] <- TP_local$root
   
-  # calculate b2TCefficacy boundary using the other predefined parameters
+  # calculate bTC2e boundary using the other predefined parameters
   # (This is the second implicit parameter)
   TC_local_lower <- calc_local_rejection_boundaries("TC", D)
   
-  if (always_both_futility_tests){
+  if (D$always_both_futility_tests){
     alpha_TC <- TC_local_lower$alpha
     D$b[[2]][["TC"]][["efficacy"]] <- TC_local_lower$root
   } else{
     b2TC_lower_bound <- TC_local_lower$root
     max_ss_lb <- sum(unlist(
       calc_n_from_c(
-        calc_nT1_wrt_b2TCefficacy(b2TC_lower_bound, D), D
+        calc_nT1_wrt_bTC2e(b2TC_lower_bound, D), D
       )
     ))
     
@@ -40,7 +40,7 @@ objective_twostage <- function(D)
     b2TC_upper_bound <- TC_local_upper$root
     max_ss_ub <- sum(unlist(
       calc_n_from_c(
-        calc_nT1_wrt_b2TCefficacy(b2TC_upper_bound, D), D
+        calc_nT1_wrt_bTC2e(b2TC_upper_bound, D), D
       )
     ))
     
@@ -72,8 +72,9 @@ objective_twostage <- function(D)
   eval(get_boundaries)
   
   # Calculate Design parameters, now that the implicit parameters are fixed
-  nT1 <- calc_nT1_wrt_b2TCefficacy(D$b[[2]][["TC"]][["efficacy"]], D)
-  D$n <- calc_n_from_c(nT1, D)
+  nT1 <- calc_nT1_wrt_bTC2e(D$b[[2]][["TC"]][["efficacy"]], D)
+  
+  D$n <- n <- calc_n_from_c(nT1, D)
   if (D$round_n){
     D$n[[1]] <- lapply(D$n[[1]], ceiling)
     D$n[[2]] <- lapply(D$n[[2]], ceiling)
@@ -81,7 +82,7 @@ objective_twostage <- function(D)
     eval(get_boundaries)
   }
   
-  D$cumn <- calc_cumn(D)
+  D$cumn <- cumn <- calc_cumn(D)
   D$mu_vec <- calc_mu_vec(D)
   
   final_state_probs <- list()
@@ -91,75 +92,15 @@ objective_twostage <- function(D)
   final_state_probs[["H0"]] <- final_state_probs[["H00"]]
   final_state_probs[["H1"]] <- final_state_probs[["H1"]]
   D$final_state_probs <- final_state_probs
-  D$ASN <- calc_ASN(D)
-  D$ASNP <- calc_ASNP(D)
+  D$ASN <- ASN <- calc_ASN(D)
+  D$ASNP <- ASNP <- calc_ASNP(D)
+  lambda <- D$lambda
+  kappa <- D$kappa
+  nu <- D$nu
   
-  lambda_ASN <- sqrt(D$lambda)^2 * ASN[["H11"]] +
-    (1 - sqrt(D$lambda))*sqrt(D$lambda) * ASN[["H10"]] +
-    (1 - sqrt(D$lambda))*sqrt(D$lambda) * ASN[["H01"]] +
-    (1 - sqrt(D$lambda))^2 * ASN[["H00"]]
+  objective_val <- eval(D$objective)
   
-  lambda_ASNP <- sqrt(D$lambda)^2 * ASNP[["H11"]] +
-    (1 - sqrt(D$lambda))*sqrt(D$lambda) * ASNP[["H10"]] +
-    (1 - sqrt(D$lambda))*sqrt(D$lambda) * ASNP[["H01"]] +
-    (1 - sqrt(D$lambda))^2 * ASNP[["H00"]]
-  
-  # lambda_ASN <- D$lambda * ASN[["H11"]] +
-  #   (1 - sqrt(D$lambda))/ 3 * ASN[["H00"]] +
-  #   (1 - sqrt(D$lambda))/ 3 * ASN[["H01"]] +
-  #   (1 - sqrt(D$lambda))/ 3 * ASN[["H10"]]
-  #
-  # lambda_ASNP <- D$lambda * ASNP[["H11"]] +
-  #   (1 - D$lambda)/3 * ASNP[["H00"]] +
-  #   (1 - D$lambda)/3 * ASNP[["H01"]] +
-  #   (1 - D$lambda)/3 * ASNP[["H10"]]
-  
-  objective_val <- lambda_ASN + D$kappa * lambda_ASNP
-  
-  if (return_everything) {
-    mu_ <- D$mu_vec[["H1"]]
-    pInf <- qnorm(D$tol * 1e-2, mean = mu_, lower.tail = FALSE)
-    pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
-    nInf <- qnorm(D$tol * 1e-2, mean = mu_, lower.tail = TRUE)
-    nInf <- list(list("TP" = nInf[1], "TC" = nInf[3]), list("TP" = nInf[2], "TC" = nInf[4]))
-    
-    D$x <- x
-    
-    D$power_TP <- pmvnorm_(
-      mean = as.vector(projection[["TP1"]] %*% D$mu_vec[["H1"]]),
-      var = projection[["TP1"]] %*% D$Sigma %*% t(projection[["TP1"]]),
-      lower = c(D$b[[1]][["TP"]][["efficacy"]]),
-      upper = c(pInf[[1]][["TP"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / 2,
-      #                       releps = 0)
-    )[1] + pmvnorm_(
-      mean = as.vector(projection[["TP12_TC1"]] %*% D$mu_vec[["H1"]]),
-      var = projection[["TP12_TC1"]] %*% D$Sigma %*% t(projection[["TP12_TC1"]]),
-      lower = c(D$b[[1]][["TP"]][["futility"]], D$b[[2]][["TP"]][["efficacy"]], D$b[[1]][["TP"]][["futility"]]),
-      upper = c(D$b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], pInf[[1]][["TP"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / 2,
-      #                       releps = 0)
-    )[1]
-    
-    D$power <- calc_prob_reject_both("H1", D)
-    D$min_conditional_power <- calc_conditional_power(
-      D$b[[1]][["TP"]][["futility"]] + 1e-10, D$b[[1]][["TC"]][["futility"]] + 1e-10,
-      D$mu_vec[["H1"]], D$Sigma, D$b, D$nonsequential_futility
-    )
-    
-    D$alpha_TP <- alpha_TP
-    D$alpha_TC <- alpha_TC
-    D$final_state_probs <- final_state_probs
-    D$ASN <- ASN
-    D$ASNP <- ASNP
-    D$lambda_ASN <- lambda_ASN
-    D$lambda_ASNP <- lambda_ASNP
-    D$objective_val <- objective_val
-    D$maxn <- sum(unlist(D$n))
+  if (D$return_everything) {
     return(D)
   } else {
     return(objective_val)
@@ -172,7 +113,7 @@ objective_twostage <- function(D)
 #' @template D
 objective_singlestage <-
   function(D) {
-    D$nonsequential_futility <- FALSE
+    D$always_both_futility_tests <- FALSE
     
     # Add input parameters to Design object
     D$stagec <- list()
@@ -230,10 +171,10 @@ objective_singlestage <-
       
       1 - pmvnorm_(
         mean = as.vector(mu_vec[["H1"]]),
-        var = D$Sigma,
+        sigma = D$Sigma,
         lower = c(D$b[[1]][["TP"]][["efficacy"]], D$b[[1]][["TC"]][["efficacy"]]),
         upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
-        algorithm = Miwa(steps = D$maxpts)
+        algorithm = D$mvnorm_algorithm
         # algorithm = GenzBretz(maxpts = D$maxpts,
         #                       abseps = D$tol / 2,
         #                       releps = 0)
@@ -289,10 +230,10 @@ objective_singlestage <-
       P <- list()
       P[["TP1E_TC1E"]] <- pmvnorm_(
         mean = as.vector(mu_vec[[hyp]]),
-        var = D$Sigma,
+        sigma = D$Sigma,
         lower = c(D$b[[1]][["TP"]][["efficacy"]], D$b[[1]][["TC"]][["efficacy"]]),
         upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
-        algorithm = Miwa(steps = D$maxpts)
+        algorithm = D$mvnorm_algorithm
         # algorithm = GenzBretz(maxpts = D$mvtnorm_alg_maxpts,
         #                       abseps = D$tol / 3,
         #                       releps = 0)
@@ -300,10 +241,10 @@ objective_singlestage <-
       
       P[["TP1F"]] <- pmvnorm_(
         mean = as.vector(mu_vec[[hyp]])[1],
-        var = D$Sigma[1, 1],
+        sigma = D$Sigma[1, 1],
         lower = c(nInf[[1]][["TP"]]),
         upper = c(D$b[[1]][["TP"]][["efficacy"]]),
-        algorithm = Miwa(steps = D$maxpts)
+        algorithm = D$mvnorm_algorithm
         # algorithm = GenzBretz(maxpts = D$mvtnorm_alg_maxpts,
         #                       abseps = D$tol / 3,
         #                       releps = 0)
@@ -311,10 +252,10 @@ objective_singlestage <-
       
       P[["TP1E_TC1F"]] <- pmvnorm_(
         mean = as.vector(mu_vec[[hyp]]),
-        var = D$Sigma,
+        sigma = D$Sigma,
         lower = c(D$b[[1]][["TP"]][["efficacy"]], nInf[[1]][["TC"]]),
         upper = c(pInf[[1]][["TP"]], D$b[[1]][["TC"]][["efficacy"]]),
-        algorithm = Miwa(steps = D$maxpts)
+        algorithm = D$mvnorm_algorithm
         # algorithm = GenzBretz(maxpts = D$maxpts,
         #                       abseps = D$tol / 3,
         #                       releps = 0)
@@ -324,43 +265,9 @@ objective_singlestage <-
       ASNP[[hyp]] <- D$n[[1]][["P"]]
     }
     
-    lambda_ASN <- D$lambda * ASN[["H1"]] + (1 - D$lambda) * ASN[["H0"]]
-    lambda_ASNP <- D$lambda * ASNP[["H1"]] + (1 - D$lambda) * ASNP[["H0"]]
-    objective_val <- lambda_ASN + D$kappa * lambda_ASNP
+    objective_val <- eval(D$objective)
     
     if (return_everything) {
-      mu_ <- D$mu_vec[[hyp]]
-      pInf <- qnorm(D$tol * 1e-2, mean = mu_, lower.tail = FALSE)
-      pInf <- list(list("TP" = pInf[1], "TC" = pInf[2]))
-      nInf <- qnorm(D$tol * 1e-2, mean = mu_, lower.tail = TRUE)
-      nInf <- list(list("TP" = nInf[1], "TC" = nInf[2]))
-      
-      D$x <- x
-      
-      D$power_TP <- pmvnorm_(
-        mean = as.vector(D$mu_vec[["H1"]][1]),
-        var = D$Sigma[1, 1],
-        lower = c(D$b[[1]][["TP"]][["efficacy"]]),
-        upper = c(pInf[[1]][["TP"]]),
-        algorithm = Miwa(steps = D$maxpts)
-        # algorithm = GenzBretz(maxpts = D$maxpts,
-        #                       abseps = D$tol,
-        #                       releps = 0)
-      )[1]
-      
-      D$power <- power
-      D$min_conditional_power <- NA_real_
-      
-      D$alpha_TP <- D$type_I_error
-      D$alpha_TC <- D$type_I_error
-      
-      D$final_state_probs <- final_state_probs
-      D$ASN <- ASN
-      D$ASNP <- ASNP
-      D$lambda_ASN <- lambda_ASN
-      D$lambda_ASNP <- lambda_ASNP
-      D$objective_val <- objective_val
-      D$maxn <- sum(unlist(D$n))
       return(D)
     } else {
       return(objective_val)

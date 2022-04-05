@@ -198,9 +198,9 @@ calc_final_state_probs <- function(hypothesis = "H0", D) {
   mu_ <- D$mu_vec[[hypothesis]]
   Sigma <- D$Sigma
   b <- D$b
-  nonsequential_futility <- D$nonsequential_futility
+  always_both_futility_tests <- D$always_both_futility_tests
   
-  # Hack to get MiWa algorithm to work with infinite boundaries and reasonable astagecuracy
+  # Hack to get MiWa algorithm to work with infinite boundaries and reasonable accuracy
   pInf <- qnorm(D$tol * 1e-2, mean = mu_, lower.tail = FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
   nInf <- qnorm(D$tol * 1e-2, mean = mu_, lower.tail = TRUE)
@@ -221,160 +221,116 @@ calc_final_state_probs <- function(hypothesis = "H0", D) {
   
   P <- list()
   P[["TP1E_TC1E"]] <- pmvnorm_(
-    mean = as.vector(A_[["TP1_TC1"]] %*% mu_),
-    var = A_[["TP1_TC1"]] %*% Sigma %*% t(A_[["TP1_TC1"]]),
+    mean = as.vector(projection[["TP1_TC1"]] %*% mu_),
+    sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
     lower = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["efficacy"]]),
     upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / toladjust,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   
   P[["TP1E_TC12E"]] <- pmvnorm_(
-    mean = as.vector(A_[["TP1_TC12"]] %*% mu_),
-    var = A_[["TP1_TC12"]] %*% Sigma %*% t(A_[["TP1_TC12"]]),
+    mean = as.vector(projection[["TP1_TC12"]] %*% mu_),
+    sigma =  projection[["TP1_TC12"]] %*% Sigma %*% t(projection[["TP1_TC12"]]),
     lower = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]], b[[2]][["TC"]][["efficacy"]]),
     upper = c(pInf[[1]][["TP"]], b[[1]][["TC"]][["efficacy"]], pInf[[2]][["TC"]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / toladjust,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   
   P[["TP1E_TC12F"]] <- pmvnorm_(
-    mean = as.vector(A_[["TP1_TC12"]] %*% mu_),
-    var = A_[["TP1_TC12"]] %*% Sigma %*% t(A_[["TP1_TC12"]]),
+    mean = as.vector(projection[["TP1_TC12"]] %*% mu_),
+    sigma =  projection[["TP1_TC12"]] %*% Sigma %*% t(projection[["TP1_TC12"]]),
     lower = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]], nInf[[2]][["TC"]]),
     upper = c(pInf[[1]][["TP"]], b[[1]][["TC"]][["efficacy"]], b[[2]][["TC"]][["efficacy"]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / toladjust,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   
-  if (isTRUE(nonsequential_futility)) {
+  if (isTRUE(always_both_futility_tests)) {
     P[["TP1F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP1"]] %*% mu_),
-      var = A_[["TP1"]] %*% Sigma %*% t(A_[["TP1"]]),
+      mean = as.vector(projection[["TP1"]] %*% mu_),
+      sigma =  projection[["TP1"]] %*% Sigma %*% t(projection[["TP1"]]),
       lower = c(nInf[[1]][["TP"]]),
       upper = c(b[[1]][["TP"]][["futility"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP1_TC1F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP1_TC1"]] %*% mu_),
-      var = A_[["TP1_TC1"]] %*% Sigma %*% t(A_[["TP1_TC1"]]),
+      mean = as.vector(projection[["TP1_TC1"]] %*% mu_),
+      sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
       lower = c(b[[1]][["TP"]][["futility"]], nInf[[1]][["TC"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP1F_TC1F"]] <- 1 - pmvnorm_(
-      mean = as.vector(A_[["TP1_TC1"]] %*% mu_),
-      var = A_[["TP1_TC1"]] %*% Sigma %*% t(A_[["TP1_TC1"]]),
+      mean = as.vector(projection[["TP1_TC1"]] %*% mu_),
+      sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[1]][["TC"]][["futility"]]),
       upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(
-      #   maxpts = D$maxpts,
-      #   abseps = D$tol / toladjust,
-      #   releps = 0
-      # )
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP12F_TC1"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC1"]] %*% mu_),
-      var = A_[["TP12_TC1"]] %*% Sigma %*% t(A_[["TP12_TC1"]]),
+      mean = as.vector(projection[["TP12_TC1"]] %*% mu_),
+      sigma =  projection[["TP12_TC1"]] %*% Sigma %*% t(projection[["TP12_TC1"]]),
       lower = c(b[[1]][["TP"]][["futility"]], nInf[[2]][["TP"]], b[[1]][["TC"]][["futility"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], b[[2]][["TP"]][["efficacy"]], pInf[[1]][["TC"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP12E_TC12E"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC12"]] %*% mu_),
-      var = A_[["TP12_TC12"]] %*% Sigma %*% t(A_[["TP12_TC12"]]),
+      mean = as.vector(projection[["TP12_TC12"]] %*% mu_),
+      sigma =  projection[["TP12_TC12"]] %*% Sigma %*% t(projection[["TP12_TC12"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[2]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]], b[[2]][["TC"]][["efficacy"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], pInf[[1]][["TC"]], pInf[[2]][["TC"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                                abseps = D$tol / toladjust,
-      #                                releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP12E_TC12F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC12"]] %*% mu_),
-      var = A_[["TP12_TC12"]] %*% Sigma %*% t(A_[["TP12_TC12"]]),
+      mean = as.vector(projection[["TP12_TC12"]] %*% mu_),
+      sigma =  projection[["TP12_TC12"]] %*% Sigma %*% t(projection[["TP12_TC12"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[2]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]], nInf[[2]][["TC"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], pInf[[1]][["TC"]], b[[2]][["TC"]][["efficacy"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                                abseps = D$tol / toladjust,
-      #                                releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
   } else {
     P[["TP1F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP1"]] %*% mu_),
-      var = A_[["TP1"]] %*% Sigma %*% t(A_[["TP1"]]),
+      mean = as.vector(projection[["TP1"]] %*% mu_),
+      sigma =  projection[["TP1"]] %*% Sigma %*% t(projection[["TP1"]]),
       lower = c(nInf[[1]][["TP"]]),
       upper = c(b[[1]][["TP"]][["futility"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP1E_TC1F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP1_TC1"]] %*% mu_),
-      var = A_[["TP1_TC1"]] %*% Sigma %*% t(A_[["TP1_TC1"]]),
+      mean = as.vector(projection[["TP1_TC1"]] %*% mu_),
+      sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
       lower = c(b[[1]][["TP"]][["efficacy"]], nInf[[1]][["TC"]]),
       upper = c(pInf[[1]][["TP"]], b[[1]][["TC"]][["futility"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP12F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12"]] %*% mu_),
-      var = A_[["TP12"]] %*% Sigma %*% t(A_[["TP12"]]),
+      mean = as.vector(projection[["TP12"]] %*% mu_),
+      sigma =  projection[["TP12"]] %*% Sigma %*% t(projection[["TP12"]]),
       lower = c(b[[1]][["TP"]][["futility"]], nInf[[2]][["TP"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], b[[2]][["TP"]][["efficacy"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP12E_TC2E"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC2"]] %*% mu_),
-      var = A_[["TP12_TC2"]] %*% Sigma %*% t(A_[["TP12_TC2"]]),
+      mean = as.vector(projection[["TP12_TC2"]] %*% mu_),
+      sigma =  projection[["TP12_TC2"]] %*% Sigma %*% t(projection[["TP12_TC2"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[2]][["TP"]][["efficacy"]], b[[2]][["TC"]][["efficacy"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], pInf[[2]][["TC"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
     
     P[["TP12E_TC2F"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC2"]] %*% mu_),
-      var = A_[["TP12_TC2"]] %*% Sigma %*% t(A_[["TP12_TC2"]]),
+      mean = as.vector(projection[["TP12_TC2"]] %*% mu_),
+      sigma =  projection[["TP12_TC2"]] %*% Sigma %*% t(projection[["TP12_TC2"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[2]][["TP"]][["efficacy"]], nInf[[2]][["TC"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], b[[2]][["TC"]][["efficacy"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / toladjust,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
   }
   return(P)
@@ -388,7 +344,7 @@ calc_final_state_probs <- function(hypothesis = "H0", D) {
 calc_prob_reject_both <- function(mu_vec, D) {
   Sigma <- D$Sigma
   b <- D$b
-  nonsequential_futility <- D$nonsequential_futility
+  always_both_futility_tests <- D$always_both_futility_tests
   
   pInf <- qnorm(D$tol * 1e-2, mean = mu_vec, lower.tail = FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
@@ -408,48 +364,36 @@ calc_prob_reject_both <- function(mu_vec, D) {
   
   P <- list()
   P[["TP1E_TC1E"]] <- pmvnorm_(
-    mean = as.vector(A_[["TP1_TC1"]] %*% mu_vec),
-    var = A_[["TP1_TC1"]] %*% Sigma %*% t(A_[["TP1_TC1"]]),
+    mean = as.vector(projection[["TP1_TC1"]] %*% mu_vec),
+    sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
     lower = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["efficacy"]]),
     upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / 3,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   
   P[["TP1E_TC12E"]] <- pmvnorm_(
-    mean = as.vector(A_[["TP1_TC12"]] %*% mu_vec),
-    var = A_[["TP1_TC12"]] %*% Sigma %*% t(A_[["TP1_TC12"]]),
+    mean = as.vector(projection[["TP1_TC12"]] %*% mu_vec),
+    sigma =  projection[["TP1_TC12"]] %*% Sigma %*% t(projection[["TP1_TC12"]]),
     lower = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]], b[[2]][["TC"]][["efficacy"]]),
     upper = c(pInf[[1]][["TP"]], b[[1]][["TC"]][["efficacy"]], pInf[[2]][["TC"]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / 3,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   
-  if (isTRUE(nonsequential_futility)) {
+  if (isTRUE(always_both_futility_tests)) {
     P[["TP12E_TC12E"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC12"]] %*% mu_vec),
-      var = A_[["TP12_TC12"]] %*% Sigma %*% t(A_[["TP12_TC12"]]),
+      mean = as.vector(projection[["TP12_TC12"]] %*% mu_vec),
+      sigma =  projection[["TP12_TC12"]] %*% Sigma %*% t(projection[["TP12_TC12"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[2]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]], b[[2]][["TC"]][["efficacy"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], pInf[[1]][["TC"]], pInf[[2]][["TC"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                                abseps = D$tol / 3,
-      #                                releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
   } else {
     P[["TP12E_TC2E"]] <- pmvnorm_(
-      mean = as.vector(A_[["TP12_TC2"]] %*% mu_vec),
-      var = A_[["TP12_TC2"]] %*% Sigma %*% t(A_[["TP12_TC2"]]),
+      mean = as.vector(projection[["TP12_TC2"]] %*% mu_vec),
+      sigma =  projection[["TP12_TC2"]] %*% Sigma %*% t(projection[["TP12_TC2"]]),
       lower = c(b[[1]][["TP"]][["futility"]], b[[2]][["TP"]][["efficacy"]], b[[2]][["TC"]][["efficacy"]]),
       upper = c(b[[1]][["TP"]][["efficacy"]], pInf[[2]][["TP"]], pInf[[2]][["TC"]]),
-      algorithm = Miwa(steps = D$maxpts)
-      # algorithm = GenzBretz(maxpts = D$maxpts,
-      #                       abseps = D$tol / 3,
-      #                       releps = 0)
+      algorithm = D$mvnorm_algorithm
     )[1]
   }
   return(sum(unlist(P)))
@@ -489,33 +433,24 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
   P <- list()
   P[[paste0(groups, "1E")]] <- pmvnorm_(
     mean = as.vector(projection[[paste0(groups, "1")]] %*% mu_vec),
-    var = projection[[paste0(groups, "1")]] %*% D$Sigma %*% t(projection[[paste0(groups, "1")]]),
+    sigma = projection[[paste0(groups, "1")]] %*% D$Sigma %*% t(projection[[paste0(groups, "1")]]),
     lower = b[[1]][[groups]][["efficacy"]],
     upper = pInf[[1]][[groups]],
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / 3,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   sgn_low <- sign(pmvnorm_(
     mean = as.vector(projection[[paste0(groups, "12")]] %*% mu_vec),
-    var = projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
+    sigma =  projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
     lower = c(b[[1]][[groups]][["futility"]], qnorm(1 - D$type_I_error)),
     upper = c(b[[1]][[groups]][["efficacy"]], pInf[[1]][[groups]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / 3,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1] + P[[paste0(groups, "1E")]] - D$type_I_error)
   sgn_high <- sign(pmvnorm_(
     mean = as.vector(projection[[paste0(groups, "12")]] %*% mu_vec),
-    var = projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
+    sigma =  projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
     lower = c(b[[1]][[groups]][["futility"]], qnorm(1 - D$tol / 3)),
     upper = c(b[[1]][[groups]][["efficacy"]], pInf[[1]][[groups]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / 3,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1] + P[[paste0(groups, "1E")]] - D$type_I_error)
   
   if (sgn_high >= -D$tol / 3) {
@@ -529,13 +464,10 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
       function(x) {
         pmvnorm_(
           mean = as.vector(projection[[paste0(groups, "12")]] %*% mu_vec),
-          var = projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
+          sigma =  projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
           lower = c(b[[1]][[groups]][["futility"]], x),
           upper = c(b[[1]][[groups]][["efficacy"]], pInf[[1]][[groups]]),
-          algorithm = Miwa(steps = D$maxpts)
-          # algorithm = GenzBretz(maxpts = D$maxpts,
-          #                       abseps = D$tol / 3,
-          #                       releps = 0)
+          algorithm = D$mvnorm_algorithm
         )[1] + P[[paste0(groups, "1E")]] - D$type_I_error
       },
       c(qnorm(1 - D$type_I_error), qnorm(1 - D$tol / 3)),
@@ -545,13 +477,10 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
   b[[2]][[groups]][["efficacy"]] <- b2$root
   P[[paste0(groups, "12E")]] <- pmvnorm_(
     mean = as.vector(projection[[paste0(groups, "12")]] %*% mu_vec),
-    var = projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
+    sigma =  projection[[paste0(groups, "12")]] %*% D$Sigma %*% t(projection[[paste0(groups, "12")]]),
     lower = c(b[[1]][[groups]][["futility"]], b[[2]][[groups]][["efficacy"]]),
     upper = c(b[[1]][[groups]][["efficacy"]], pInf[[1]][[groups]]),
-    algorithm = Miwa(steps = D$maxpts)
-    # algorithm = GenzBretz(maxpts = D$maxpts,
-    #                       abseps = D$tol / 3,
-    #                       releps = 0)
+    algorithm = D$mvnorm_algorithm
   )[1]
   
   return(list(
@@ -560,17 +489,79 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
   ))
 }
 
+#' Helper function to calculate the required sample size (of the stage 1 treatment group)
+#' to achieve the target power given the bTC2e 
+#' 
+#'
+#' @template bTC2e
+#' @template D
+#' @include design_helper_functions.R
+calc_nT1_wrt_bTC2e <- function(bTC2e, D) {
+  D$b[[2]][["TC"]][["efficacy"]] <- bTC2e
+  D$tol <- D$tol * 3 / 4
+  
+  if (1 - calc_prob_reject_both(D$mu_wo_nT1[["H1"]] * 1, D) - D$type_II_error <= D$tol / 3) {
+    return(1)
+  } else {
+    # This trick calculates (-) the sqrt of the sample size required for a power of 1-D$type_II_error to reject in the first stage.
+    # This gives an upper bound on the total sample size required for a power of 1-D$type_II_error.
+    sqrtn <- qmvnorm(1 - D$type_II_error,
+                     mean = -as.vector(diag(1 / D$mu_wo_nT1[["H1"]][c(1, 3)]) %*% c(D$b[[1]][["TP"]][["efficacy"]], D$b[[1]][["TC"]][["efficacy"]])),
+                     var = diag(1 / D$mu_wo_nT1[["H1"]][c(1, 3)]) %*%
+                       (projection[["TP1_TC1"]] %*% D$Sigma %*% t(projection[["TP1_TC1"]])) %*% diag(1 / D$mu_wo_nT1[["H1"]][c(1, 3)]),
+                     tail = "upper.tail"
+    )$quantile
+    
+    return(uniroot(function(nT1, D) 1 - calc_prob_reject_both(D$mu_wo_nT1[["H1"]] * sqrt(nT1), D) - D$type_II_error,
+                   c(1, sqrtn^2),
+                   tol = D$tol / 3,
+                   extendInt = "downX",
+                   D = D
+    )$root)
+  }
+}
+
+
+#' Helper function to calculate the maximal probability of rejecting the non-inferiority hypothesis
+#' in the testing procedure featuring nonsequential futility, given a point hypothesis for
+#' the superiority hypothesis. 
+#' 
+#' This is required in designs with nonsequential futility testing, as choosing locally valid designs
+#' is insufficient to gurantee type I error control.
+#'
+#' @template bTC2e
+#' @template D
+calc_worst_type_I_error <- function(bTC2e, D) {
+  sqrt_nT1 <- sqrt(calc_nT1_wrt_bTC2e(bTC2e, D))
+  nT1_div_gamma <- sqrt_nT1 / c(D$gamma[[1]][["TP"]], D$gamma[[2]][["TP"]])
+  D$b[[2]][["TC"]]["efficacy"] <- bTC2e
+  
+  calc_alpha_wrt_muH0T <- function(muH0TP, D) {
+    return(vapply(muH0TP, function(x, D){
+      mu_vec <- c(x * nT1_div_gamma, 0, 0)
+      calc_prob_reject_both_wrt_mu_vec(mu_vec, D)
+    }, numeric(1), D = D))
+  }
+  
+  D$tol <- D$tol * 3 / 5
+  optimum <- optimize(calc_alpha_wrt_muH0T, c(0, qnorm(1 - D$tol / 3) / min(nT1_div_gamma)),
+                      maximum = TRUE, D = D,
+                      tol = D$tol / 3
+  )
+  return(optimum$objective)
+}
+
 #' Helper function to calculate the average sample size
 #'
 #' @template D
 calc_ASN <- function(D) {
   n <- D$n
-  nonsequential_futility <- D$nonsequential_futility
+  always_both_futility_tests <- D$always_both_futility_tests
   ASN <- list()
   for (hyp in c("H00", "H11", "H10", "H01")){
     P <- D$final_state_probs[[hyp]]
     
-    if (isTRUE(nonsequential_futility)) {
+    if (isTRUE(always_both_futility_tests)) {
       ASN[[hyp]] <- (P[["TP1E_TC1E"]] + P[["TP1F_TC1F"]]) * (n[[1]][["T"]] + n[[1]][["P"]] + n[[1]][["C"]]) +
         (P[["TP1E_TC12E"]] + P[["TP1E_TC12F"]]) * (n[[1]][["T"]] + n[[1]][["P"]] + n[[1]][["C"]] + n[[2]][["T"]] + n[[2]][["C"]]) +
         (P[["TP12F_TC1"]] + P[["TP12E_TC12E"]] + P[["TP12E_TC12F"]]) *
@@ -592,11 +583,11 @@ calc_ASN <- function(D) {
 #' @template D
 calc_ASNP <- function(D) {
   n <- D$n
-  nonsequential_futility <- D$nonsequential_futility
+  always_both_futility_tests <- D$always_both_futility_tests
   ASNP <- list()
   for (hyp in c("H00", "H11", "H10", "H01")){
     P <- D$final_state_probs[[hyp]]
-    if (isTRUE(nonsequential_futility)) {
+    if (isTRUE(always_both_futility_tests)) {
       ASNP[[hyp]] <- (P[["TP1E_TC1E"]] + P[["TP1F_TC1F"]]) * (n[[1]][["P"]]) +
         (P[["TP1E_TC12E"]] + P[["TP1E_TC12F"]]) * (n[[1]][["P"]]) +
         (P[["TP12F_TC1"]] + P[["TP12E_TC12E"]] + P[["TP12E_TC12F"]]) * (n[[1]][["P"]] + n[[2]][["P"]])

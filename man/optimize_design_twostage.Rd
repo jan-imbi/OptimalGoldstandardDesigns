@@ -22,18 +22,25 @@ optimize_design_twostage(
   varT = 1,
   varP = 1,
   varC = 1,
+  nonbinding_futility = TRUE,
+  always_both_futility_tests = TRUE,
+  round_n = TRUE,
   lambda = 1,
   kappa = 0,
-  nonbinding_futility = TRUE,
-  nonsequential_futility = FALSE,
-  round_n = TRUE,
+  nu = 0,
+  objective = quote(sqrt(lambda)^2 * ASN[["H11"]] + (1 - sqrt(lambda)) * sqrt(lambda) *
+    ASN[["H10"]] + (1 - sqrt(lambda)) * sqrt(lambda) * ASN[["H01"]] + (1 -
+    sqrt(lambda))^2 * ASN[["H00"]] + kappa * (sqrt(lambda)^2 * ASNP[["H11"]] + (1 -
+    sqrt(lambda)) * sqrt(lambda) * ASNP[["H10"]] + (1 - sqrt(lambda)) * sqrt(lambda) *
+    ASNP[["H01"]] + (1 - sqrt(lambda))^2 * ASNP[["H00"]] + nu * cumn[[2]][["P"]]) + nu *
+    (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])),
   inner_tol_objective = 1e-07,
-  mvnorm_algorithm = mvtnorm::Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000),
+  mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1000),
   nloptr_x0 = NULL,
   nloptr_lb = NULL,
   nloptr_ub = NULL,
-  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = inner_tol_objective/9,
-    maxeval = 500)
+  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 0.1, maxeval = 500),
+  ...
 )
 }
 \arguments{
@@ -50,8 +57,6 @@ optimize_design_twostage(
 \item{bTP1f}{}
 
 \item{bTP1e}{}
-
-\item{bTC1f}{}
 
 \item{bTC1e}{}
 
@@ -71,15 +76,13 @@ optimize_design_twostage(
 
 \item{varC}{}
 
-\item{lambda}{}
-
-\item{kappa}{}
-
 \item{nonbinding_futility}{}
 
-\item{nonsequential_futility}{}
+\item{always_both_futility_tests}{}
 
 \item{round_n}{}
+
+\item{objective}{}
 
 \item{inner_tol_objective}{}
 
@@ -92,6 +95,8 @@ optimize_design_twostage(
 \item{nloptr_ub}{}
 
 \item{nloptr_opts}{}
+
+\item{i}{}
 }
 \value{
 

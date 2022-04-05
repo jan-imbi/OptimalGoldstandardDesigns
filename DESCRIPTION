@@ -30,9 +30,10 @@ RoxygenNote: 7.1.2
 Collate: 
     'pmv_upper_smaller_slower_fix.R'
     'conditional_probability_functions.R'
+    'design_display_functions.R'
     'global_constants.R'
     'design_helper_functions.R'
-    'design_helper_functions_nonsequential_futility.R'
+    'design_helper_functions_design5.R'
     'objective_functions.R'
     'optimization_methods.R'
     'table_format_functions.R'
