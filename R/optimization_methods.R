@@ -316,7 +316,7 @@ optimize_design_twostage <-
 #' 1 + 1
 #'
 #' @include design_helper_functions.R
-optimize_design_singlestage <-
+optimize_design_onestage <-
   function(cP1 = .25,
            cC1 = 1,
            alpha = .025,
@@ -409,7 +409,7 @@ optimize_design_singlestage <-
           list("T" = 1, "P" = cP1, "C" = cC1)
         )),
         D_half2)
-      objective_twostage(D)
+      objective_onestage(D)
     }
 
     nloptr_x0 <- unlist(nloptr_x0)
@@ -436,7 +436,7 @@ optimize_design_singlestage <-
         list("T" = 1, "P" = cP1, "C" = cC1)
       )),
       D_half2)
-    opt_design <- objective_twostage(D)
+    opt_design <- objective_onestage(D)
 
     class(opt_design) <- c("OneStageGoldStandardDesign", class(opt_design))
     return(opt_design)

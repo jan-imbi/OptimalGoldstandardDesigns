@@ -5,6 +5,7 @@
 objective_twostage <- function(D)
 {
   # Quote this because might need reevaluation when D$round_n == TRUE
+  # Sets D$cumc, D$gamma, D$Sigma, D$mu_wo_nT1, D$b
   get_boundaries <- quote({
 
   # Calculate covariance matrix Sigma
@@ -66,21 +67,23 @@ objective_twostage <- function(D)
 
     D$b2TC_boundary_description <- b2TC_boundary_description
     D$b[[2]][["TC"]][["efficacy"]] <- best_boundary$root
-    alpha_TC <- sum(best_boundary$f.root + D$type_I_error)
+    alpha_TC <- sum(best_boundary$f.root + D$type_I_error) 
   }
   })
   eval(get_boundaries)
 
   # Calculate Design parameters, now that the implicit parameters are fixed
-  nT1 <- calc_nT1_wrt_bTC2e(D$b[[2]][["TC"]][["efficacy"]], D)
-
-  D$n <- n <- calc_n_from_c(nT1, D)
+  nT1 <- solve_nT1_wrt_bTC2e(D$b[[2]][["TC"]][["efficacy"]], D)
+  D$n <- calc_n_from_c(nT1, D)
+  
+  # Recalculate design parameters if rounding is requested
   if (D$round_n){
     D$n[[1]] <- lapply(D$n[[1]], ceiling)
     D$n[[2]] <- lapply(D$n[[2]], ceiling)
     D$c <- calc_c(D)
     eval(get_boundaries)
   }
+  n <- D$n
 
   D$cumn <- cumn <- calc_cumn(D)
   D$mu_vec <- calc_mu_vec(D)
@@ -90,7 +93,7 @@ objective_twostage <- function(D)
     final_state_probs[[hyp]] <- calc_final_state_probs(hyp, D)
   }
   final_state_probs[["H0"]] <- final_state_probs[["H00"]]
-  final_state_probs[["H1"]] <- final_state_probs[["H1"]]
+  final_state_probs[["H1"]] <- final_state_probs[["H11"]]
   D$final_state_probs <- final_state_probs
   D$ASN <- ASN <- calc_ASN(D)
   D$ASNP <- ASNP <- calc_ASNP(D)
@@ -98,21 +101,37 @@ objective_twostage <- function(D)
   kappa <- D$kappa
   nu <- D$nu
 
-  objective_val <- eval(D$objective)
+  D$objective_val <- eval(D$objective)
 
   if (D$return_everything) {
+    D$power <- calc_prob_reject_both(D$mu_vec[["H1"]], D)
+    D$futility_prob <- list()
+    if (D$always_both_futility_tests){
+      for (hyp in c("H0", "H1")){
+        D$futility_prob[[hyp]] <- D$final_state_probs[[hyp]][["TP1F_TC1F"]]
+      }
+    } else{
+      D$max_alpha_TC <- alpha_TC
+      for (hyp in c("H0", "H1")){
+        D$futility_prob[[hyp]] <- D$final_state_probs[[hyp]][["TP1F"]] + D$final_state_probs[[hyp]][["TP1E_TC1F"]]
+      }
+    }
+    D$local_alphas <- calc_local_alphas(D)
+    D$cp_min <-
+      calc_conditional_power(D$b[[1]][["TP"]][["futility"]] + .Machine$double.eps,
+                             D$b[[1]][["TC"]][["futility"]] + .Machine$double.eps,
+                             D)
     return(D)
   } else {
-    return(objective_val)
+    return(D$objective_val)
   }
 }
 
 #' Objective function for single-stage designs
 #'
 #' @template D
-objective_singlestage <-
+objective_onestage <-
   function(D) {
-
     calc_params <- quote({
     # Calculate covariance matrix Sigma
     gamma <- list()
@@ -168,9 +187,7 @@ objective_singlestage <-
       D$stagec[[1]][["P"]] <-  n[[1]][["P"]] / n[[1]][["T"]]
       D$stagec[[1]][["C"]] <-  n[[1]][["C"]] / n[[1]][["T"]]
       eval(calc_params)
-      power <- calc_prob_reject_both_singlestage(D$mu_wo_nT1[["H1"]] * sqrt(nT1), D)
     } else {
-      power <- 1 - beta_sol$f.root
       nT <- beta_sol$root
       n <- list()
       n[[1]] <- list()
@@ -181,13 +198,10 @@ objective_singlestage <-
 
     D$n <- n
     sqrt_nT <- sqrt(nT)
-    mu_vec <- list()
+    D$mu_vec <- list()
     for (hyp in c("H0", "H1")){
-      D$mu_wo_nT1[[hyp]] <- c(
-        mu_vec[[hyp]] <- sqrt_nT * D$mu_wo_nT1[[hyp]]
-      )
+      D$mu_vec[[hyp]] <- sqrt_nT * D$mu_wo_nT1[[hyp]]
     }
-    D$mu_vec <- mu_vec
 
     final_state_probs <- list()
     ASN <- list()
@@ -201,7 +215,7 @@ objective_singlestage <-
 
       P <- list()
       P[["TP1E_TC1E"]] <- pmvnorm_(
-        mean = as.vector(mu_vec[[hyp]]),
+        mean = as.vector(D$mu_vec[[hyp]]),
         sigma = D$Sigma,
         lower = c(D$b[[1]][["TP"]][["efficacy"]], D$b[[1]][["TC"]][["efficacy"]]),
         upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
@@ -209,7 +223,7 @@ objective_singlestage <-
       )[1]
 
       P[["TP1F"]] <- pmvnorm_(
-        mean = as.vector(mu_vec[[hyp]])[1],
+        mean = as.vector(D$mu_vec[[hyp]])[1],
         sigma = D$Sigma[1, 1],
         lower = c(nInf[[1]][["TP"]]),
         upper = c(D$b[[1]][["TP"]][["efficacy"]]),
@@ -217,7 +231,7 @@ objective_singlestage <-
       )[1]
 
       P[["TP1E_TC1F"]] <- pmvnorm_(
-        mean = as.vector(mu_vec[[hyp]]),
+        mean = as.vector(D$mu_vec[[hyp]]),
         sigma = D$Sigma,
         lower = c(D$b[[1]][["TP"]][["efficacy"]], nInf[[1]][["TC"]]),
         upper = c(pInf[[1]][["TP"]], D$b[[1]][["TC"]][["efficacy"]]),
@@ -230,12 +244,14 @@ objective_singlestage <-
     D$ASN <- ASN
     D$ASNP <- ASNP
     D$final_state_probs <- final_state_probs
+    kappa <- D$kappa
 
-    objective_val <- eval(D$objective)
+    D$objective_val <- eval(D$objective)
 
-    if (return_everything) {
+    if (D$return_everything) {
+      D$power <- calc_prob_reject_both_singlestage(D$mu_wo_nT1[["H1"]] * sqrt(nT), D)
       return(D)
     } else {
-      return(objective_val)
+      return(D$objective_val)
     }
   }

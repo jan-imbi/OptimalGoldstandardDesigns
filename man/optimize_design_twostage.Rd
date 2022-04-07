@@ -14,7 +14,7 @@ optimize_design_twostage(
   bTP1e = 2.3,
   bTC1f = 0,
   bTC1e = 2.3,
-  alpha = 0.05,
+  alpha = 0.025,
   beta = 0.2,
   alternative_TP = 0.4,
   alternative_TC = 0,
@@ -44,59 +44,7 @@ optimize_design_twostage(
 )
 }
 \arguments{
-\item{cT2}{}
-
-\item{cP1}{}
-
-\item{cP2}{}
-
-\item{cC1}{}
-
-\item{cC2}{}
-
-\item{bTP1f}{}
-
-\item{bTP1e}{}
-
-\item{bTC1e}{}
-
-\item{alpha}{}
-
-\item{beta}{}
-
-\item{alternative_TP}{}
-
-\item{alternative_TC}{}
-
-\item{Delta}{}
-
-\item{varT}{}
-
-\item{varP}{}
-
-\item{varC}{}
-
-\item{nonbinding_futility}{}
-
-\item{always_both_futility_tests}{}
-
-\item{round_n}{}
-
-\item{objective}{}
-
-\item{inner_tol_objective}{}
-
-\item{mvnorm_algorithm}{}
-
-\item{nloptr_x0}{}
-
-\item{nloptr_lb}{}
-
-\item{nloptr_ub}{}
-
 \item{nloptr_opts}{}
-
-\item{i}{}
 }
 \value{
 

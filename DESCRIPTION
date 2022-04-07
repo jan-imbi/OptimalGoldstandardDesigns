@@ -33,7 +33,6 @@ Collate:
     'design_display_functions.R'
     'global_constants.R'
     'design_helper_functions.R'
-    'design_helper_functions_design5.R'
     'objective_functions.R'
     'optimization_methods.R'
     'table_format_functions.R'

@@ -404,17 +404,61 @@ calc_prob_reject_both <- function(mu_vec, D) {
 #'
 #' @template D
 calc_prob_reject_both_singlestage <- function(mu_vec, D) {
-  pInf <- qnorm(.Machine$double.eps, mean = mu_vec= FALSE)
+  pInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail =  FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[2]))
-  nInf <- qnorm(.Machine$double.eps, mean = mu_vec= TRUE)
+  nInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail = TRUE)
   nInf <- list(list("TP" = nInf[1], "TC" = nInf[2]))
-  1 - pmvnorm_(
+  pmvnorm_(
     mean = as.vector(mu_vec),
     sigma = D$Sigma,
     lower = c(D$b[[1]][["TP"]][["efficacy"]], D$b[[1]][["TC"]][["efficacy"]]),
     upper = c(pInf[[1]][["TP"]], pInf[[1]][["TC"]]),
     algorithm = D$mvnorm_algorithm
   )[1]
+}
+
+calc_local_alphas <- function(D){
+  mu_vec <- c(0,0,0,0)
+  b <- D$b
+  Sigma <- D$Sigma
+  pInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail = FALSE)
+  pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
+  nInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail = TRUE)
+  nInf <- list(list("TP" = nInf[1], "TC" = nInf[3]), list("TP" = nInf[2], "TC" = nInf[4]))
+  for (i in seq_len(length(b))){
+    for (j in names(b[[i]])){
+      for (k in names(b[[i]][[j]])){
+        if (!is.na(b[[i]][[j]][[k]])){
+          if (b[[i]][[j]][[k]]==Inf)
+            b[[i]][[j]][[k]] <- pInf[[i]][[j]]
+          if (b[[i]][[j]][[k]]==-Inf)
+            b[[i]][[j]][[k]] <- nInf[[i]][[j]]
+        }
+      }
+    }
+  }
+  P <- list()
+  for (groups in c("TP", "TC")){
+    P[[paste0(groups, "1E")]] <- pmvnorm_(
+      mean = as.vector(projection[[paste0(groups, "1")]] %*% mu_vec),
+      sigma = projection[[paste0(groups, "1")]] %*% Sigma %*% t(projection[[paste0(groups, "1")]]),
+      lower = b[[1]][[groups]][["efficacy"]],
+      upper = pInf[[1]][[groups]],
+      algorithm = D$mvnorm_algorithm
+    )[1]
+    P[[paste0(groups, "12E")]] <- pmvnorm_(
+      mean = as.vector(projection[[paste0(groups, "12")]] %*% mu_vec),
+      sigma =  projection[[paste0(groups, "12")]] %*% Sigma %*% t(projection[[paste0(groups, "12")]]),
+      lower = c(b[[1]][[groups]][["futility"]], b[[2]][[groups]][["efficacy"]]),
+      upper = c(b[[1]][[groups]][["efficacy"]], pInf[[1]][[groups]]),
+      algorithm = D$mvnorm_algorithm
+    )[1]
+  }
+  alphas <- numeric(2)
+  names(alphas) <- c("TP", "TC")
+  alphas[[1]] <- P[["TP1E"]] + P[["TP12E"]]
+  alphas[[2]] <- P[["TC1E"]] + P[["TC12E"]]
+  return(alphas)
 }
 
 #' Helper function to calculate the local rejection boundaries of group sequential testing
@@ -514,7 +558,7 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
 #' @template bTC2e
 #' @template D
 #' @include design_helper_functions.R
-calc_nT1_wrt_bTC2e <- function(bTC2e, D) {
+solve_nT1_wrt_bTC2e <- function(bTC2e, D) {
   D$b[[2]][["TC"]][["efficacy"]] <- bTC2e
   D$tol <- D$tol * 3 / 4
 
@@ -550,7 +594,7 @@ calc_nT1_wrt_bTC2e <- function(bTC2e, D) {
 #' @template bTC2e
 #' @template D
 calc_worst_type_I_error <- function(bTC2e, D) {
-  sqrt_nT1 <- sqrt(calc_nT1_wrt_bTC2e(bTC2e, D))
+  sqrt_nT1 <- sqrt(solve_nT1_wrt_bTC2e(bTC2e, D))
   nT1_div_gamma <- sqrt_nT1 / c(D$gamma[[1]][["TP"]], D$gamma[[2]][["TP"]])
   D$b[[2]][["TC"]]["efficacy"] <- bTC2e
 

@@ -57,9 +57,9 @@ calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
   Sigma <- D$Sigma
   always_both_futility_tests <- D$always_both_futility_tests
 
-  pInf <- qnorm(.Machine$double.eps, mean = mu_, lower.tail = FALSE)
+  pInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
-  nInf <- qnorm(.Machine$double.eps, mean = mu_, lower.tail = TRUE)
+  nInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = TRUE)
   nInf <- list(list("TP" = nInf[1], "TC" = nInf[3]), list("TP" = nInf[2], "TC" = nInf[4]))
 
   for (i in seq_len(length(b))){
