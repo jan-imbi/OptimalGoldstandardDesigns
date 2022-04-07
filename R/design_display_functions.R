@@ -1,13 +1,13 @@
 #' Title
 #'
-#' @param x 
-#' @param ... 
+#' @param x
+#' @param ...
 #'
 #' @return
 #' @export
 #'
 #' @examples
-print.GoldStandardDesign <- function(x, ...){
+print.TwoStageGoldStandardDesign <- function(x, ...){
 
   sample_sizes_stage1 <- sprintf("Sample sizes (stage 1): T: %i, P: %i, C: %i\n",
                                  x$n[[1]][["T"]], x$n[[1]][["P"]], x$n[[1]][["C"]])
@@ -15,10 +15,10 @@ print.GoldStandardDesign <- function(x, ...){
                                  x$n[[2]][["T"]], x$n[[2]][["P"]], x$n[[2]][["C"]])
   efficacy_boundaries_stage1 <- sprintf("Efficacy boundaries (stage 1): Z_TP_e: %.4f, Z_TC_e: %.4f\n",
                                         x$b[[1]][["TP"]][["efficacy"]], x$b[[1]][["TC"]][["efficacy"]])
-  
+
   futility_boundaries_stage1 <- sprintf("Futility boundaries (stage 1): Z_TP_f: %.4f, Z_TC_f: %.4f\n",
                                         x$b[[1]][["TP"]][["futility"]], x$b[[1]][["TC"]][["futility"]])
-  
+
   efficacy_boundaries_stage2 <- sprintf("Efficacy boundaries (stage 2): Z_TP_e: %.4f, Z_TC_e: %.4f\n",
                                         x$b[[2]][["TP"]][["efficacy"]], x$b[[2]][["TC"]][["efficacy"]])
   max_sample_size <- sprintf("Maximum overall sample size: %i\n", sum(unlist(x$n)))

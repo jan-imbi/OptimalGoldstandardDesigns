@@ -1,39 +1,39 @@
 #' Title
 #'
-#' @param cT2 
-#' @param cP1 
-#' @param cP2 
-#' @param cC1 
-#' @param cC2 
-#' @param bTP1f 
-#' @param bTP1e 
-#' @param i 
-#' @param bTC1e 
-#' @param alpha 
-#' @param beta 
-#' @param alternative_TP 
-#' @param alternative_TC 
-#' @param Delta 
-#' @param varT 
-#' @param varP 
-#' @param varC 
-#' @param nonbinding_futility 
-#' @param always_both_futility_tests 
-#' @param round_n 
-#' @param objective 
-#' @param inner_tol_objective 
-#' @param mvnorm_algorithm 
-#' @param nloptr_x0 
-#' @param nloptr_lb 
-#' @param nloptr_ub 
-#' @param nloptr_opts 
+#' @param cT2
+#' @param cP1
+#' @param cP2
+#' @param cC1
+#' @param cC2
+#' @param bTP1f
+#' @param bTP1e
+#' @param i
+#' @param bTC1e
+#' @param alpha
+#' @param beta
+#' @param alternative_TP
+#' @param alternative_TC
+#' @param Delta
+#' @param varT
+#' @param varP
+#' @param varC
+#' @param nonbinding_futility
+#' @param always_both_futility_tests
+#' @param round_n
+#' @param objective
+#' @param inner_tol_objective
+#' @param mvnorm_algorithm
+#' @param nloptr_x0
+#' @param nloptr_lb
+#' @param nloptr_ub
+#' @param nloptr_opts
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #' 1 + 1
-#' 
+#'
 #' @include design_helper_functions.R
 optimize_design_twostage <-
   function(cT2 = 1,
@@ -88,11 +88,11 @@ optimize_design_twostage <-
     arguments <- c(as.list(environment()))
     quoted_arguments <- arguments[sapply(arguments, is.call)]
     quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
-    
+
     determine_x0 <- missing(nloptr_x0)
     determine_lb <- missing(nloptr_lb)
     determine_ub <- missing(nloptr_ub)
-    
+
     if (determine_x0){
       nloptr_x0 <- list()
     }
@@ -160,7 +160,7 @@ optimize_design_twostage <-
       if (determine_lb)
         nloptr_lb[[quote_idx]] <- qnorm(1-alpha)
       if (determine_ub)
-        nloptr_ub[[quote_idx]] <- 6
+        nloptr_ub[[quote_idx]] <- qnorm(.Machine$double.eps, lower.tail = FALSE)
       quotes[[quote_idx]] <- quote(bTP1e <- x[i])
       quote_idx <- quote_idx + 1L
     }
@@ -168,7 +168,7 @@ optimize_design_twostage <-
       if (determine_x0)
         nloptr_x0[[quote_idx]] <- 0
       if (determine_lb)
-        nloptr_lb[[quote_idx]] <- -6
+        nloptr_lb[[quote_idx]] <- qnorm(.Machine$double.eps, lower.tail = TRUE)
       if (determine_ub)
         nloptr_ub[[quote_idx]] <- qnorm(1-alpha)
       quotes[[quote_idx]] <- quote(bTP1f <- x[i])
@@ -180,7 +180,7 @@ optimize_design_twostage <-
       if (determine_lb)
         nloptr_lb[[quote_idx]] <- qnorm(1-alpha)
       if (determine_ub)
-        nloptr_ub[[quote_idx]] <- 6
+        nloptr_ub[[quote_idx]] <- qnorm(.Machine$double.eps, lower.tail = FALSE)
       quotes[[quote_idx]] <- quote(bTC1e <- x[i])
       quote_idx <- quote_idx + 1L
     }
@@ -188,7 +188,7 @@ optimize_design_twostage <-
       if (determine_x0)
         nloptr_x0[[quote_idx]] <- 0
       if (determine_lb)
-        nloptr_lb[[quote_idx]] <- -6
+        nloptr_lb[[quote_idx]] <- qnorm(.Machine$double.eps, lower.tail = TRUE)
       if (determine_ub)
         nloptr_ub[[quote_idx]] <- qnorm(1-alpha)
       quotes[[quote_idx]] <- quote(bTC1f <- x[i])
@@ -236,7 +236,7 @@ optimize_design_twostage <-
         D_half2)
       objective_twostage(D)
     }
-    
+
     nloptr_x0 <- unlist(nloptr_x0)
     nloptr_lb <- unlist(nloptr_lb)
     nloptr_ub <- unlist(nloptr_ub)
@@ -253,7 +253,7 @@ optimize_design_twostage <-
     for (i in seq_along(quoted_arguments)){
       eval(quoted_arguments[[i]])
     }
-    
+
     D_half2$round_n <- round_n
     D_half2$return_everything <- TRUE
     D <-
@@ -273,377 +273,191 @@ optimize_design_twostage <-
       )),
       D_half2)
     opt_design <- objective_twostage(D)
-    
-    
-    class(opt_design) <- c("GoldStandardDesign", class(opt_design))
+
+
+    class(opt_design) <- c("TwoStageGoldStandardDesign", class(opt_design))
     return(opt_design)
   }
 
-
-#' Optimal design parameters for design 1
+#' Title
 #'
-#' @param start
-#' @param D
+#' @param cT2
+#' @param cP1
+#' @param cP2
+#' @param cC1
+#' @param cC2
+#' @param bTP1f
+#' @param bTP1e
+#' @param i
+#' @param bTC1e
+#' @param alpha
+#' @param beta
+#' @param alternative_TP
+#' @param alternative_TC
+#' @param Delta
+#' @param varT
+#' @param varP
+#' @param varC
+#' @param nonbinding_futility
+#' @param always_both_futility_tests
+#' @param round_n
+#' @param objective
+#' @param inner_tol_objective
+#' @param mvnorm_algorithm
+#' @param nloptr_x0
+#' @param nloptr_lb
+#' @param nloptr_ub
+#' @param nloptr_opts
 #'
-#' @return optimal design
+#' @return
 #' @export
 #'
 #' @examples
 #' 1 + 1
-#' 
-#' @importFrom nloptr nloptr
-opt_objective_single_stage <- function(start = NULL, D = create_Design()) {
-  if (is.null(start)) {
-    start <- c(1, 1)
+#'
+#' @include design_helper_functions.R
+optimize_design_singlestage <-
+  function(cP1 = .25,
+           cC1 = 1,
+           alpha = .025,
+           beta = .2,
+           alternative_TP = .4,
+           alternative_TC = 0,
+           Delta = .2,
+           varT = 1,
+           varP = 1,
+           varC = 1,
+           round_n = TRUE,
+           kappa = 0,
+           objective = quote(
+             sum(unlist(n)) +
+               kappa * n[[1]][["P"]]
+           ),
+           inner_tol_objective = 1e-7,
+           mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
+           nloptr_x0 = NULL,
+           nloptr_lb = NULL,
+           nloptr_ub = NULL,
+           nloptr_opts = list(
+             algorithm = "NLOPT_LN_SBPLX",
+             xtol_rel = .1, # inner_tol_objective / 9
+             maxeval = 500
+           ),
+           ...) {
+    arguments <- c(as.list(environment()))
+    quoted_arguments <- arguments[sapply(arguments, is.call)]
+    quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
+
+    determine_x0 <- missing(nloptr_x0)
+    determine_lb <- missing(nloptr_lb)
+    determine_ub <- missing(nloptr_ub)
+
+    if (determine_x0){
+      nloptr_x0 <- list()
+    }
+    if (determine_lb){
+      nloptr_lb <- list()
+    }
+    if (determine_ub){
+      nloptr_ub <- list()
+    }
+    quotes <- list()
+    quote_idx <- 1L
+    if (missing(cP1)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- .25
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- .25 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- .25 * 20
+      quotes[[quote_idx]] <- quote(cP1 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    if (missing(cC1)){
+      if (determine_x0)
+        nloptr_x0[[quote_idx]] <- 1
+      if (determine_lb)
+        nloptr_lb[[quote_idx]] <- 1 / 20
+      if (determine_ub)
+        nloptr_ub[[quote_idx]] <- 20
+      quotes[[quote_idx]] <- quote(cC1 <- x[i])
+      quote_idx <- quote_idx + 1L
+    }
+    D_half2<- list(
+      b = list(list("TP" = list("efficacy" = qnorm(1-alpha)), "TC" = list("efficacy" = qnorm(1-alpha)))),
+      type_I_error = alpha,
+      type_II_error = beta,
+      mu = list("H0" = list("TP" = 0, "TC" = 0), "H1" = list("TP" = alternative_TP, "TC" = alternative_TC + Delta)),
+      var = list("T" = varT, "P" = varP, "C" = varC),
+      round_n = FALSE,
+      kappa = kappa,
+      objective = objective,
+      tol = inner_tol_objective,
+      mvnorm_algorithm = mvnorm_algorithm,
+      return_everything = FALSE,
+      ...
+    )
+    opt_fun <- function(x){
+      for (i in seq_along(x)){
+        eval(quotes[[i]])
+      }
+      for (i in seq_along(quoted_arguments)){
+        eval(quoted_arguments[[i]])
+      }
+      D <-
+        append(list(stagec = list(
+          list("T" = 1, "P" = cP1, "C" = cC1)
+        )),
+        D_half2)
+      objective_twostage(D)
+    }
+
+    nloptr_x0 <- unlist(nloptr_x0)
+    nloptr_lb <- unlist(nloptr_lb)
+    nloptr_ub <- unlist(nloptr_ub)
+    opt <- nloptr(
+      x0 = nloptr_x0,
+      eval_f = opt_fun,
+      lb = nloptr_lb,
+      ub = nloptr_ub,
+      opts = nloptr_opts)
+    x <- opt$solution
+    for (i in seq_along(x)){
+      eval(quotes[[i]])
+    }
+    for (i in seq_along(quoted_arguments)){
+      eval(quoted_arguments[[i]])
+    }
+
+    D_half2$round_n <- round_n
+    D_half2$return_everything <- TRUE
+    D <-
+      append(list(stagec = list(
+        list("T" = 1, "P" = cP1, "C" = cC1)
+      )),
+      D_half2)
+    opt_design <- objective_twostage(D)
+
+    class(opt_design) <- c("OneStageGoldStandardDesign", class(opt_design))
+    return(opt_design)
   }
-  opt <-
-    nloptr(
-      start,
-      eval_f = objective_single_stage,
-      lb = c(1 / 300, 1 / 20),
-      ub = c(3, 20),
-      opts = list(
-        algorithm = "NLOPT_GN_MLSL",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval,
-        local_opts = list(
-          algorithm = "NLOPT_LN_SBPLX",
-          ftol_abs = .1,
-          print_level = 0,
-          maxeval = round(D$maxeval / 100)
-        )
-      ),
-      D = D,
-      return_everything = FALSE
-    )
 
-  opt <-
-    nloptr(
-      opt$solution,
-      eval_f = objective_single_stage,
-      # eval_g_ineq = g,
-      lb = c(1 / 300, 1 / 20),
-      ub = c(3, 20),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  return(opt)
+# opts = list(
+#   algorithm = "NLOPT_LN_SBPLX",
+#   xtol_rel = D[["tol"]] / length(start),
+#   print_level = 0,
+#   maxeval = D$maxeval,
+#   local_opts = list(
+#     algorithm = "NLOPT_LN_SBPLX",
+#     ftol_abs = .1,
+#     print_level = 0,
+#     maxeval = D$maxeval / 100
+#   )
+# )
+
+optimize_with_increasing_accuracy <- function(){
+
 }
-
-#' Optimal design parameters for design 2
-#'
-#' @param start
-#' @param D
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' @importFrom nloptr nloptr
-opt_objective_no_futility_fixed_c <- function(start = NULL, D = create_Design()) {
-  if (is.null(start)) {
-    start <- c(.5, .5)
-  }
-  opt <-
-    nloptr(
-      start,
-      eval_f = objective_no_futility_fixed_c,
-      lb = c(1 / 20, 1 / 20),
-      ub = c(5, 5),
-      opts = list(
-        algorithm = "NLOPT_GN_MLSL",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval,
-        local_opts = list(
-          algorithm = "NLOPT_LN_SBPLX",
-          ftol_abs = .1,
-          print_level = 0,
-          maxeval = D$maxeval / 100
-        )
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-
-  opt <-
-    nloptr(
-      opt$solution,
-      eval_f = objective_no_futility_fixed_c,
-      lb = c(1 / 20, 1 / 20),
-      ub = c(5, 5),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  return(opt)
-}
-
-#' Optimal design parameters for design 3
-#'
-#' @param start
-#' @param D
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' @importFrom nloptr nloptr
-opt_objective_no_futility <- function(start = NULL, D = create_Design( maxeval = 10)) {
-  if (is.null(start)) {
-    #         P1T C1T T2T P2T C2T
-    start <- c(
-      .25, 1, 1, .25, 1,
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1], # bTPE1
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1]  # b1TCE1
-    )
-  }
-  opt <-
-    nloptr(
-      start,
-      eval_f = objective_no_futility,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, qnorm(1 - D$type_I_error), qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, 6, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval,
-        local_opts = list(
-          algorithm = "NLOPT_LN_SBPLX",
-          ftol_abs = .1,
-          print_level = 0,
-          maxeval = D$maxeval / 100
-        )
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  opt <-
-    nloptr(
-      opt$solution,
-      eval_f = objective_no_futility,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, qnorm(1 - D$type_I_error), qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, 6, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  return(opt)
-}
-
-#' Optimal design parameters for design 4
-#'
-#' @param start
-#' @param D
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' @importFrom nloptr nloptr
-opt_objective_nonbinding_futility <- function(start = NULL, D = create_Design( maxeval = 10)) {
-  if (is.null(start)) {
-    #       P1T  C1T  T2T  P2T  C2T   bTPF1
-    start <- c(
-      .25, 1, 1, .25, 1, 0,
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1], # bTPE1
-      0, # bTC1F
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1] # bTC1E
-    )
-  }
-  opt <-
-    nloptr(
-      start,
-      eval_f = objective_nonbinding_futility,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, qnorm(1 - D$type_I_error) - .1, 6, qnorm(1 - D$type_I_error) - .1, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval,
-        local_opts = list(
-          algorithm = "NLOPT_LN_SBPLX",
-          ftol_abs = .1,
-          print_level = 0,
-          maxeval=D$maxeval/100
-        )
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  opt <-
-    nloptr(
-      opt$solution,
-      eval_f = objective_nonbinding_futility,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, qnorm(1 - D$type_I_error) - .1, 6, qnorm(1 - D$type_I_error) - .1, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  return(opt)
-}
-
-
-
-
-
-
-
-
-#' Optimal design parameters for design 6
-#'
-#' @param start
-#' @param D
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' @importFrom nloptr nloptr
-opt_objective_closed_testing <- function(start = NULL, D = create_Design(maxeval = 10)) {
-  if (is.null(start)) {
-    #        P1T  C1T  T2T  P2T  C2T   bTPF1
-    start <- c(
-      .25, 1, 1, .25, 1, 0,
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1], # bTPE1
-      0, # bTC1F
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1]
-    ) # bTC1E
-  }
-  opt <-
-    nloptr(
-      start,
-      eval_f = objective_closed_testing,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, qnorm(1 - D$type_I_error) - .1, 6, qnorm(1 - D$type_I_error) - .1, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval,
-        local_opts = list(
-          algorithm = "NLOPT_LN_SBPLX",
-          ftol_abs = .1,
-          print_level = 0,
-          maxeval=D$maxeval / 100
-        )
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  if (any(opt$solution < c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error))))
-    print(paste0("solution: ", opt$solution))
-  opt <-
-    nloptr(
-      opt$solution,
-      eval_f = objective_closed_testing,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, qnorm(1 - D$type_I_error) - .1, 6, qnorm(1 - D$type_I_error) - .1, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  return(opt)
-}
-
-
-
-
-
-
-#' Optimal design parameters for design 5
-#'
-#' @param start
-#' @param D
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' @importFrom nloptr nloptr
-opt_objective_fully_sequential <- function(start = NULL, D = create_Design(maxeval = 10)) {
-  if (is.null(start)) {
-    #        P1T  C1T  T2T  P2T  C2T   bTPF1
-    start <- c(
-      .25, 1, 1, .25, 1, 0,
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1], # bTPE1
-      0, # bTC0F
-      gsDesign::gsDesign(2, 1, sfu = "WT", sfupar = .5)$upper$bound[1]
-    ) # bTC1E
-  }
-  opt <-
-    nloptr(
-      start,
-      eval_f = objective_fully_sequential,
-      # eval_g_ineq = g,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, qnorm(1 - D$type_I_error) - .1, 6, qnorm(1 - D$type_I_error) - .1, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval,  # /10, (consider less maxeval because this is by far the slowest procedure)
-        local_opts = list(
-          algorithm = "NLOPT_LN_SBPLX",
-          ftol_abs = .1,
-          print_level = 0,
-          maxeval=D$maxeval / 100  # /10
-        )
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  opt <-
-    nloptr(
-      opt$solution,
-      eval_f = objective_fully_sequential,
-      lb = c(1 / 300, 1 / 20, 1 / 20, 1 / 300, 1 / 20, -6, qnorm(1 - D$type_I_error), -6, qnorm(1 - D$type_I_error)),
-      ub = c(3, 20, 20, 3, 20, qnorm(1 - D$type_I_error) - .1, 6, qnorm(1 - D$type_I_error) - .1, 6),
-      opts = list(
-        algorithm = "NLOPT_LN_SBPLX",
-        xtol_rel = D[["tol"]] / length(start),
-        print_level = 0,
-        maxeval = D$maxeval  # /10
-      ),
-      D = D,
-      return_everything = FALSE
-    )
-  return(opt)
-}
-
-
-
-
 
 
 
