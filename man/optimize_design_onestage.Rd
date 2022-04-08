@@ -24,6 +24,7 @@ optimize_design_onestage(
   nloptr_lb = NULL,
   nloptr_ub = NULL,
   nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 0.1, maxeval = 500),
+  print_progress = TRUE,
   ...
 )
 }

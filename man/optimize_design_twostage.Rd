@@ -11,9 +11,9 @@ optimize_design_twostage(
   cC1 = 1,
   cC2 = 1,
   bTP1f = 0,
-  bTP1e = 2.3,
+  bTP1e = 2.105099,
   bTC1f = 0,
-  bTC1e = 2.3,
+  bTC1e = 2.270933,
   alpha = 0.025,
   beta = 0.2,
   alternative_TP = 0.4,
@@ -22,7 +22,7 @@ optimize_design_twostage(
   varT = 1,
   varP = 1,
   varC = 1,
-  nonbinding_futility = TRUE,
+  binding_futility = FALSE,
   always_both_futility_tests = TRUE,
   round_n = TRUE,
   lambda = 1,
@@ -34,12 +34,14 @@ optimize_design_twostage(
     sqrt(lambda)) * sqrt(lambda) * ASNP[["H10"]] + (1 - sqrt(lambda)) * sqrt(lambda) *
     ASNP[["H01"]] + (1 - sqrt(lambda))^2 * ASNP[["H00"]] + nu * cumn[[2]][["P"]]) + nu *
     (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])),
-  inner_tol_objective = 1e-07,
-  mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1000),
+  inner_tol_objective = 1e-05,
+  mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000),
   nloptr_x0 = NULL,
   nloptr_lb = NULL,
   nloptr_ub = NULL,
-  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 0.1, maxeval = 500),
+  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-04, xtol_abs = 0.001,
+    xtol_rel = 0.01, maxeval = 1000, print_level = 0),
+  print_progress = TRUE,
   ...
 )
 }

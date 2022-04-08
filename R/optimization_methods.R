@@ -42,9 +42,9 @@ optimize_design_twostage <-
            cC1 = 1,
            cC2 = 1,
            bTP1f = 0,
-           bTP1e = 2.3,
+           bTP1e = 2.105099,
            bTC1f = 0,
-           bTC1e = 2.3,
+           bTC1e = 2.270933,
            alpha = .025,
            beta = .2,
            alternative_TP = .4,
@@ -53,7 +53,7 @@ optimize_design_twostage <-
            varT = 1,
            varP = 1,
            varC = 1,
-           nonbinding_futility = TRUE,
+           binding_futility = FALSE,
            always_both_futility_tests = TRUE,
            round_n = TRUE,
            lambda = 1,
@@ -74,16 +74,20 @@ optimize_design_twostage <-
                ) +
                nu * (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])
              ),
-           inner_tol_objective = 1e-7,
-           mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
+           inner_tol_objective = 1e-5,
+           mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
            nloptr_x0 = NULL,
            nloptr_lb = NULL,
            nloptr_ub = NULL,
            nloptr_opts = list(
              algorithm = "NLOPT_LN_SBPLX",
-             xtol_rel = .1, # inner_tol_objective / 9
-             maxeval = 500
+             ftol_rel = 1e-4,
+             xtol_abs = 1e-3,
+             xtol_rel = 1e-2,
+             maxeval = 1000,
+             print_level = 0
            ),
+           print_progress = TRUE,
            ...) {
     arguments <- c(as.list(environment()))
     quoted_arguments <- arguments[sapply(arguments, is.call)]
@@ -199,7 +203,7 @@ optimize_design_twostage <-
       type_II_error = beta,
       mu = list("H0" = list("TP" = 0, "TC" = 0), "H1" = list("TP" = alternative_TP, "TC" = alternative_TC + Delta)),
       var = list("T" = varT, "P" = varP, "C" = varC),
-      nonbinding_futility = nonbinding_futility,
+      binding_futility = binding_futility,
       always_both_futility_tests = always_both_futility_tests,
       round_n = FALSE,
       lambda = lambda,
@@ -211,6 +215,10 @@ optimize_design_twostage <-
       return_everything = FALSE,
       ...
     )
+
+    nloptr_maxeval <- if(!is.null(nloptr_opts$maxeval)) nloptr_opts$maxeval else 100
+    iter <- 0
+
     opt_fun <- function(x){
       for (i in seq_along(x)){
         eval(quotes[[i]])
@@ -234,7 +242,21 @@ optimize_design_twostage <-
           )
         )),
         D_half2)
-      objective_twostage(D)
+
+      ret <- objective_twostage(D)
+      if (print_progress){
+        iter <<- iter + 1
+        iterstring <- padd_whitespace(paste0("iteration: ", iter, "/", nloptr_maxeval))
+        exprstring <- character(length = length(x))
+        for (i in seq_along(x)){
+          exprstring[i] <- deparse(do.call(substitute, list(quotes[[i]], list(i=i))))
+        }
+        exprstring <- padd_whitespace(paste0("  ",paste0(exprstring, collapse = " "), "", collapse=""))
+        xstring <- padd_whitespace(paste0("    x = c(", paste0(format(x, trim=TRUE), collapse = ", "), ")", collapse = ""))
+        fstring <- padd_whitespace(paste0("     f(x) = ", format(ret)))
+        cat("\r", iterstring, exprstring, xstring,  fstring)
+      }
+      return(ret)
     }
 
     nloptr_x0 <- unlist(nloptr_x0)
@@ -246,6 +268,10 @@ optimize_design_twostage <-
       lb = nloptr_lb,
       ub = nloptr_ub,
       opts = nloptr_opts)
+
+    if(print_progress)
+      cat("\n")
+
     x <- opt$solution
     for (i in seq_along(x)){
       eval(quotes[[i]])
@@ -273,7 +299,7 @@ optimize_design_twostage <-
       )),
       D_half2)
     opt_design <- objective_twostage(D)
-
+    opt_design$x_end <- x
 
     class(opt_design) <- c("TwoStageGoldStandardDesign", class(opt_design))
     return(opt_design)
@@ -334,15 +360,19 @@ optimize_design_onestage <-
                kappa * n[[1]][["P"]]
            ),
            inner_tol_objective = 1e-7,
-           mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
+           mvnorm_algorithm = mvtnorm::Miwa(steps = 4097, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
            nloptr_x0 = NULL,
            nloptr_lb = NULL,
            nloptr_ub = NULL,
            nloptr_opts = list(
              algorithm = "NLOPT_LN_SBPLX",
-             xtol_rel = .1, # inner_tol_objective / 9
-             maxeval = 500
+             ftol_rel = 1e-9,
+             xtol_abs = 1e-8,
+             xtol_rel = 1e-7,
+             maxeval = 1000,
+             print_level = 0
            ),
+           print_progress = TRUE,
            ...) {
     arguments <- c(as.list(environment()))
     quoted_arguments <- arguments[sapply(arguments, is.call)]
@@ -397,6 +427,10 @@ optimize_design_onestage <-
       return_everything = FALSE,
       ...
     )
+
+    nloptr_maxeval <- if(!is.null(nloptr_opts$maxeval)) nloptr_opts$maxeval else 100
+    iter <- 0
+
     opt_fun <- function(x){
       for (i in seq_along(x)){
         eval(quotes[[i]])
@@ -409,7 +443,22 @@ optimize_design_onestage <-
           list("T" = 1, "P" = cP1, "C" = cC1)
         )),
         D_half2)
-      objective_onestage(D)
+
+
+      ret <- objective_onestage(D)
+      if (print_progress){
+        iter <<- iter + 1
+        iterstring <- padd_whitespace(paste0("iteration: ", iter, "/", nloptr_maxeval))
+        exprstring <- character(length = length(x))
+        for (i in seq_along(x)){
+          exprstring[i] <- deparse(do.call(substitute, list(quotes[[i]], list(i=i))))
+        }
+        exprstring <- padd_whitespace(paste0("  ",paste0(exprstring, collapse = " "), "", collapse=""))
+        xstring <- padd_whitespace(paste0("    x = c(", paste0(format(x, trim = TRUE), collapse = ", "), ")", collapse = ""))
+        fstring <- padd_whitespace(paste0("     f(x) = ", format(ret)))
+        cat("\r", iterstring, exprstring, xstring,  fstring)
+      }
+      return(ret)
     }
 
     nloptr_x0 <- unlist(nloptr_x0)
@@ -421,6 +470,10 @@ optimize_design_onestage <-
       lb = nloptr_lb,
       ub = nloptr_ub,
       opts = nloptr_opts)
+
+    if(print_progress)
+      cat("\n")
+
     x <- opt$solution
     for (i in seq_along(x)){
       eval(quotes[[i]])
@@ -437,27 +490,45 @@ optimize_design_onestage <-
       )),
       D_half2)
     opt_design <- objective_onestage(D)
+    opt_design$x_end <- x
 
     class(opt_design) <- c("OneStageGoldStandardDesign", class(opt_design))
     return(opt_design)
   }
 
-# opts = list(
-#   algorithm = "NLOPT_LN_SBPLX",
-#   xtol_rel = D[["tol"]] / length(start),
-#   print_level = 0,
-#   maxeval = D$maxeval,
-#   local_opts = list(
-#     algorithm = "NLOPT_LN_SBPLX",
-#     ftol_abs = .1,
-#     print_level = 0,
-#     maxeval = D$maxeval / 100
-#   )
-# )
 
-optimize_with_increasing_accuracy <- function(){
+optimize_with_increasing_accuracy <- function(steps = c(50, 200, 1000)){
 
+  mvnorm_algorithm <- mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000)
+  nloptr_opts <- list(algorithm = "NLOPT_LN_SBPLX",
+                      xtol_rel = 1e-2,
+                      xtol_abs = 1e-3,
+                      maxeval = 500,
+                      print_level=3)
+
+  nloptr_opts <-  list(
+    algorithm = "NLOPT_GN_MLSL",
+    xtol_rel = 1e-2,
+    xtol_abs = 1e-3,
+    print_level = 3,
+    maxeval = 1000,
+    local_opts = list(
+      algorithm = "NLOPT_LN_SBPLX",
+      ftol_rel = .1,
+      print_level = 2,
+      maxeval = 1000
+    ))
+
+  optimize_design_twostage(alternative_TP = .6,
+                           Delta = .3,
+                           round_n = FALSE,
+                           inner_tol_objective = 1e-4,
+                           mvnorm_algorithm = mvnorm_algorithm,
+                           nloptr_opts = nloptr_opts)
 }
+
+
+
 
 
 

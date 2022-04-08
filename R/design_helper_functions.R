@@ -469,9 +469,9 @@ calc_local_alphas <- function(D){
 calc_local_rejection_boundaries <- function(groups = "TP", D) {
   mu_vec <- c(0, 0, 0, 0)
   b <- D$b
-  if (D$nonbinding_futility){
-    D$b[[1]][["TP"]][["futility"]] <- -Inf
-    D$b[[1]][["TC"]][["futility"]] <- -Inf
+  if (!D$binding_futility){
+    b[[1]][["TP"]][["futility"]] <- -Inf
+    b[[1]][["TC"]][["futility"]] <- -Inf
   }
 
   pInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail = FALSE)

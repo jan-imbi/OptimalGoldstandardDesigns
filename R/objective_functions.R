@@ -67,7 +67,7 @@ objective_twostage <- function(D)
 
     D$b2TC_boundary_description <- b2TC_boundary_description
     D$b[[2]][["TC"]][["efficacy"]] <- best_boundary$root
-    alpha_TC <- sum(best_boundary$f.root + D$type_I_error) 
+    alpha_TC <- sum(best_boundary$f.root + D$type_I_error)
   }
   })
   eval(get_boundaries)
@@ -75,7 +75,7 @@ objective_twostage <- function(D)
   # Calculate Design parameters, now that the implicit parameters are fixed
   nT1 <- solve_nT1_wrt_bTC2e(D$b[[2]][["TC"]][["efficacy"]], D)
   D$n <- calc_n_from_c(nT1, D)
-  
+
   # Recalculate design parameters if rounding is requested
   if (D$round_n){
     D$n[[1]] <- lapply(D$n[[1]], ceiling)

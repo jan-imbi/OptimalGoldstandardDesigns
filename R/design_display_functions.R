@@ -39,9 +39,10 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
   cp_min <- sprintf("Minimum conditional power: %.2f%%\n", x$cp_min*100)
   futility_prob_H1 <- sprintf("Probability of futility stop (H1): %.2f%%\n", x$futility_prob[["H1"]]*100)
   futility_prob_H0 <- sprintf("Probability of futility stop (H0): %.2f%%\n", x$futility_prob[["H0"]]*100)
+  futility_boundaries_binding <- paste0("Futility boundaries: ", if(x$binding_futility) "binding\n" else "nonbinding\n")
   futility_testing_mode <- paste0("Futility testing method: ",
-                                  if(x$always_both_futility_tests) "always both futility tests" else "completely sequential testing")
-  
+                                  if(x$always_both_futility_tests) "always both futility tests\n" else "completely sequential testing\n")
+
   cat(sample_sizes_stage1)
   cat(sample_sizes_stage2)
   cat(efficacy_boundaries_stage1)
@@ -61,9 +62,13 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
   cat(futility_prob_H0)
   cat(cp_min)
   cat(power)
+  cat(futility_boundaries_binding)
+  if (!x$binding_futility &&
+      (is.finite(x$b[[1]][["TP"]][["futility"]]) || is.finite(x$b[[1]][["TC"]][["futility"]]))){
+    cat("Note: Results are presented as if futility boundaries were strictly obeyed.\n")
+  }
   cat(futility_testing_mode)
 }
-
 
 #' Printing method for optimal single-stage goldstandard designs
 #'
@@ -90,7 +95,7 @@ print.OneStageGoldStandardDesign <- function(x, ...){
   alpha_TP <- sprintf("Type I error for TP testing: %.1f%%\n", x$type_I_error*100)
   alpha_TC <- sprintf("Type I error for TC testing: %.1f%%\n", x$type_I_error*100)
   power <- sprintf("Power: %.1f%%\n", x$power*100)
-  
+
   cat(sample_sizes_stage1)
   cat(efficacy_boundaries_stage1)
   cat(max_sample_size)
@@ -99,4 +104,16 @@ print.OneStageGoldStandardDesign <- function(x, ...){
   cat(alpha_TP)
   cat(alpha_TC)
   cat(power)
+}
+
+
+
+#' Add whitespace padding to string
+#'
+#' @param str a character string
+#'
+#' @return string with whitespace padding until the full console width
+#' @importFrom cli console_width
+padd_whitespace <- function(str) {
+  paste0(str, paste0(replicate(max(1, console_width()-nchar(str) + 1L) , " "), collapse="") , collapse = "")
 }

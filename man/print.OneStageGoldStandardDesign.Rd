@@ -2,16 +2,21 @@
 % Please edit documentation in R/design_display_functions.R
 \name{print.OneStageGoldStandardDesign}
 \alias{print.OneStageGoldStandardDesign}
-\title{Title}
+\title{Printing method for optimal single-stage goldstandard designs}
 \usage{
 \method{print}{OneStageGoldStandardDesign}(x, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{An object of class OneStageGoldStandardDesign}
+
+\item{...}{additional parameters}
 }
 \value{
 
 }
 \description{
-Title
+Printing method for optimal single-stage goldstandard designs
+}
+\examples{
+1 + 1
 }

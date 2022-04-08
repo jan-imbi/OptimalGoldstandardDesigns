@@ -25,6 +25,7 @@ Depends:
     doFuture,
     doRNG,
     foreach,
+    cli
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
 Collate: 
