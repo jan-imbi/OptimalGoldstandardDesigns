@@ -8,10 +8,7 @@ and gamma factors}
 calc_Sigma(D)
 }
 \arguments{
-\item{D}{}
-}
-\value{
-
+\item{D}{list containing all parameters of a the trial design.}
 }
 \description{
 Helper function to calculate the covariance matrix from the group variances, cumulative allocation ratios

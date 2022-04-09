@@ -7,6 +7,8 @@
 calc_n_from_c(nT1, D)
 }
 \arguments{
+\item{nT1}{first stage sample size of the treatment group.}
+
 \item{D}{list containing all parameters of a the trial design.}
 }
 \description{

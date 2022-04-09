@@ -1,1 +1,1 @@
-#' @param mu_b Mean of second part of normally distributed vector.
+#' @param mu_a Mean of second part of normally distributed vector.

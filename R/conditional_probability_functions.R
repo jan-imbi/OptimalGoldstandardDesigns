@@ -48,9 +48,11 @@ conditional_Sigma <- function(x_a, mu_a, mu_b, Sigma) {
 #'
 #' @return numeric value of the conditional power.
 #' @export
+#' @importFrom stats qnorm 
 #'
 #' @examples
-#' 1 + 1
+#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+#' calc_conditional_power(.2, .3, D)
 calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
   b <- D$b
   mu <- D$mu_vec[["H1"]]
@@ -134,21 +136,22 @@ calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
 #'
 #' @return named numeric vector with both conditional type I errors.
 #' @export
+#' @importFrom stats qnorm
 #'
 #' @examples
-#' 1 + 1
+#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+#' calc_conditional_alpha(.2, .3, D)
 calc_conditional_alpha <- function(Z_TP1, Z_TC1, D) {
   if (!D$always_both_futility_tests){
     warning("Testing procedure not closed. Changing design characteristics at interim based on the conditional rejection probability princple may lead to inflated family-wise type I error if only local type I error rates are considered.")
   }
-
   b <- D$b
   mu <- D$mu_vec[["H1"]]
   Sigma <- D$Sigma
 
-  pInf <- qnorm(.Machine$double.eps, mean = mu_, lower.tail = FALSE)
+  pInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
-  nInf <- qnorm(.Machine$double.eps, mean = mu_, lower.tail = TRUE)
+  nInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = TRUE)
   nInf <- list(list("TP" = nInf[1], "TC" = nInf[3]), list("TP" = nInf[2], "TC" = nInf[4]))
 
   for (i in seq_len(length(b))){

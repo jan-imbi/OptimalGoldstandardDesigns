@@ -1,9 +1,12 @@
-#' Objective function for two-stage designs
+#' Objective function for two-stage gold-standard designs
 #'
 #' @template D
 #' @include design_helper_functions.R
 objective_twostage <- function(D)
 {
+  # this make cran check shut up.
+  alpha_TC <- NA_real_
+  
   # Quote this because might need reevaluation when D$round_n == TRUE
   # Sets D$cumc, D$gamma, D$Sigma, D$mu_wo_nT1, D$b
   get_boundaries <- quote({
@@ -104,6 +107,8 @@ objective_twostage <- function(D)
   D$objective_val <- eval(D$objective)
 
   if (D$return_everything) {
+    D$invnormal_weights_TP <- c(D$Sigma[1,2], sqrt(1-D$Sigma[1,2]^2))
+    D$invnormal_weights_TC <- c(D$Sigma[3,4], sqrt(1-D$Sigma[3,4]^2))
     D$power <- calc_prob_reject_both(D$mu_vec[["H1"]], D)
     D$futility_prob <- list()
     if (D$always_both_futility_tests){
@@ -127,9 +132,10 @@ objective_twostage <- function(D)
   }
 }
 
-#' Objective function for single-stage designs
+#' Objective function for single-stage gold-standard designs
 #'
 #' @template D
+#' @importFrom stats qnorm uniroot
 objective_onestage <-
   function(D) {
     calc_params <- quote({

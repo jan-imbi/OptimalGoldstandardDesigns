@@ -20,5 +20,6 @@ named numeric vector with both conditional type I errors.
 Calculate the (local) conditional type I errors of both hypothesis given both interim test statistics.
 }
 \examples{
-1 + 1
+D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+calc_conditional_alpha(.2, .3, D)
 }

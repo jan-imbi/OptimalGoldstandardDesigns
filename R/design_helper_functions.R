@@ -27,6 +27,7 @@ calc_cumc <- function(D) {
 #' Helper function to calculate other n's given n_{1,T} and allocation ratios
 #'
 #' @template D
+#' @template nT1
 calc_n_from_c <- function(nT1, D) {
   stagec <- D$stagec
   n <- list()
@@ -76,12 +77,7 @@ calc_gamma <- function(D) {
 #' Helper function to calculate the covariance matrix from the group variances, cumulative allocation ratios
 #' and gamma factors
 #'
-#' @param D
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @template D
 calc_Sigma <- function(D) {
   var <- D$var
   cumc <- D$cumc
@@ -118,11 +114,7 @@ calc_Sigma <- function(D) {
 #'
 #' This quantity is helpful when solving for the smallest n which fulfills a certain power constraint.
 #'
-#' @param D
-#'
-#' @return
-#'
-#' @examples
+#' @template D
 calc_mu_wo_nT1 <- function(D) {
   gamma <- D$gamma
   mu <- D$mu
@@ -194,6 +186,7 @@ calc_mu_vec <- function(D) {
 #'
 #' @template hypothesis
 #' @template D
+#' @importFrom stats qnorm
 calc_final_state_probs <- function(hypothesis = "H0", D) {
   mu_ <- D$mu_vec[[hypothesis]]
   Sigma <- D$Sigma
@@ -341,6 +334,7 @@ calc_final_state_probs <- function(hypothesis = "H0", D) {
 #' given the mean of the normal test statistic vector c(Z_TP1, Z_TP2, Z_TC1, Z_TC2).
 #'
 #' @template D
+#' @template mu_vec
 calc_prob_reject_both <- function(mu_vec, D) {
   Sigma <- D$Sigma
   b <- D$b
@@ -403,6 +397,7 @@ calc_prob_reject_both <- function(mu_vec, D) {
 #' given the mean of the normal test statistic vector c(Z_TP1, Z_TC1).
 #'
 #' @template D
+#' @template mu_vec
 calc_prob_reject_both_singlestage <- function(mu_vec, D) {
   pInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail =  FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[2]))
@@ -417,6 +412,11 @@ calc_prob_reject_both_singlestage <- function(mu_vec, D) {
   )[1]
 }
 
+
+#' Helper function to calculate the local type I error rates of a Design
+#'
+#' @template D
+#' @importFrom stats qnorm
 calc_local_alphas <- function(D){
   mu_vec <- c(0,0,0,0)
   b <- D$b
@@ -466,6 +466,7 @@ calc_local_alphas <- function(D){
 #'
 #' @template groups
 #' @template D
+#' @importFrom stats qnorm
 calc_local_rejection_boundaries <- function(groups = "TP", D) {
   mu_vec <- c(0, 0, 0, 0)
   b <- D$b
@@ -554,10 +555,10 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
 #' Helper function to calculate the required sample size (of the stage 1 treatment group)
 #' to achieve the target power given the bTC2e
 #'
-#'
 #' @template bTC2e
 #' @template D
-#' @include design_helper_functions.R
+#' @importFrom mvtnorm qmvnorm
+#' @importFrom stats uniroot
 solve_nT1_wrt_bTC2e <- function(bTC2e, D) {
   D$b[[2]][["TC"]][["efficacy"]] <- bTC2e
   D$tol <- D$tol * 3 / 4
@@ -593,6 +594,7 @@ solve_nT1_wrt_bTC2e <- function(bTC2e, D) {
 #'
 #' @template bTC2e
 #' @template D
+#' @importFrom stats optimize
 calc_worst_type_I_error <- function(bTC2e, D) {
   sqrt_nT1 <- sqrt(solve_nT1_wrt_bTC2e(bTC2e, D))
   nT1_div_gamma <- sqrt_nT1 / c(D$gamma[[1]][["TP"]], D$gamma[[2]][["TP"]])
@@ -601,7 +603,7 @@ calc_worst_type_I_error <- function(bTC2e, D) {
   calc_alpha_wrt_muH0T <- function(muH0TP, D) {
     return(vapply(muH0TP, function(x, D){
       mu_vec <- c(x * nT1_div_gamma, 0, 0)
-      calc_prob_reject_both_wrt_mu_vec(mu_vec, D)
+      calc_prob_reject_both(mu_vec, D)
     }, numeric(1), D = D))
   }
 

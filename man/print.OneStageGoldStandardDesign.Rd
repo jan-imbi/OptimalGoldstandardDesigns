@@ -12,11 +12,13 @@
 \item{...}{additional parameters}
 }
 \value{
-
+returns the input x invisibly. This functions is used for its side effects, i.e. printing
+design characteristics to the screen.
 }
 \description{
 Printing method for optimal single-stage goldstandard designs
 }
 \examples{
-1 + 1
+D <- optimize_design_onestage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+D
 }

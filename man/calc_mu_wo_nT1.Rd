@@ -8,10 +8,7 @@ under the null and alternative hypothesis given nT1=1, gamma and mu.}
 calc_mu_wo_nT1(D)
 }
 \arguments{
-\item{D}{}
-}
-\value{
-
+\item{D}{list containing all parameters of a the trial design.}
 }
 \description{
 This quantity is helpful when solving for the smallest n which fulfills a certain power constraint.

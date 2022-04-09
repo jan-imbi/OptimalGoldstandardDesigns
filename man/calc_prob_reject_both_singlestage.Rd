@@ -8,6 +8,8 @@ given the mean of the normal test statistic vector c(Z_TP1, Z_TC1).}
 calc_prob_reject_both_singlestage(mu_vec, D)
 }
 \arguments{
+\item{mu_vec}{vector of means of the test statistic c(Z_TP1, Z_TP2, Z_TC1, Z_TC1).}
+
 \item{D}{list containing all parameters of a the trial design.}
 }
 \description{

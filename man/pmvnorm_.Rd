@@ -12,7 +12,7 @@ pmvnorm_(upper, lower, ...)
 
 \item{lower}{the vector of lower limits of length n.}
 
-\item{...}{additional parameters passed to \code{\link{mvtnorm::pmvnorm}}}
+\item{...}{additional parameters passed to \code{\link[mvtnorm]{pmvnorm}}.}
 }
 \value{
 The evaluated distribution function is returned, if \code{keepAttr} is true, with attributes
@@ -25,5 +25,5 @@ mvtnorm::pmvnorm, but returns 0 if any lower boundary is larger than
 any upper boundary
 }
 \seealso{
-\code{\link{mvtnorm::pmvnorm}}
+\code{\link[mvtnorm]{pmvnorm}}
 }

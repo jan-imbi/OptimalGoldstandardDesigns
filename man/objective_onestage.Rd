@@ -2,7 +2,7 @@
 % Please edit documentation in R/objective_functions.R
 \name{objective_onestage}
 \alias{objective_onestage}
-\title{Objective function for single-stage designs}
+\title{Objective function for single-stage gold-standard designs}
 \usage{
 objective_onestage(D)
 }
@@ -10,5 +10,5 @@ objective_onestage(D)
 \item{D}{list containing all parameters of a the trial design.}
 }
 \description{
-Objective function for single-stage designs
+Objective function for single-stage gold-standard designs
 }

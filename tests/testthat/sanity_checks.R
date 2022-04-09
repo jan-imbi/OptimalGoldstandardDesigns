@@ -8,7 +8,6 @@ library(nloptr)
 library(doFuture)
 library(foreach)
 library(doRNG)
-library(tidyverse)
 
 source(here("R", "1_conditional_probability_functions.R"))
 source(here("R", "2_design_functions.R"))

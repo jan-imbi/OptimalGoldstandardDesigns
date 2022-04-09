@@ -9,9 +9,9 @@ the superiority hypothesis.}
 calc_worst_type_I_error(bTC2e, D)
 }
 \arguments{
-\item{D}{list containing all parameters of a the trial design.}
+\item{bTC2e}{second stage critical value for the TC testing problem.}
 
-\item{b2TCe}{second stage critical value for the TC testing problem.}
+\item{D}{list containing all parameters of a the trial design.}
 }
 \description{
 This is required in designs with nonsequential futility testing, as choosing locally valid designs

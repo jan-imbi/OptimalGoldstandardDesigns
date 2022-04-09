@@ -3,11 +3,13 @@
 #' @param x An object of class TwoStageGoldStandardDesign
 #' @param ... additional parameters
 #'
-#' @return
+#' @return returns the input x invisibly. This functions is used for its side effects, i.e. printing
+#' design characteristics to the screen.
 #' @export
 #'
 #' @examples
-#' 1 + 1
+#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+#' D
 print.TwoStageGoldStandardDesign <- function(x, ...){
   if (x$round_n)
     f <- "%i"
@@ -15,7 +17,7 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
     f <- "%.1f"
   sample_sizes_stage1 <- sprintf(paste0("Sample sizes (stage 1): T: ",f,", P: ",f,", C: ",f,"\n"),
                                  x$n[[1]][["T"]], x$n[[1]][["P"]], x$n[[1]][["C"]])
-  sample_sizes_stage2 <- sprintf(paste0("Sample sizes (stage 1): T: ",f,", P: ",f,", C: ",f,"\n"),
+  sample_sizes_stage2 <- sprintf(paste0("Sample sizes (stage 2): T: ",f,", P: ",f,", C: ",f,"\n"),
                                  x$n[[2]][["T"]], x$n[[2]][["P"]], x$n[[2]][["C"]])
   efficacy_boundaries_stage1 <- sprintf("Efficacy boundaries (stage 1): Z_TP_e: %.5f, Z_TC_e: %.5f\n",
                                         x$b[[1]][["TP"]][["efficacy"]], x$b[[1]][["TC"]][["efficacy"]])
@@ -25,6 +27,10 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
 
   efficacy_boundaries_stage2 <- sprintf("Efficacy boundaries (stage 2): Z_TP_e: %.5f, Z_TC_e: %.5f\n",
                                         x$b[[2]][["TP"]][["efficacy"]], x$b[[2]][["TC"]][["efficacy"]])
+  invnormal_weights_TP <- sprintf("Inverse normal combination test weights (TP): w1: %.5f, w2: %.5f\n",
+                                  x$invnormal_weights_TP[[1]], x$invnormal_weights_TP[[2]])
+  invnormal_weights_TC <- sprintf("Inverse normal combination test weights (TC): w1: %.5f, w2: %.5f\n",
+                                  x$invnormal_weights_TC[[1]], x$invnormal_weights_TC[[2]])
   max_sample_size <- sprintf(paste0("Maximum overall sample size: ",f,"\n"), sum(unlist(x$n)))
   ASN_H1 <- sprintf("Expected sample size (H1): %.1f\n", x$ASN$H1)
   ASN_H0 <- sprintf("Expected sample size (H0): %.1f\n", x$ASN$H0)
@@ -48,6 +54,8 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
   cat(efficacy_boundaries_stage1)
   cat(futility_boundaries_stage1)
   cat(efficacy_boundaries_stage2)
+  cat(invnormal_weights_TP)
+  cat(invnormal_weights_TC)
   cat(max_sample_size)
   cat(ASN_H1)
   cat(ASN_H0)
@@ -68,6 +76,7 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
     cat("Note: Results are presented as if futility boundaries were strictly obeyed.\n")
   }
   cat(futility_testing_mode)
+  return(invisible(x))
 }
 
 #' Printing method for optimal single-stage goldstandard designs
@@ -75,11 +84,13 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
 #' @param x An object of class OneStageGoldStandardDesign
 #' @param ... additional parameters
 #'
-#' @return
+#' @return returns the input x invisibly. This functions is used for its side effects, i.e. printing
+#' design characteristics to the screen.
 #' @export
 #'
 #' @examples
-#' 1 + 1
+#' D <- optimize_design_onestage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+#' D
 print.OneStageGoldStandardDesign <- function(x, ...){
   if (x$round_n)
     f <- "%i"
@@ -104,8 +115,8 @@ print.OneStageGoldStandardDesign <- function(x, ...){
   cat(alpha_TP)
   cat(alpha_TC)
   cat(power)
+  return(invisible(x))
 }
-
 
 
 #' Add whitespace padding to string

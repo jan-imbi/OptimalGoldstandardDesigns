@@ -1,1 +1,1 @@
-#' @param b2TCe second stage critical value for the TC testing problem.
+#' @param bTC2e second stage critical value for the TC testing problem.

@@ -285,6 +285,7 @@ ccc_wrt_nmax <- function(ccc, maxn, n, singlestage = FALSE){
 }
 
 # This should be called TP, typo...
+#' @import mvtnorm
 calc_prob_reject_first_stage <- function(hypothesis = "H1", D, groups = "TP"){
   A_ <- D$A_
   mu_ <- D$mu_vec[[hypothesis]]
@@ -313,6 +314,7 @@ calc_prob_reject_first_stage <- function(hypothesis = "H1", D, groups = "TP"){
   }
 }
 
+#' @import mvtnorm
 calc_prob2 <- function(hypothesis = "H1", D, groups = "TP"){
   A_ <- D$A_
   mu_ <- D$mu_vec[[hypothesis]]
@@ -338,31 +340,5 @@ calc_prob2 <- function(hypothesis = "H1", D, groups = "TP"){
                             abseps = D$tol / 2,
                             releps = 0)
     )[1]
-  }
-}
-
-calc_futility_prob <- function(hypothesis = "H1",
-                               groups = "TP",
-                               D) {
-  if (dim(D$Sigma)[1] == 2) {
-    return(0)
-  } else{
-    A_ <- D$A_
-    mu_ <- D$mu_vec[[hypothesis]]
-    Sigma <- D$Sigma
-    b <- D$b
-    return(
-      pmvnorm_(
-        mean = as.vector(A_[[paste0(groups, "1")]] %*% mu_),
-        sigma =  A_[[paste0(groups, "1")]] %*% Sigma %*% t(A_[[paste0(groups, "1")]]),
-        lower = c(-Inf),
-        upper = c(b[[1]][[groups]][["futility"]]),
-        algorithm = GenzBretz(
-          maxpts = D$maxpts,
-          abseps = D$tol / toladjust,
-          releps = 0
-        )
-      )[1]
-    )
   }
 }

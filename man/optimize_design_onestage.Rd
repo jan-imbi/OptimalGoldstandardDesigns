@@ -2,11 +2,11 @@
 % Please edit documentation in R/optimization_methods.R
 \name{optimize_design_onestage}
 \alias{optimize_design_onestage}
-\title{Title}
+\title{Calculate optimial design parameters for a single-stage gold-standard design}
 \usage{
 optimize_design_onestage(
-  cP1 = 0.25,
-  cC1 = 1,
+  cP1 = NULL,
+  cC1 = NULL,
   alpha = 0.025,
   beta = 0.2,
   alternative_TP = 0.4,
@@ -19,25 +19,69 @@ optimize_design_onestage(
   kappa = 0,
   objective = quote(sum(unlist(n)) + kappa * n[[1]][["P"]]),
   inner_tol_objective = 1e-07,
-  mvnorm_algorithm = mvtnorm::Miwa(steps = 500, checkCorr = FALSE, maxval = 1000),
+  mvnorm_algorithm = mvtnorm::Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000),
   nloptr_x0 = NULL,
   nloptr_lb = NULL,
   nloptr_ub = NULL,
-  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", xtol_rel = 0.1, maxeval = 500),
+  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-09, xtol_abs = 1e-08,
+    xtol_rel = 1e-07, maxeval = 1000, print_level = 0),
   print_progress = TRUE,
   ...
 )
 }
 \arguments{
-\item{nloptr_opts}{}
+\item{cP1}{(numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{cC1}{(numeric) allocation ratio nC1 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{alpha}{type I error rate.}
+
+\item{beta}{type II error rate.}
+
+\item{alternative_TP}{assumed difference between T and P under H1. Positive values favor T.}
+
+\item{alternative_TC}{assumed difference between T and C under H1. Positive values favor T.}
+
+\item{Delta}{non-inferiority margin for the test Z_TC > -Delta.}
+
+\item{varT}{variance of treatment group.}
+
+\item{varP}{variance of placebo group.}
+
+\item{varC}{variance of control group.}
+
+\item{round_n}{(logical) if TRUE, a design with integer valued sample sizes is returned.}
+
+\item{kappa}{(numeric) penalty factor for placebo patients in the default objective function.}
+
+\item{objective}{(expression) objective criterion.}
+
+\item{inner_tol_objective}{(numeric) used to determine the tolerances for integrals and nuisance optimization problems
+inside the objective function.}
+
+\item{mvnorm_algorithm}{algorithm for multivariate integration passed to \code{\link[mvtnorm]{pmvnorm}}.}
+
+\item{nloptr_x0}{(numeric vector) starting point for optimization.}
+
+\item{nloptr_lb}{(numeric vector) lower bound box for box constrained optimization.}
+
+\item{nloptr_ub}{(numeric vector) upper bound box for box constrained optimization.}
+
+\item{nloptr_opts}{(list) nloptr options. See \code{\link[nloptr]{nloptr}}.}
+
+\item{print_progress}{(logical) controls whether optimization progress should be visualized during the calculation.}
+
+\item{...}{additional arguments passed along.}
 }
 \value{
-
+Design object (a list) with optimized design parameters.
 }
 \description{
-Title
+Calculate optimial design parameters for a single-stage gold-standard design
+}
+\details{
+TODO.
 }
 \examples{
-1 + 1
-
+D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
 }

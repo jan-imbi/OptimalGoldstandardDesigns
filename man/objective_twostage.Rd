@@ -2,7 +2,7 @@
 % Please edit documentation in R/objective_functions.R
 \name{objective_twostage}
 \alias{objective_twostage}
-\title{Objective function for two-stage designs}
+\title{Objective function for two-stage gold-standard designs}
 \usage{
 objective_twostage(D)
 }
@@ -10,5 +10,5 @@ objective_twostage(D)
 \item{D}{list containing all parameters of a the trial design.}
 }
 \description{
-Objective function for two-stage designs
+Objective function for two-stage gold-standard designs
 }

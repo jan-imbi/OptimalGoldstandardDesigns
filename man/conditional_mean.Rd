@@ -9,6 +9,8 @@ conditional_mean(x_a, mu_a, mu_b, Sigma)
 \arguments{
 \item{x_a}{(Observed) first part of normally distributed vector.}
 
+\item{mu_a}{Mean of second part of normally distributed vector.}
+
 \item{mu_b}{Mean of first part of normally distributed vector.}
 
 \item{Sigma}{covariance matrix of test statistic vector c(Z_TP1, Z_TP2, Z_TC1, Z_TC2).}

@@ -2,18 +2,18 @@
 % Please edit documentation in R/optimization_methods.R
 \name{optimize_design_twostage}
 \alias{optimize_design_twostage}
-\title{Title}
+\title{Calculate optimial design parameters for a two-stage gold-standard design}
 \usage{
 optimize_design_twostage(
-  cT2 = 1,
-  cP1 = 0.25,
-  cP2 = 0.25,
-  cC1 = 1,
-  cC2 = 1,
-  bTP1f = 0,
-  bTP1e = 2.105099,
-  bTC1f = 0,
-  bTC1e = 2.270933,
+  cT2 = NULL,
+  cP1 = NULL,
+  cP2 = NULL,
+  cC1 = NULL,
+  cC2 = NULL,
+  bTP1f = NULL,
+  bTP1e = NULL,
+  bTC1f = NULL,
+  bTC1e = NULL,
   alpha = 0.025,
   beta = 0.2,
   alternative_TP = 0.4,
@@ -46,15 +46,82 @@ optimize_design_twostage(
 )
 }
 \arguments{
-\item{nloptr_opts}{}
+\item{cT2}{(numeric) allocation ratio nT2 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{cP1}{(numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{cP2}{(numeric) allocation ratio nP2 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{cC1}{(numeric) allocation ratio nC1 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{cC2}{(numeric) allocation ratio nC2 / nT1. Parameter to be optimized if left unspecified.}
+
+\item{bTP1f}{(numeric) first stage futility boundary for the T vs. P testing problem. Parameter to be optimized if left unspecified.}
+
+\item{bTP1e}{(numeric) first stage critical value for the T vs. P testing problem. Parameter to be optimized if left unspecified.}
+
+\item{bTC1f}{(numeric) first stage futility boundary for the T vs. C testing problem. Parameter to be optimized if left unspecified.}
+
+\item{bTC1e}{(numeric) first stage critical value for the T vs. C testing problem. Parameter to be optimized if left unspecified.}
+
+\item{alpha}{type I error rate.}
+
+\item{beta}{type II error rate.}
+
+\item{alternative_TP}{assumed difference between T and P under H1. Positive values favor T.}
+
+\item{alternative_TC}{assumed difference between T and C under H1. Positive values favor T.}
+
+\item{Delta}{non-inferiority margin for the test Z_TC > -Delta.}
+
+\item{varT}{variance of treatment group.}
+
+\item{varP}{variance of placebo group.}
+
+\item{varC}{variance of control group.}
+
+\item{binding_futility}{(logical) controls if futility boundaries are binding.}
+
+\item{always_both_futility_tests}{(logical) if true, both futility tests are performed after the first stage. If false,
+a 'completely sequential' testing procedure is employed (see Appendix of paper).}
+
+\item{round_n}{(logical) if TRUE, a design with integer valued sample sizes is returned.}
+
+\item{lambda}{(numeric) weight of the alternative hypothesis in the default objective function. 1-lambda is the weight
+of the null hypothesis.}
+
+\item{kappa}{(numeric) penalty factor for placebo patients in the default objective function.}
+
+\item{nu}{(numeric) penalty factor for the maximum sample size in the default objective function.}
+
+\item{objective}{(expression) objective criterion.}
+
+\item{inner_tol_objective}{(numeric) used to determine the tolerances for integrals and nuisance optimization problems
+inside the objective function.}
+
+\item{mvnorm_algorithm}{algorithm for multivariate integration passed to \code{\link[mvtnorm]{pmvnorm}}.}
+
+\item{nloptr_x0}{(numeric vector) starting point for optimization.}
+
+\item{nloptr_lb}{(numeric vector) lower bound box for box constrained optimization.}
+
+\item{nloptr_ub}{(numeric vector) upper bound box for box constrained optimization.}
+
+\item{nloptr_opts}{(list) nloptr options. See \code{\link[nloptr]{nloptr}}.}
+
+\item{print_progress}{(logical) controls whether optimization progress should be visualized during the calculation.}
+
+\item{...}{additional arguments passed along.}
 }
 \value{
-
+Design object (a list) with optimized design parameters.
 }
 \description{
-Title
+Calculate optimial design parameters for a two-stage gold-standard design
+}
+\details{
+TODO.
 }
 \examples{
-1 + 1
-
+D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
 }

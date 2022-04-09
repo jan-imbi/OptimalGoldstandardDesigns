@@ -8,9 +8,9 @@ to achieve the target power given the bTC2e}
 solve_nT1_wrt_bTC2e(bTC2e, D)
 }
 \arguments{
-\item{D}{list containing all parameters of a the trial design.}
+\item{bTC2e}{second stage critical value for the TC testing problem.}
 
-\item{b2TCe}{second stage critical value for the TC testing problem.}
+\item{D}{list containing all parameters of a the trial design.}
 }
 \description{
 Helper function to calculate the required sample size (of the stage 1 treatment group)

@@ -3,7 +3,7 @@
 #'
 #' @param upper the vector of upper limits of length n.
 #' @param lower the vector of lower limits of length n.
-#' @param ... additional parameters passed to \code{\link{mvtnorm::pmvnorm}}
+#' @param ... additional parameters passed to \code{\link[mvtnorm]{pmvnorm}}.
 #'
 #' @return
 #' The evaluated distribution function is returned, if \code{keepAttr} is true, with attributes
@@ -11,7 +11,7 @@
 #' \item{msg}{status message(s).}
 #' \item{algorithm}{a \code{\link{character}} string with \code{class(algorithm)}.}
 #'
-#' @seealso \code{\link{mvtnorm::pmvnorm}}
+#' @seealso \code{\link[mvtnorm]{pmvnorm}}
 #'
 #' @importFrom mvtnorm pmvnorm
 pmvnorm_ <- function(upper, lower, ...) {
@@ -27,7 +27,7 @@ pmvnorm_ <- function(upper, lower, ...) {
 #'
 #' @param upper the vector of upper limits of length n.
 #' @param lower the vector of lower limits of length n.
-#' @param ... additional parameters passed to \code{\link{mvtnorm::pmvt}}
+#' @param ... additional parameters passed to \code{\link[mvtnorm]{pmvt}}.
 #'
 #' @return
 #' The evaluated distribution function is returned, if \code{keepAttr} is true, with attributes
@@ -35,7 +35,7 @@ pmvnorm_ <- function(upper, lower, ...) {
 #' \item{msg}{status message(s).}
 #' \item{algorithm}{a \code{\link{character}} string with \code{class(algorithm)}.}
 #'
-#' @seealso \code{\link{mvtnorm::pmvt}}
+#' @seealso \code{\link[mvtnorm]{pmvt}}
 #'
 #' @importFrom mvtnorm pmvt
 pmvt_ <- function(upper, lower, ...) {

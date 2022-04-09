@@ -1,7 +1,6 @@
 library(mvtnorm)
 library(mnormt)
 
-
 # This code is from the Appendix from Patrick Schlömers Dissertation:
 #
 # Schlömer, Patrick. 2014. “Group Sequential and Adaptive
