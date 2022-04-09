@@ -238,22 +238,6 @@ calc_final_state_probs <- function(hypothesis = "H0", D) {
   )[1]
 
   if (isTRUE(always_both_futility_tests)) {
-    P[["TP1F"]] <- pmvnorm_(
-      mean = as.vector(projection[["TP1"]] %*% mu_),
-      sigma =  projection[["TP1"]] %*% Sigma %*% t(projection[["TP1"]]),
-      lower = c(nInf[[1]][["TP"]]),
-      upper = c(b[[1]][["TP"]][["futility"]]),
-      algorithm = D$mvnorm_algorithm
-    )[1]
-
-    P[["TP1_TC1F"]] <- pmvnorm_(
-      mean = as.vector(projection[["TP1_TC1"]] %*% mu_),
-      sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
-      lower = c(b[[1]][["TP"]][["futility"]], nInf[[1]][["TC"]]),
-      upper = c(b[[1]][["TP"]][["efficacy"]], b[[1]][["TC"]][["futility"]]),
-      algorithm = D$mvnorm_algorithm
-    )[1]
-
     P[["TP1F_TC1F"]] <- 1 - pmvnorm_(
       mean = as.vector(projection[["TP1_TC1"]] %*% mu_),
       sigma =  projection[["TP1_TC1"]] %*% Sigma %*% t(projection[["TP1_TC1"]]),
@@ -559,7 +543,7 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
 #' @template D
 #' @importFrom mvtnorm qmvnorm
 #' @importFrom stats uniroot
-solve_nT1_wrt_bTC2e <- function(bTC2e, D) {
+calc_nT1_wrt_bTC2e <- function(bTC2e, D) {
   D$b[[2]][["TC"]][["efficacy"]] <- bTC2e
   D$tol <- D$tol * 3 / 4
 
@@ -584,7 +568,6 @@ solve_nT1_wrt_bTC2e <- function(bTC2e, D) {
   }
 }
 
-
 #' Helper function to calculate the maximal probability of rejecting the non-inferiority hypothesis
 #' in the testing procedure featuring nonsequential futility, given a point hypothesis for
 #' the superiority hypothesis.
@@ -596,7 +579,7 @@ solve_nT1_wrt_bTC2e <- function(bTC2e, D) {
 #' @template D
 #' @importFrom stats optimize
 calc_worst_type_I_error <- function(bTC2e, D) {
-  sqrt_nT1 <- sqrt(solve_nT1_wrt_bTC2e(bTC2e, D))
+  sqrt_nT1 <- sqrt(calc_nT1_wrt_bTC2e(bTC2e, D))
   nT1_div_gamma <- sqrt_nT1 / c(D$gamma[[1]][["TP"]], D$gamma[[2]][["TP"]])
   D$b[[2]][["TC"]]["efficacy"] <- bTC2e
 

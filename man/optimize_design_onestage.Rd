@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimization_methods.R
 \name{optimize_design_onestage}
 \alias{optimize_design_onestage}
-\title{Calculate optimial design parameters for a single-stage gold-standard design}
+\title{Calculate optimal design parameters for a single-stage gold-standard design}
 \usage{
 optimize_design_onestage(
   cP1 = NULL,
@@ -42,7 +42,8 @@ optimize_design_onestage(
 
 \item{alternative_TC}{assumed difference between T and C under H1. Positive values favor T.}
 
-\item{Delta}{non-inferiority margin for the test Z_TC > -Delta.}
+\item{Delta}{non-inferiority margin for the test \eqn{X_T - X_C \leq - \Delta} vs.
+\eqn{X_T - X_C > - \Delta}.}
 
 \item{varT}{variance of treatment group.}
 
@@ -77,10 +78,25 @@ inside the objective function.}
 Design object (a list) with optimized design parameters.
 }
 \description{
-Calculate optimial design parameters for a single-stage gold-standard design
+Calculate optimal design parameters for a single-stage gold-standard design
 }
 \details{
-TODO.
+This function calculates optimal design parameters for a single-stage three-arm gold-standard
+non-inferiority trial. The design assumes a hierarchical testing procedure is applied.
+The first test aims to establish assay sensitivity of a trial. It is a test of 
+superiority of the experimental treatment (T) against the placebo treatment (P).
+If assay sensitivity is successfully established, the treatment is tested for non-inferiority
+to the control treatment (C).
+
+Individual observations are assumed to be normally distributed, where higher values
+correspond to better treatment effects. We denote the test statistics for the
+two hypothesis by Z_TP1 and Z_TC1, where Z_TC,1 already incorporates
+the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
+\code{qnorm(1-alpha)}.
+
+The parameters being optimized are ...
+
+The design is optimized with respect to ...
 }
 \examples{
 D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))

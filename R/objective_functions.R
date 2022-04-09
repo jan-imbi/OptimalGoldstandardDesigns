@@ -27,7 +27,7 @@ objective_twostage <- function(D)
   # (This is the second implicit parameter)
   TC_local_lower <- calc_local_rejection_boundaries("TC", D)
 
-  if (D$always_both_futility_tests){
+  if (D$always_both_futility_tests || !D$binding_futility){
     alpha_TC <- TC_local_lower$alpha
     D$b[[2]][["TC"]][["efficacy"]] <- TC_local_lower$root
   } else{
@@ -76,7 +76,7 @@ objective_twostage <- function(D)
   eval(get_boundaries)
 
   # Calculate Design parameters, now that the implicit parameters are fixed
-  nT1 <- solve_nT1_wrt_bTC2e(D$b[[2]][["TC"]][["efficacy"]], D)
+  nT1 <- calc_nT1_wrt_bTC2e(D$b[[2]][["TC"]][["efficacy"]], D)
   D$n <- calc_n_from_c(nT1, D)
 
   # Recalculate design parameters if rounding is requested

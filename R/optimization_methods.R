@@ -1,4 +1,4 @@
-#' Calculate optimial design parameters for a two-stage gold-standard design
+#' Calculate optimal design parameters for a two-stage gold-standard design
 #' 
 #' @param cT2 (numeric) allocation ratio nT2 / nT1. Parameter to be optimized if left unspecified. 
 #' @param cP1 (numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified. 
@@ -37,9 +37,28 @@
 #' @return Design object (a list) with optimized design parameters.
 #' @export
 #' @importFrom nloptr nloptr
+#' @importFrom mvtnorm Miwa
 #' @details 
-#' TODO.
+#' This function calculates optimal design parameters for a two-stage three-arm gold-standard
+#' non-inferiority trial. The design assumes a hierarchical testing procedure is applied.
+#' The first test aims to establish assay sensitivity of a trial. It is a test of 
+#' superiority of the experimental treatment (T) against the placebo treatment (P).
+#' If assay sensitivity is successfully established, the treatment is tested for non-inferiority
+#' to the control treatment (C).
 #' 
+#' Individual observations are assumed to be normally distributed, where higher values
+#' correspond to better treatment effects. We denote the test statistics for the
+#' two hypothesis by Z_TP1 and Z_TC1, where Z_TC1 already incorporates
+#' the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
+#' bTP1e, bTC1e, bTP2e and bTC2e. (The optimizer searches for the optimal values of bTP1e and
+#' bTC1e, while bTP2e and bTC2e are implicitly defined.)
+#' 
+#' The parameters being optimized are ...
+#' 
+#' The design is optimized with respect to ...
+#' 
+#' 
+#'
 #'
 #' @examples
 #' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
@@ -98,8 +117,14 @@ optimize_design_twostage <-
            print_progress = TRUE,
            ...) {
     arguments <- c(as.list(environment()))
-    quoted_arguments <- arguments[sapply(arguments, is.call)]
+    quoted_arguments <- arguments[sapply(arguments, function(x)is.call(x)||is.symbol(x))]
     quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
+    
+    for (n in names(quoted_arguments)){
+     if (!grepl("<-", deparse(quoted_arguments[[n]]))){
+       quoted_arguments[[n]] <- parse(text=paste0(n, " <- ", deparse(quoted_arguments[[n]]), collapse = ""))
+     }
+    }
 
     determine_x0 <- missing(nloptr_x0)
     determine_lb <- missing(nloptr_lb)
@@ -278,7 +303,7 @@ optimize_design_twostage <-
       opts = nloptr_opts)
 
     if(print_progress)
-      cat("\n")
+      cat("\n", "Optimization finished. Calculating final design with greater accuracy...\n")
 
     x <- opt$solution
     for (i in seq_along(x)){
@@ -306,14 +331,29 @@ optimize_design_twostage <-
         )
       )),
       D_half2)
+    
+    # Increase accuracy for final design
+    original_inner_tol_objective <- inner_tol_objective
+    original_mvnorm_algorithm <- mvnorm_algorithm
+    D$inner_tol_objective <- 1e-9
+    D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
+    
     opt_design <- objective_twostage(D)
     opt_design$x_end <- x
+    opt_design$inner_tol_objective <- original_inner_tol_objective
+    D$mvnorm_algorithm <- original_mvnorm_algorithm
+    
+    for (n in names(arguments)){
+      if (!(n %in% names(opt_design))){
+        opt_design[[n]] <- eval(parse(text = n))
+      }
+    }
 
     class(opt_design) <- c("TwoStageGoldStandardDesign", class(opt_design))
     return(opt_design)
   }
 
-#' Calculate optimial design parameters for a single-stage gold-standard design
+#' Calculate optimal design parameters for a single-stage gold-standard design
 #' 
 #' @param cP1 (numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified. 
 #' @param cC1 (numeric) allocation ratio nC1 / nT1. Parameter to be optimized if left unspecified.
@@ -341,7 +381,23 @@ optimize_design_twostage <-
 #' @export
 #' @importFrom nloptr nloptr
 #' @details 
-#' TODO.
+#' This function calculates optimal design parameters for a single-stage three-arm gold-standard
+#' non-inferiority trial. The design assumes a hierarchical testing procedure is applied.
+#' The first test aims to establish assay sensitivity of a trial. It is a test of 
+#' superiority of the experimental treatment (T) against the placebo treatment (P).
+#' If assay sensitivity is successfully established, the treatment is tested for non-inferiority
+#' to the control treatment (C).
+#' 
+#' Individual observations are assumed to be normally distributed, where higher values
+#' correspond to better treatment effects. We denote the test statistics for the
+#' two hypothesis by Z_TP1 and Z_TC1, where Z_TC,1 already incorporates
+#' the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
+#' \code{qnorm(1-alpha)}.
+#' 
+#' The parameters being optimized are ...
+#' 
+#' The design is optimized with respect to ...
+#' 
 #' 
 #'
 #' @examples
@@ -379,8 +435,14 @@ optimize_design_onestage <-
            print_progress = TRUE,
            ...) {
     arguments <- c(as.list(environment()))
-    quoted_arguments <- arguments[sapply(arguments, is.call)]
+    quoted_arguments <- arguments[sapply(arguments, function(x)is.call(x)||is.symbol(x))]
     quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
+    
+    for (n in names(quoted_arguments)){
+      if (!grepl("<-", deparse(quoted_arguments[[n]]))){
+        quoted_arguments[[n]] <- parse(text=paste0(n, " <- ", deparse(quoted_arguments[[n]]), collapse = ""))
+      }
+    }
 
     determine_x0 <- missing(nloptr_x0)
     determine_lb <- missing(nloptr_lb)
@@ -476,7 +538,7 @@ optimize_design_onestage <-
       opts = nloptr_opts)
 
     if(print_progress)
-      cat("\n")
+      cat("\n", "Optimization finished. Calculating final design with greater accuracy...\n")
 
     x <- opt$solution
     for (i in seq_along(x)){
@@ -493,8 +555,22 @@ optimize_design_onestage <-
         list("T" = 1, "P" = cP1, "C" = cC1)
       )),
       D_half2)
+    
+    original_inner_tol_objective <- inner_tol_objective
+    original_mvnorm_algorithm <- mvnorm_algorithm
+    D$inner_tol_objective <- 1e-9
+    D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
+    
     opt_design <- objective_onestage(D)
     opt_design$x_end <- x
+    opt_design$inner_tol_objective <- original_inner_tol_objective
+    D$mvnorm_algorithm <- original_mvnorm_algorithm
+    
+    for (n in names(arguments)){
+      if (!(n %in% names(opt_design))){
+        opt_design[[n]] <- eval(parse(text = n))
+      }
+    }
 
     class(opt_design) <- c("OneStageGoldStandardDesign", class(opt_design))
     return(opt_design)

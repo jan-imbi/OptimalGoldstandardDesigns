@@ -7,7 +7,6 @@ library(mnormt)
 # Designs for Three-Arm’gold Standard’non-Inferiority Trials.”
 # PhD thesis, Universität Bremen. https://d-nb.info/1072225700/34.
 
-
 # ################################################## #############################
 # ############# #############
 # ############# Calculation of the overall power in a single stage #############
