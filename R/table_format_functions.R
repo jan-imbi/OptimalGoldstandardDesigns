@@ -6,9 +6,9 @@ fr <- function(x, k=2){
       return("")
     else if (is.infinite(x))
       if (x > 0){
-        return("\\infty")
+        return("$\\infty$")
       } else{
-        return("-\\infty")
+        return("$-\\infty$")
       }
     else return(format(round(x, k), nsmall=k))
   }

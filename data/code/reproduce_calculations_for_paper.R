@@ -40,7 +40,7 @@ shared_params <- list(
   inner_tol_objective = 1e-05,
   mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000),
   nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-04, xtol_abs = 0.001,
-                     xtol_rel = 0.01, maxeval = 50, print_level = 0)
+                     xtol_rel = 0.01, maxeval = 70, print_level = 0)
 )
 
 bc_t2<- list()
@@ -131,7 +131,7 @@ iend <- iend + length(bc_t5)
 opt_t5 <- opt_all[istart:iend]
 
 D_tab2 <- append(append(append(list(opt_onestage[[1]]),
-                             opt_t2[2:4]),
+                             opt_t2[1:4]),
                       list(opt_onestage[[2]])),
                opt_t2[5:8])
 D_tab3 <- opt_t2
@@ -144,3 +144,8 @@ saveRDS(value(D_tab2), here("data", "D_tab2.rds"))
 saveRDS(value(D_tab3), here("data", "D_tab3.rds"))
 saveRDS(value(D_tab4), here("data", "D_tab4.rds"))
 saveRDS(value(D_tab5), here("data", "D_tab5.rds"))
+
+
+
+
+
