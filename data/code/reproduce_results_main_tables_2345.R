@@ -53,7 +53,7 @@ for (i in seq_along(c(.2, .1))){
         nr = 2,
         beta = beta,
         bTP1f = -Inf, bTC1f = -Inf,
-        cP1 = eval(opt_onestage[[i]]$stagec[[1]][["P"]]), cC1 = eval(opt_onestage[[i]]$stagec[[1]][["C"]]),
+        cP1 = opt_onestage[[i]]$stagec[[1]][["P"]], cC1 = opt_onestage[[i]]$stagec[[1]][["C"]],
         cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1),
         binding_futility = FALSE
         )
@@ -140,12 +140,7 @@ D_tab4 <- append(append(append(list(opt_t2[[2]]), opt_t4[1:7]),
                opt_t4[8:14])
 D_tab5 <- append(list(opt_t2[[2]]), opt_t5)
 
-saveRDS(value(D_tab2), here("data", "D_tab2.rds"))
-saveRDS(value(D_tab3), here("data", "D_tab3.rds"))
-saveRDS(value(D_tab4), here("data", "D_tab4.rds"))
-saveRDS(value(D_tab5), here("data", "D_tab5.rds"))
-
-
-
-
-
+saveRDS(D_tab2, here("data", "D_tab2.rds"))
+saveRDS(D_tab3, here("data", "D_tab3.rds"))
+saveRDS(D_tab4, here("data", "D_tab4.rds"))
+saveRDS(D_tab5, here("data", "D_tab5.rds"))

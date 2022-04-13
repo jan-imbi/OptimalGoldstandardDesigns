@@ -101,7 +101,7 @@ optimize_design_twostage <-
                ) +
                nu * (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])
              ),
-           inner_tol_objective = 1e-5,
+           inner_tol_objective = .Machine$double.eps^0.25,
            mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
            nloptr_x0 = NULL,
            nloptr_lb = NULL,
