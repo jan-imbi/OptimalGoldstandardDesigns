@@ -335,7 +335,7 @@ optimize_design_twostage <-
     # Increase accuracy for final design
     original_inner_tol_objective <- inner_tol_objective
     original_mvnorm_algorithm <- mvnorm_algorithm
-    D$inner_tol_objective <- 1e-9
+    D$inner_tol_objective <- min(1e-9, inner_tol_objective)
     D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
     
     opt_design <- objective_twostage(D)
@@ -558,7 +558,7 @@ optimize_design_onestage <-
     
     original_inner_tol_objective <- inner_tol_objective
     original_mvnorm_algorithm <- mvnorm_algorithm
-    D$inner_tol_objective <- 1e-9
+    D$inner_tol_objective <- min(1e-9, inner_tol_objective)
     D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
     
     opt_design <- objective_onestage(D)
