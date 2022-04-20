@@ -34,7 +34,7 @@ optimize_design_twostage(
     sqrt(lambda)) * sqrt(lambda) * ASNP[["H10"]] + (1 - sqrt(lambda)) * sqrt(lambda) *
     ASNP[["H01"]] + (1 - sqrt(lambda))^2 * ASNP[["H00"]] + nu * cumn[[2]][["P"]]) + nu *
     (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])),
-  inner_tol_objective = 1e-05,
+  inner_tol_objective = .Machine$double.eps^0.25,
   mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000),
   nloptr_x0 = NULL,
   nloptr_lb = NULL,
@@ -122,22 +122,43 @@ Calculate optimal design parameters for a two-stage gold-standard design
 }
 \details{
 This function calculates optimal design parameters for a two-stage three-arm gold-standard
-non-inferiority trial. The design assumes a hierarchical testing procedure is applied.
-The first test aims to establish assay sensitivity of a trial. It is a test of 
-superiority of the experimental treatment (T) against the placebo treatment (P).
-If assay sensitivity is successfully established, the treatment is tested for non-inferiority
-to the control treatment (C).
+non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
+to see details about the test statistics and testing procedure corresponding to this design.
 
-Individual observations are assumed to be normally distributed, where higher values
-correspond to better treatment effects. We denote the test statistics for the
-two hypothesis by Z_TP1 and Z_TC1, where Z_TC1 already incorporates
-the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
-bTP1e, bTC1e, bTP2e and bTC2e. (The optimizer searches for the optimal values of bTP1e and
-bTC1e, while bTP2e and bTC2e are implicitly defined.)
 
-The parameters being optimized are ...
+Parameters which can be optimized are the allocation ratios for all groups and stages and the
+futility and efficacy boundaries of the first stage. The allocation ratios are
+cT2 = nT2 / nT1, cP1 = nP1 / nT1,
+cP2 = nP2 / nT1, cC1 = nC1 / nT1 and cC2 = nC2 / nT1. Here, nT1 denotes the sample size
+of the treatment group in the first stage, nP2 the sample size of the placebo group in the
+second stage, etc. The first stage efficacy boundaries are bTP1e for the treatment vs
+placebo testing problem, and bTC1e for the treatment vs control non-inferiority testing
+problem. The futility boundaries are denoted by bTP1f and bTC1f.
 
-The design is optimized with respect to ...
+If these parameters are left unspecified or set to NULL, they will be included into the
+optimization process, otherwise they will be considered boundary constraints.
+You may also supply quoted expressions as arguments for these
+parameters to solve a constrained optimization problem. For example, you can supply
+\code{cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1)} to ensure that the first and second
+stage allocation ratios are equal.
+
+
+The design is optimized with respect to the objective criterion given by the parameter
+\code{objective}. By default, ...
+
+Designs are calculated to fulfill the following constraints: the family-wise type I error
+rate is controlled at \code{alpha} under any combination of the two null hypotheses
+\code{muT - muP = 0} and \code{muT - muC + Delta = 0}.
+The power to reject both hypothesis given both alternative
+hypotheses \code{muT - muP = alternative_TP} and \code{muT - muC + Delta = alternative_TC + Delta}
+is at least \code{1 - beta}. Variances are assumed to be given by \code{varT, varP} and \code{varC}.
+
+If \code{binding_futility} is \code{TRUE}, type I error recycling is used.
+If \code{always_both_futility_tests} is \code{TRUE}, it is assumed that futility tests for both
+hypotheses are performed at interim, regardless of whether the treatment vs placebo null hypothesis
+was successfully rejected. If \code{always_both_futility_tests} is \code{FALSE}, the futility
+test for the treatment vs. control testing problem only needs to be done if the null for the
+treatment vs. placebo testing problem was rejected in the first stage.
 }
 \examples{
 D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))

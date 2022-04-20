@@ -1,63 +1,83 @@
 #' Calculate optimal design parameters for a two-stage gold-standard design
-#' 
-#' @param cT2 (numeric) allocation ratio nT2 / nT1. Parameter to be optimized if left unspecified. 
-#' @param cP1 (numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified. 
-#' @param cP2 (numeric) allocation ratio nP2 / nT1. Parameter to be optimized if left unspecified. 
+#'
+#' @param cT2 (numeric) allocation ratio nT2 / nT1. Parameter to be optimized if left unspecified.
+#' @param cP1 (numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified.
+#' @param cP2 (numeric) allocation ratio nP2 / nT1. Parameter to be optimized if left unspecified.
 #' @param cC1 (numeric) allocation ratio nC1 / nT1. Parameter to be optimized if left unspecified.
 #' @param cC2 (numeric) allocation ratio nC2 / nT1. Parameter to be optimized if left unspecified.
 #' @param bTP1f (numeric) first stage futility boundary for the T vs. P testing problem. Parameter to be optimized if left unspecified.
 #' @param bTP1e (numeric) first stage critical value for the T vs. P testing problem. Parameter to be optimized if left unspecified.
 #' @param bTC1f (numeric) first stage futility boundary for the T vs. C testing problem. Parameter to be optimized if left unspecified.
 #' @param bTC1e (numeric) first stage critical value for the T vs. C testing problem. Parameter to be optimized if left unspecified.
-#' @template alpha 
-#' @template beta 
-#' @template alternative_TP 
-#' @template alternative_TC 
-#' @template Delta 
-#' @template varT 
-#' @template varP 
-#' @template varC 
+#' @template alpha
+#' @template beta
+#' @template alternative_TP
+#' @template alternative_TC
+#' @template Delta
+#' @template varT
+#' @template varP
+#' @template varC
 #' @param binding_futility (logical) controls if futility boundaries are binding.
 #' @param always_both_futility_tests (logical) if true, both futility tests are performed after the first stage. If false,
 #' a 'completely sequential' testing procedure is employed (see Appendix of paper).
 #' @template round_n
-#' @template lambda 
+#' @template lambda
 #' @template kappa
-#' @template nu 
-#' @template objective 
-#' @template inner_tol_objective 
-#' @template mvnorm_algorithm 
-#' @template nloptr_x0 
+#' @template nu
+#' @template objective
+#' @template inner_tol_objective
+#' @template mvnorm_algorithm
+#' @template nloptr_x0
 #' @template nloptr_lb
 #' @template nloptr_ub
 #' @template nloptr_opts
 #' @template print_progress
-#' @param ... additional arguments passed along. 
+#' @param ... additional arguments passed along.
 #'
 #' @return Design object (a list) with optimized design parameters.
 #' @export
 #' @importFrom nloptr nloptr
 #' @importFrom mvtnorm Miwa
-#' @details 
+#' @details
 #' This function calculates optimal design parameters for a two-stage three-arm gold-standard
-#' non-inferiority trial. The design assumes a hierarchical testing procedure is applied.
-#' The first test aims to establish assay sensitivity of a trial. It is a test of 
-#' superiority of the experimental treatment (T) against the placebo treatment (P).
-#' If assay sensitivity is successfully established, the treatment is tested for non-inferiority
-#' to the control treatment (C).
-#' 
-#' Individual observations are assumed to be normally distributed, where higher values
-#' correspond to better treatment effects. We denote the test statistics for the
-#' two hypothesis by Z_TP1 and Z_TC1, where Z_TC1 already incorporates
-#' the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
-#' bTP1e, bTC1e, bTP2e and bTC2e. (The optimizer searches for the optimal values of bTP1e and
-#' bTC1e, while bTP2e and bTC2e are implicitly defined.)
-#' 
-#' The parameters being optimized are ...
-#' 
-#' The design is optimized with respect to ...
-#' 
-#' 
+#' non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
+#' to see details about the test statistics and testing procedure corresponding to this design.
+#'
+#'
+#' Parameters which can be optimized are the allocation ratios for all groups and stages and the
+#' futility and efficacy boundaries of the first stage. The allocation ratios are
+#' cT2 = nT2 / nT1, cP1 = nP1 / nT1,
+#' cP2 = nP2 / nT1, cC1 = nC1 / nT1 and cC2 = nC2 / nT1. Here, nT1 denotes the sample size
+#' of the treatment group in the first stage, nP2 the sample size of the placebo group in the
+#' second stage, etc. The first stage efficacy boundaries are bTP1e for the treatment vs
+#' placebo testing problem, and bTC1e for the treatment vs control non-inferiority testing
+#' problem. The futility boundaries are denoted by bTP1f and bTC1f.
+#'
+#' If these parameters are left unspecified or set to NULL, they will be included into the
+#' optimization process, otherwise they will be considered boundary constraints.
+#' You may also supply quoted expressions as arguments for these
+#' parameters to solve a constrained optimization problem. For example, you can supply
+#' \code{cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1)} to ensure that the first and second
+#' stage allocation ratios are equal.
+#'
+#'
+#' The design is optimized with respect to the objective criterion given by the parameter
+#' \code{objective}. By default, ...
+#'
+#' Designs are calculated to fulfill the following constraints: the family-wise type I error
+#' rate is controlled at \code{alpha} under any combination of the two null hypotheses
+#' \code{muT - muP = 0} and \code{muT - muC + Delta = 0}.
+#' The power to reject both hypothesis given both alternative
+#' hypotheses \code{muT - muP = alternative_TP} and \code{muT - muC + Delta = alternative_TC + Delta}
+#' is at least \code{1 - beta}. Variances are assumed to be given by \code{varT, varP} and \code{varC}.
+#'
+#' If \code{binding_futility} is \code{TRUE}, type I error recycling is used.
+#' If \code{always_both_futility_tests} is \code{TRUE}, it is assumed that futility tests for both
+#' hypotheses are performed at interim, regardless of whether the treatment vs placebo null hypothesis
+#' was successfully rejected. If \code{always_both_futility_tests} is \code{FALSE}, the futility
+#' test for the treatment vs. control testing problem only needs to be done if the null for the
+#' treatment vs. placebo testing problem was rejected in the first stage.
+#'
 #'
 #'
 #' @examples
@@ -119,7 +139,7 @@ optimize_design_twostage <-
     arguments <- c(as.list(environment()))
     quoted_arguments <- arguments[sapply(arguments, function(x)is.call(x)||is.symbol(x))]
     quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
-    
+
     for (n in names(quoted_arguments)){
      if (!grepl("<-", deparse(quoted_arguments[[n]]))){
        quoted_arguments[[n]] <- parse(text=paste0(n, " <- ", deparse(quoted_arguments[[n]]), collapse = ""))
@@ -331,18 +351,18 @@ optimize_design_twostage <-
         )
       )),
       D_half2)
-    
+
     # Increase accuracy for final design
     original_inner_tol_objective <- inner_tol_objective
     original_mvnorm_algorithm <- mvnorm_algorithm
     D$inner_tol_objective <- min(1e-9, inner_tol_objective)
     D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
-    
+
     opt_design <- objective_twostage(D)
     opt_design$x_end <- x
     opt_design$inner_tol_objective <- original_inner_tol_objective
     D$mvnorm_algorithm <- original_mvnorm_algorithm
-    
+
     for (n in names(arguments)){
       if (!(n %in% names(opt_design))){
         opt_design[[n]] <- eval(parse(text = n))
@@ -354,23 +374,23 @@ optimize_design_twostage <-
   }
 
 #' Calculate optimal design parameters for a single-stage gold-standard design
-#' 
-#' @param cP1 (numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified. 
+#'
+#' @param cP1 (numeric) allocation ratio nP1 / nT1. Parameter to be optimized if left unspecified.
 #' @param cC1 (numeric) allocation ratio nC1 / nT1. Parameter to be optimized if left unspecified.
-#' @template alpha 
-#' @template beta 
-#' @template alternative_TP 
-#' @template alternative_TC 
-#' @template Delta 
-#' @template varT 
-#' @template varP 
-#' @template varC 
-#' @template round_n 
-#' @template kappa 
+#' @template alpha
+#' @template beta
+#' @template alternative_TP
+#' @template alternative_TC
+#' @template Delta
+#' @template varT
+#' @template varP
+#' @template varC
+#' @template round_n
+#' @template kappa
 #' @template objective
 #' @template inner_tol_objective
-#' @template mvnorm_algorithm 
-#' @template nloptr_x0 
+#' @template mvnorm_algorithm
+#' @template nloptr_x0
 #' @template nloptr_lb
 #' @template nloptr_ub
 #' @template nloptr_opts
@@ -380,25 +400,47 @@ optimize_design_twostage <-
 #' @return Design object (a list) with optimized design parameters.
 #' @export
 #' @importFrom nloptr nloptr
-#' @details 
-#' This function calculates optimal design parameters for a single-stage three-arm gold-standard
-#' non-inferiority trial. The design assumes a hierarchical testing procedure is applied.
-#' The first test aims to establish assay sensitivity of a trial. It is a test of 
-#' superiority of the experimental treatment (T) against the placebo treatment (P).
-#' If assay sensitivity is successfully established, the treatment is tested for non-inferiority
-#' to the control treatment (C).
-#' 
-#' Individual observations are assumed to be normally distributed, where higher values
-#' correspond to better treatment effects. We denote the test statistics for the
-#' two hypothesis by Z_TP1 and Z_TC1, where Z_TC,1 already incorporates
-#' the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
-#' \code{qnorm(1-alpha)}.
-#' 
-#' The parameters being optimized are ...
-#' 
-#' The design is optimized with respect to ...
-#' 
-#' 
+#' @details
+#' This function calculates optimal design parameters for a two-stage three-arm gold-standard
+#' non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
+#' to see details about the test statistics and testing procedure corresponding to this design.
+#'
+#'
+#' Parameters which can be optimized are the allocation ratios for all groups and stages and the
+#' futility and efficacy boundaries of the first stage. The allocation ratios are
+#' cT2 = nT2 / nT1, cP1 = nP1 / nT1,
+#' cP2 = nP2 / nT1, cC1 = nC1 / nT1 and cC2 = nC2 / nT1. Here, nT1 denotes the sample size
+#' of the treatment group in the first stage, nP2 the sample size of the placebo group in the
+#' second stage, etc. The first stage efficacy boundaries are bTP1e for the treatment vs
+#' placebo testing problem, and bTC1e for the treatment vs control non-inferiority testing
+#' problem. The futility boundaries are denoted by bTP1f and bTC1f.
+#'
+#' If these parameters are left unspecified or set to NULL, they will be included into the
+#' optimization process, otherwise they will be considered boundary constraints.
+#' You may also supply quoted expressions as arguments for these
+#' parameters to solve a constrained optimization problem. For example, you can supply
+#' \code{cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1)} to ensure that the first and second
+#' stage allocation ratios are equal.
+#'
+#'
+#' The design is optimized with respect to the objective criterion given by the parameter
+#' \code{objective}. By default, ...
+#'
+#' Designs are calculated to fulfill the following constraints: the family-wise type I error
+#' rate is controlled at \code{alpha} under any combination of the two null hypotheses
+#' \code{muT - muP = 0} and \code{muT - muC + Delta = 0}.
+#' The power to reject both hypothesis given both alternative
+#' hypotheses \code{muT - muP = alternative_TP} and \code{muT - muC + Delta = alternative_TC + Delta}
+#' is at least \code{1 - beta}. Variances are assumed to be given by \code{varT, varP} and \code{varC}.
+#'
+#' If \code{binding_futility} is \code{TRUE}, type I error recycling is used.
+#' If \code{always_both_futility_tests} is \code{TRUE}, it is assumed that futility tests for both
+#' hypotheses are performed at interim, regardless of whether the treatment vs placebo null hypothesis
+#' was successfully rejected. If \code{always_both_futility_tests} is \code{FALSE}, the futility
+#' test for the treatment vs. control testing problem only needs to be done if the null for the
+#' treatment vs. placebo testing problem was rejected in the first stage.
+#'
+#'
 #'
 #' @examples
 #' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
@@ -437,7 +479,7 @@ optimize_design_onestage <-
     arguments <- c(as.list(environment()))
     quoted_arguments <- arguments[sapply(arguments, function(x)is.call(x)||is.symbol(x))]
     quoted_arguments <- quoted_arguments[names(quoted_arguments)!= "objective"]
-    
+
     for (n in names(quoted_arguments)){
       if (!grepl("<-", deparse(quoted_arguments[[n]]))){
         quoted_arguments[[n]] <- parse(text=paste0(n, " <- ", deparse(quoted_arguments[[n]]), collapse = ""))
@@ -555,17 +597,17 @@ optimize_design_onestage <-
         list("T" = 1, "P" = cP1, "C" = cC1)
       )),
       D_half2)
-    
+
     original_inner_tol_objective <- inner_tol_objective
     original_mvnorm_algorithm <- mvnorm_algorithm
     D$inner_tol_objective <- min(1e-9, inner_tol_objective)
     D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
-    
+
     opt_design <- objective_onestage(D)
     opt_design$x_end <- x
     opt_design$inner_tol_objective <- original_inner_tol_objective
     D$mvnorm_algorithm <- original_mvnorm_algorithm
-    
+
     for (n in names(arguments)){
       if (!(n %in% names(opt_design))){
         opt_design[[n]] <- eval(parse(text = n))
