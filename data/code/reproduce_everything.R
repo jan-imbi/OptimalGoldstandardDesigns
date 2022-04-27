@@ -1,6 +1,24 @@
 library(future.apply)
 library(here)
+library(mvtnorm)
 eg <- function(...) apply(expand.grid(...), 1, as.list)
+opt_two_step <- function(...){
+  arglist <- list(...)
+  orig_nloptr <- arglist$nloptr_opts
+  orig_mvnorm <- arglist$mvnorm_algorithm
+  arglist$nloptr_opts <- 
+  opt_mlsl <-  do.call(optimize_design_twostage, arglist)
+  
+  
+  mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000),
+  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-04, xtol_abs = 0.001,
+                     xtol_rel = 0.01, maxeval = 70, print_level = 0)
+  
+  arglist$nloptr_opts <- orig_nloptr
+  arglist$nloptr_x0 <- opt_mlsl$x_end
+  opt_refined <- do.call(optimize_design_twostage, arglist)
+  return(opt_refined)
+}
 set.seed(19102021) # Everything should deterministic, but just to be sure...
 
 plan(list(
@@ -240,7 +258,7 @@ bc_a5 <- lapply(eg(
   beta = .2,
   binding_futility = FALSE
 ), function(x)append(shared_params, x))
-bc_ex4 <- append(
+bc_ex4 <- list(append(
   shared_params,
   list(
     nr = 44,
@@ -252,7 +270,7 @@ bc_ex4 <- append(
     binding_futility = FALSE,
     beta = .1
   )
-)
+))
 
 bc_all <- c(bc_t2, bc_t3, bc_t4, bc_t5, bc_a1, bc_a2, bc_a3, bc_a4, bc_a5, bc_ex4)
 opt_all <- future_lapply(
@@ -274,8 +292,8 @@ opt_t4 <- opt_all[istart:iend]
 istart <- istart + length(bc_t4)
 iend <- iend + length(bc_t5)
 opt_t5 <- opt_all[istart:iend]
-istart <- istart + length(opt_t5)
-iend <- iend + length(opt_a1)
+istart <- istart + length(bc_t5)
+iend <- iend + length(bc_a1)
 opt_a1 <- opt_all[istart:iend]
 istart <- istart + length(bc_a1)
 iend <- iend + length(bc_a2)
@@ -317,11 +335,11 @@ D_a2 <- c(
   opt_a2[5:8]
 )
 D_a3 <- opt_a3
-D_a4 <- c(opt_atemp[2],
+D_a4 <- c(opt_a1[2],
           opt_a4[1:7],
           opt_a1[5],
           opt_a4[8:14])
-D_a5 <- c(opt_atemp[2],
+D_a5 <- c(opt_t2[2],
           opt_a5)
 D_ex1_tmp <- list(
   b = list(list("TP" = list("efficacy" = qnorm(1-0.025)), "TC" = list("efficacy" = qnorm(1-0.025)))),
