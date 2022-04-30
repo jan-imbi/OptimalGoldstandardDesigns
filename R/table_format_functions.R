@@ -102,7 +102,10 @@ make_table_3 <- function(D_list){
     `$N_{H_0}$`                  = numeric(),
     `$N_{H_1}$`                  = numeric(),
     `$g_{\\lambda, \\kappa}(D)$` = numeric(),
-    `$CP_{\\min}$`               = numeric()
+    `$CP_{\\min}$`               = numeric(),
+    `$b_{1, TP, f}$`             = numeric(),
+    `$b_{1, TC, f}$`             = numeric()
+    
   )
   for (i in seq_along(D_list)){
     D <- D_list[[i]]
@@ -119,7 +122,9 @@ make_table_3 <- function(D_list){
        `$N_{H_0}$`                  =  D$ASN[["H0"]],
        `$N_{H_1}$`                  =  D$ASN[["H1"]],
        `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
-       `$CP_{\\min}$`               =  NA_real_
+       `$CP_{\\min}$`               =  NA_real_,
+       `$b_{1, TP, f}$`             =  D$b[[1]][["TP"]][["futility"]],
+       `$b_{1, TC, f}$`             =  D$b[[1]][["TC"]][["futility"]]
       )
       table_tib <- bind_rows(table_tib, tmp)
     } else if ("TwoStageGoldStandardDesign" %in% class(D)){
@@ -135,7 +140,9 @@ make_table_3 <- function(D_list){
         `$N_{H_0}$`                  =  D$ASN[["H0"]],
         `$N_{H_1}$`                  =  D$ASN[["H1"]],
         `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
-        `$CP_{\\min}$`               =  D$cp_min
+        `$CP_{\\min}$`               =  D$cp_min,
+        `$b_{1, TP, f}$`             =  D$b[[1]][["TP"]][["futility"]],
+        `$b_{1, TC, f}$`             =  D$b[[1]][["TC"]][["futility"]]
       )
       table_tib <- bind_rows(table_tib, tmp)
     } else{
