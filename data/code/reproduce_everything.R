@@ -365,7 +365,7 @@ D_tab4 <- c(opt_t2[1],
 duplicates[[length(duplicates)+1]]  <- D_tab4[[2]]
 duplicates[[length(duplicates)+1]]  <- D_tab4[[9]]
 D_tab4[[2]] <- D_tab2[[5]]
-D_tab4[[9]] <- D_tab2[[10]]
+D_tab4[[10]] <- D_tab2[[10]]
 
 D_tab5 <- c(opt_t2[1],
             opt_t5)
@@ -387,7 +387,7 @@ D_tab5[[2]] <- D_tab4[[2]]
 D_tab5[[3]] <- D_tab4[[4]]
 D_tab5[[4]] <- D_tab4[[6]]
 D_tab5[[5]] <- D_tab4[[8]]
-D_tab5[[6]] <- D_tab3[[3]]
+D_tab5[[6]]  <- D_tab3[[3]]
 D_tab5[[10]] <- D_tab3[[4]]
 D_tab5[[14]] <- D_tab3[[5]]
 D_tab5[[18]] <- D_tab3[[6]]
@@ -421,7 +421,7 @@ D_a4 <- c(opt_t2[1],
 duplicates[[length(duplicates)+1]]  <- D_a4[[2]]
 duplicates[[length(duplicates)+1]]  <- D_a4[[9]]
 D_a4[[2]] <- D_a3[[2]]
-D_a4[[9]] <- D_a3[[13]]
+D_a4[[10]] <- D_a3[[13]]
 
 D_a5 <- c(opt_t2[1],
           opt_a5)

@@ -15,6 +15,13 @@ fr <- function(x, k=2){
   sapply(x, format_single)
 }
 
+ri <- function(d1, d2){
+  scales::percent(
+    1 - d2$ASN$H1 /
+      d1$ASN$H1, accuracy=.1)
+}
+
+
 #' @importFrom tibble tibble
 #' @importFrom dplyr bind_rows
 make_table_2 <- function(D_list){
