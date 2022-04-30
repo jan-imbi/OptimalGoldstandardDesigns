@@ -10,8 +10,8 @@ opt_two_step <- function(...){
     algorithm = "NLOPT_GN_MLSL",
     xtol_rel = 0.001,
     print_level = 0,
-    # maxeval = 10000,
-    maxeval = 2,
+    maxeval = 10000,
+    # maxeval = 2,
     local_opts = list(
       algorithm = "NLOPT_LN_SBPLX",
       ftol_rel = 0.05,
@@ -347,7 +347,7 @@ D_tab2 <- c(opt_onestage[1],
             opt_t2[1:4],
             opt_onestage[2],
             opt_t2[5:8])
-D_tab3 <- c(opt_t2[2],
+D_tab3 <- c(opt_t2[1],
             opt_t3[1:10],
             opt_t2[5],
             opt_t3[11:20])
@@ -357,7 +357,7 @@ duplicates[[length(duplicates)+1]]  <- D_tab3[[12]]
 D_tab3[[2]] <- D_tab2[[5]]
 D_tab3[[12]] <- D_tab2[[10]]
 
-D_tab4 <- c(opt_t2[2],
+D_tab4 <- c(opt_t2[1],
             opt_t4[1:7],
             opt_t2[5],
             opt_t4[8:14])
@@ -367,7 +367,7 @@ duplicates[[length(duplicates)+1]]  <- D_tab4[[9]]
 D_tab4[[2]] <- D_tab2[[5]]
 D_tab4[[9]] <- D_tab2[[10]]
 
-D_tab5 <- c(opt_t2[2],
+D_tab5 <- c(opt_t2[1],
             opt_t5)
 # swap out duplicates
 duplicates[[length(duplicates)+1]]  <- D_tab5[[2]]
@@ -409,11 +409,11 @@ D_a2 <- c(
   opt_onestage[6],
   opt_a2[5:8]
 )
-D_a3 <- c(opt_t2[2],
+D_a3 <- c(opt_t2[1],
           opt_a3[1:10],
           opt_t2[5],
           opt_a3[11:20])
-D_a4 <- c(opt_t2[2],
+D_a4 <- c(opt_t2[1],
           opt_a4[1:7],
           opt_t2[5],
           opt_a4[8:14])
@@ -423,7 +423,7 @@ duplicates[[length(duplicates)+1]]  <- D_a4[[9]]
 D_a4[[2]] <- D_a3[[2]]
 D_a4[[9]] <- D_a3[[13]]
 
-D_a5 <- c(opt_t2[2],
+D_a5 <- c(opt_t2[1],
           opt_a5)
 # swap out duplicates
 duplicates[[length(duplicates)+1]]  <- D_a5[[2]]
@@ -469,7 +469,7 @@ D_ex1_tmp <- list(
 )
 D_ex1 <- objective_onestage(D_ex1_tmp)
 D_ex2 <- opt_onestage[[2]]
-D_ex3 <- opt_t2[[1]]
+D_ex3 <- opt_t2[[5]]
 D_ex4 <- opt_ex4[[1]]
 
 saveRDS(D_tab2, here("data", "D_tab2.rds"))
