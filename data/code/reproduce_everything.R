@@ -165,7 +165,7 @@ for (i in seq_along(c(.2, .1))){
       shared_params,
       list(
         nr = 2,
-        Delta = 4/3,
+        Delta = .4/3,
         varP = 1,
         beta = beta,
         bTP1f = -Inf, bTC1f = -Inf,
@@ -179,7 +179,7 @@ for (i in seq_along(c(.2, .1))){
       shared_params,
       list(
         nr = 3,
-        Delta = 4/3,
+        Delta = .4/3,
         varP = 1,
         beta = beta,
         bTP1f = -Inf, bTC1f = -Inf,
@@ -191,7 +191,7 @@ for (i in seq_along(c(.2, .1))){
       shared_params,
       list(
         nr = 4,
-        Delta = 4/3,
+        Delta = .4/3,
         varP = 1,
         beta = beta,
         binding_futility = FALSE
@@ -202,7 +202,7 @@ for (i in seq_along(c(.2, .1))){
       shared_params,
       list(
         nr = 5,
-        Delta = 4/3,
+        Delta = .4/3,
         varP = 1,
         beta = beta,
         binding_futility = TRUE
@@ -462,7 +462,7 @@ D_ex1_tmp <- list(
   round_n = FALSE,
   kappa = 0,
   objective = quote(sum(unlist(n)) + kappa * n[[1]][["P"]]),
-  tol = 1e-7,
+  inner_tol_objective = 1e-9,
   mvnorm_algorithm = mvtnorm::Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000),
   return_everything = TRUE,
   stagec = list(list("T" = 1, "P" = 1, "C" = 1))
