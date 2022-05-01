@@ -14,13 +14,24 @@ fr <- function(x, k=2){
   }
   sapply(x, format_single)
 }
-
 ri <- function(d1, d2){
   scales::percent(
     1 - d2$ASN$H1 /
       d1$ASN$H1, accuracy=.1)
 }
-
+pTP1E <- function(D){
+  mu_ <- D$mu_vec[["H1"]]
+  b <- D$b
+  scales::percent(
+  pnorm(b[[1]][["TP"]][["efficacy"]],
+        mean = mu_[[1]], sd=1, lower.tail = FALSE),
+  accuracy=.1)
+}
+pTP1E_TC1E <- function(D){
+  scales::percent(
+    D$final_state_probs$H1$TP1E_TC1E,
+    accuracy=.1)
+}
 
 #' @importFrom tibble tibble
 #' @importFrom dplyr bind_rows
@@ -290,69 +301,4 @@ make_table_5 <- function(D_list){
     }
   }
   return(table_tib)
-}
-
-
-
-
-
-
-ccc_wrt_nmax <- function(ccc, maxn, n, singlestage = FALSE){
-  newfac <- n[[1]][["T"]] / maxn
-  erg <- lapply(ccc, function(x) lapply(x, function(x)x * newfac))
-  if (singlestage){
-    erg[[2]] <- list("T"=NA_real_, "P"=NA_real_,"C"=NA_real_)
-  }
-  return(erg)
-}
-
-# This should be called TP, typo...
-#' @import mvtnorm
-calc_prob_reject_first_stage <- function(hypothesis = "H1", D, groups = "TP"){
-  A_ <- D$A_
-  mu_ <- D$mu_vec[[hypothesis]]
-  Sigma <- D$Sigma
-  b <- D$b
-  if (dim(D$Sigma)[1]==2){
-    pmvnorm_(
-      mean = as.vector(mu_[1]),
-      sigma = Sigma[1,1],
-      lower = c(b[[1]][[groups]][["efficacy"]]),
-      upper = c(Inf),
-      algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000)
-    )[1]
-  } else{
-    pmvnorm_(
-      mean = as.vector(A_[[paste0(groups, "1")]] %*% mu_),
-      sigma =  A_[[paste0(groups, "1")]] %*% Sigma %*% t(A_[[paste0(groups, "1")]]),
-      lower = c(b[[1]][[groups]][["efficacy"]]),
-      upper = c(Inf),
-      algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000)
-    )[1]
-  }
-}
-
-#' @import mvtnorm
-calc_prob2 <- function(hypothesis = "H1", D, groups = "TP"){
-  A_ <- D$A_
-  mu_ <- D$mu_vec[[hypothesis]]
-  Sigma <- D$Sigma
-  b <- D$b
-  if (dim(D$Sigma)[1]==2){
-    pmvnorm_(
-      mean = as.vector(mu_[1]),
-      sigma = Sigma[1,1],
-      lower = c(b[[1]][[groups]][["efficacy"]]),
-      upper = c(Inf),
-      algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000)
-    )[1]
-  } else{
-    pmvnorm_(
-      mean = as.vector(A_[[paste0(groups, "12")]] %*% mu_),
-      sigma =  A_[[paste0(groups, "12")]] %*% Sigma %*% t(A_[[paste0(groups, "12")]]),
-      lower = c(b[[1]][[groups]][["futility"]], b[[2]][[groups]][["efficacy"]]),
-      upper = c(b[[1]][[groups]][["efficacy"]], Inf),
-      algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000)
-    )[1]
-  }
 }
