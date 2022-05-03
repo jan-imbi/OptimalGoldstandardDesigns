@@ -53,10 +53,10 @@ objective_twostage <- function(D)
       best_boundary <- list(root = b2TC_upper_bound, f.root = calc_worst_type_I_error(b2TC_upper_bound, D) - D$type_I_error)
       b2TC_boundary_description <- "boundary reduction not worth it"
     } else
-      if ((lb_val <- calc_worst_type_I_error(b2TC_lower_bound, D)) - D$type_I_error <= D$tol / 5) {
+      if ((lb_val <- calc_worst_type_I_error(b2TC_lower_bound, D)) - D$type_I_error <= D$inner_tol_objective / 5) {
         b2TC_boundary_description <- "lower boundary used"
         best_boundary <- list(root = b2TC_lower_bound, f.root = lb_val - D$type_I_error)
-      } else if ((ub_val <- calc_worst_type_I_error(b2TC_upper_bound, D)) - D$type_I_error >= -D$tol / 5) {
+      } else if ((ub_val <- calc_worst_type_I_error(b2TC_upper_bound, D)) - D$type_I_error >= -D$inner_tol_objective / 5) {
         b2TC_boundary_description <- "upper boundary used"
         best_boundary <- list(root = b2TC_upper_bound, f.root = ub_val - D$type_I_error)
       } else {
@@ -64,7 +64,7 @@ objective_twostage <- function(D)
         best_boundary <- uniroot(function(x) calc_worst_type_I_error(x, D) - D$type_I_error,
                                  c(b2TC_lower_bound, b2TC_upper_bound),
                                  f.lower = lb_val, f.upper = ub_val,
-                                 extendInt = "yes", tol = D$tol / 5
+                                 extendInt = "yes", tol = D$inner_tol_objective / 5
         )
       }
 
@@ -170,14 +170,14 @@ objective_onestage <-
     })
     eval(calc_params)
 
-    if (1 - calc_prob_reject_both_singlestage(D$mu_wo_nT1[["H1"]] * 1, D) - D$type_II_error <= D$tol / 2) {
+    if (1 - calc_prob_reject_both_singlestage(D$mu_wo_nT1[["H1"]] * 1, D) - D$type_II_error <= D$inner_tol_objective / 2) {
       beta_sol <- (list(root = 1, f.root = calc_prob_reject_both_singlestage(D$mu_wo_nT1[["H1"]] * 1, D) - D$type_II_error))
     } else {
       beta_sol <- (uniroot(
         function(nT1, D)
           1 - calc_prob_reject_both_singlestage(D$mu_wo_nT1[["H1"]] * sqrt(nT1), D) - D$type_II_error,
         c(1, 10000),
-        tol = D$tol / 2,
+        tol = D$inner_tol_objective / 2,
         extendInt = "downX",
         D = D
       ))

@@ -500,10 +500,10 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
     algorithm = D$mvnorm_algorithm
   )[1] + P[[paste0(groups, "1E")]] - D$type_I_error)
 
-  if (sgn_high >= -D$tol / 3) {
+  if (sgn_high >= -D$inner_tol_objective / 3) {
     b2 <- list()
     b2$root <- Inf
-  } else if (sgn_low <= D$tol / 3) {
+  } else if (sgn_low <= D$inner_tol_objective / 3) {
     b2 <- list()
     b2$root <- qnorm(1 - D$type_I_error)
   } else {
@@ -518,7 +518,7 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
         )[1] + P[[paste0(groups, "1E")]] - D$type_I_error
       },
       c(qnorm(1 - D$type_I_error), qnorm(.Machine$double.eps, lower.tail = FALSE)),
-      tol = D$tol / 3, extendInt = "downX"
+      tol = D$inner_tol_objective / 3, extendInt = "downX"
     )
   }
   b[[2]][[groups]][["efficacy"]] <- b2$root
@@ -545,9 +545,9 @@ calc_local_rejection_boundaries <- function(groups = "TP", D) {
 #' @importFrom stats uniroot
 calc_nT1_wrt_bTC2e <- function(bTC2e, D) {
   D$b[[2]][["TC"]][["efficacy"]] <- bTC2e
-  D$tol <- D$tol * 3 / 4
+  D$inner_tol_objective <- D$inner_tol_objective * 3 / 4
 
-  if (1 - calc_prob_reject_both(D$mu_wo_nT1[["H1"]] * 1, D) - D$type_II_error <= D$tol / 3) {
+  if (1 - calc_prob_reject_both(D$mu_wo_nT1[["H1"]] * 1, D) - D$type_II_error <= D$inner_tol_objective / 3) {
     return(1)
   } else {
     # This trick calculates (-) the sqrt of the sample size required for a power of 1-D$type_II_error to reject in the first stage.
@@ -561,7 +561,7 @@ calc_nT1_wrt_bTC2e <- function(bTC2e, D) {
 
     return(uniroot(function(nT1, D) 1 - calc_prob_reject_both(D$mu_wo_nT1[["H1"]] * sqrt(nT1), D) - D$type_II_error,
                    c(1, sqrtn^2),
-                   tol = D$tol / 3,
+                   tol = D$inner_tol_objective / 3,
                    extendInt = "downX",
                    D = D
     )$root)
@@ -590,10 +590,10 @@ calc_worst_type_I_error <- function(bTC2e, D) {
     }, numeric(1), D = D))
   }
 
-  D$tol <- D$tol * 3 / 5
+  D$inner_tol_objective <- D$inner_tol_objective * 3 / 5
   optimum <- optimize(calc_alpha_wrt_muH0T, c(0, qnorm(.Machine$double.eps, lower.tail = FALSE) / min(nT1_div_gamma)),
                       maximum = TRUE, D = D,
-                      tol = D$tol / 3
+                      tol = D$inner_tol_objective / 3
   )
   return(optimum$objective)
 }

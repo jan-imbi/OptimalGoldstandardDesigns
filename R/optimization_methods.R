@@ -263,7 +263,7 @@ optimize_design_twostage <-
       kappa = kappa,
       nu = nu,
       objective = objective,
-      tol = inner_tol_objective,
+      inner_tol_objective = inner_tol_objective,
       mvnorm_algorithm = mvnorm_algorithm,
       return_everything = FALSE,
       ...
@@ -530,7 +530,7 @@ optimize_design_onestage <-
       round_n = FALSE,
       kappa = kappa,
       objective = objective,
-      tol = inner_tol_objective,
+      inner_tol_objective = inner_tol_objective,
       mvnorm_algorithm = mvnorm_algorithm,
       return_everything = FALSE,
       ...
