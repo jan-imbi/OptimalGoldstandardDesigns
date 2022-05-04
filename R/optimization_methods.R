@@ -359,6 +359,7 @@ optimize_design_twostage <-
     D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
 
     opt_design <- objective_twostage(D)
+    opt_design$nloptr_optim <- opt
     opt_design$x_end <- x
     opt_design$inner_tol_objective <- original_inner_tol_objective
     D$mvnorm_algorithm <- original_mvnorm_algorithm
@@ -604,6 +605,7 @@ optimize_design_onestage <-
     D$mvnorm_algorithm <- Miwa(steps = 4097, checkCorr = FALSE, maxval = 1000)
 
     opt_design <- objective_onestage(D)
+    opt_design$nloptr_optim <- opt
     opt_design$x_end <- x
     opt_design$inner_tol_objective <- original_inner_tol_objective
     D$mvnorm_algorithm <- original_mvnorm_algorithm

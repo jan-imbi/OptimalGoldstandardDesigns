@@ -7,7 +7,7 @@ opt_two_step <- function(...){
   orig_nloptr <- arglist$nloptr_opts
   orig_mvnorm <- arglist$mvnorm_algorithm
   arglist$nloptr_opts <- list(
-    algorithm = "NLOPT_GN_MLSL",
+    algorithm = "NLOPT_GN_MLSL_LDS",
     xtol_rel = 0.001,
     print_level = 0,
     maxeval = 10000,
@@ -68,17 +68,17 @@ shared_params <- list(
   print_progress=FALSE,
   inner_tol_objective = 1e-9,
   mvnorm_algorithm = mvtnorm::Miwa(
-    steps = 128,
-    # steps = 4097,
+    # steps = 128,
+    steps = 4097,
     checkCorr = FALSE,
     maxval = 1000), 
   nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX",
-                     xtol_abs = 1e-3,
-                     xtol_rel = 1e-2,
-                     maxeval = 2000,
-                     # xtol_abs = 1e-10,
-                     # xtol_rel = 1e-9,
+                     # xtol_abs = 1e-3,
+                     # xtol_rel = 1e-2,
                      # maxeval = 2000,
+                     xtol_abs = 1e-10,
+                     xtol_rel = 1e-9,
+                     maxeval = 2000,
                      print_level = 0)
 )
 
