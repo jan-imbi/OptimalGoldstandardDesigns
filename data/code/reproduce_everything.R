@@ -14,9 +14,9 @@ opt_two_step <- function(...){
     # maxeval = 2,
     local_opts = list(
       algorithm = "NLOPT_LN_SBPLX",
-      ftol_rel = 0.05,
-      xtol_abs = 0.005,
-      xtol_rel = 0.05,
+      ftol_rel = 1e-4,
+      xtol_abs = 1e-3,
+      xtol_rel = 1e-2,
       maxeval = 400,
       print_level = 0
     )
