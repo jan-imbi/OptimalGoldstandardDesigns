@@ -140,13 +140,12 @@ calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
 #'
 #' @examples
 #' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
-#' calc_conditional_alpha(.2, .3, D)
-calc_conditional_alpha <- function(Z_TP1, Z_TC1, D) {
+#' calc_conditional_local_rejection_probs(.2, .3, D)
+calc_conditional_local_rejection_probs <- function(Z_TP1, Z_TC1, D, mu = D$mu_vec$H0) {
   if (!D$always_both_futility_tests){
     warning("Testing procedure not closed. Changing design characteristics at interim based on the conditional rejection probability princple may lead to inflated family-wise type I error if only local type I error rates are considered.")
   }
   b <- D$b
-  mu <- D$mu_vec[["H1"]]
   Sigma <- D$Sigma
 
   pInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = FALSE)
@@ -192,26 +191,4 @@ calc_conditional_alpha <- function(Z_TP1, Z_TC1, D) {
   return(alphas)
 }
 
-# Old convencience functions
-# meandiff_to_Z <- function(meandiff_TP, meandiff_TC, gamma, nT1) {
-#   sqrt_nT1 <- sqrt(nT1)
-#   sqrt_nT1 * c(
-#     TP = meandiff_TP / gamma[[1]][["TP"]],
-#     TC = meandiff_TC / gamma[[1]][["TC"]]
-#   )
-# }
-#
-# Z_to_meandiff <- function(Z, gamma, nT1) {
-#   sqrt_nT1 <- sqrt(nT1)
-#   list(
-#     TP = Z[[1]] * gamma[[1]][["TP"]] / sqrt_nT1,
-#     TC = Z[[2]] * gamma[[1]][["TC"]] / sqrt_nT1
-#   )
-# }
-#
-# calc_conditional_power_wrt_meandiff <- function(meandiff_TP, meandiff_TC, gamma, nT1, mu, Sigma, b, always_both_futility_tests = FALSE) {
-#   Z <- meandiff_to_Z(meandiff_TP, meandiff_TC, gamma, nT1)
-#   Z_TP1 <- Z[["TP"]]
-#   Z_TC1 <- Z[["TC"]]
-#   calc_conditional_power(Z_TP1, Z_TC1, mu, Sigma, b, always_both_futility_tests)
-# }
+
