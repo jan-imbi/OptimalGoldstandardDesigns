@@ -342,20 +342,25 @@ iend <- iend + length(bc_ex4)
 opt_ex4 <- opt_all[istart:iend]
 
 duplicates <- list()
+partial_designs <- list()
 
 D_tab2 <- c(opt_onestage[1],
             opt_t2[1:4],
             opt_onestage[2],
             opt_t2[5:8])
 D_tab3 <- c(opt_t2[1],
-            opt_t3[1:10],
+            opt_t3[1:9],
             opt_t2[5],
-            opt_t3[11:20])
+            opt_t3[11:19])
 # swap out duplicates
 duplicates[[length(duplicates)+1]]  <- D_tab3[[2]]
 duplicates[[length(duplicates)+1]]  <- D_tab3[[12]]
 D_tab3[[2]] <- D_tab2[[5]]
 D_tab3[[12]] <- D_tab2[[10]]
+
+partial_designs[[1]] <- opt_t3[[10]]
+partial_designs[[2]] <- opt_t3[[20]]
+
 
 D_tab4 <- c(opt_t2[1],
             opt_t4[1:7],
@@ -368,7 +373,7 @@ D_tab4[[2]] <- D_tab2[[5]]
 D_tab4[[10]] <- D_tab2[[10]]
 
 D_tab5 <- c(opt_t2[1],
-            opt_t5)
+            opt_t5[1:36])
 # swap out duplicates
 duplicates[[length(duplicates)+1]]  <- D_tab5[[2]]
 duplicates[[length(duplicates)+1]]  <- D_tab5[[3]]
@@ -382,7 +387,6 @@ duplicates[[length(duplicates)+1]]  <- D_tab5[[22]]
 duplicates[[length(duplicates)+1]]  <- D_tab5[[26]]
 duplicates[[length(duplicates)+1]]  <- D_tab5[[30]]
 duplicates[[length(duplicates)+1]]  <- D_tab5[[34]]
-duplicates[[length(duplicates)+1]]  <- D_tab5[[38]]
 D_tab5[[2]] <- D_tab4[[2]]
 D_tab5[[3]] <- D_tab4[[4]]
 D_tab5[[4]] <- D_tab4[[6]]
@@ -395,7 +399,8 @@ D_tab5[[22]] <- D_tab3[[7]]
 D_tab5[[26]] <- D_tab3[[8]]
 D_tab5[[30]] <- D_tab3[[9]]
 D_tab5[[34]] <- D_tab3[[10]]
-D_tab5[[38]] <- D_tab3[[11]]
+
+partial_designs[3:6] <- opt_t5[37:40]
 
 D_a1 <- c(
   opt_onestage[3],
@@ -410,9 +415,13 @@ D_a2 <- c(
   opt_a2[5:8]
 )
 D_a3 <- c(opt_t2[1],
-          opt_a3[1:10],
+          opt_a3[1:9],
           opt_t2[5],
-          opt_a3[11:20])
+          opt_a3[11:19])
+
+partial_designs[[7]] <- opt_a3[[10]]
+partial_designs[[8]] <- opt_a3[[20]]
+
 D_a4 <- c(opt_t2[1],
           opt_a4[1:7],
           opt_t2[5],
@@ -424,7 +433,7 @@ D_a4[[2]] <- D_a3[[2]]
 D_a4[[10]] <- D_a3[[13]]
 
 D_a5 <- c(opt_t2[1],
-          opt_a5)
+          opt_a5[1:36])
 # swap out duplicates
 duplicates[[length(duplicates)+1]]  <- D_a5[[2]]
 duplicates[[length(duplicates)+1]]  <- D_a5[[3]]
@@ -438,7 +447,6 @@ duplicates[[length(duplicates)+1]]  <- D_a5[[22]]
 duplicates[[length(duplicates)+1]]  <- D_a5[[26]]
 duplicates[[length(duplicates)+1]]  <- D_a5[[30]]
 duplicates[[length(duplicates)+1]]  <- D_a5[[34]]
-duplicates[[length(duplicates)+1]]  <- D_a5[[38]]
 D_a5[[2]]  <- D_a4[[2]]
 D_a5[[3]]  <- D_a4[[4]]
 D_a5[[4]]  <- D_a4[[6]]
@@ -451,7 +459,9 @@ D_a5[[22]] <- D_a3[[7]]
 D_a5[[26]] <- D_a3[[8]]
 D_a5[[30]] <- D_a3[[9]]
 D_a5[[34]] <- D_a3[[10]]
-D_a5[[38]] <- D_a3[[11]]
+
+partial_designs[9:12] <- opt_a5[37:40]
+
 
 D_ex1_tmp <- list(
   b = list(list("TP" = list("efficacy" = qnorm(1-0.025)), "TC" = list("efficacy" = qnorm(1-0.025)))),
@@ -486,3 +496,4 @@ saveRDS(D_ex2, here("data", "D_ex2.rds"))
 saveRDS(D_ex3, here("data", "D_ex3.rds"))
 saveRDS(D_ex4, here("data", "D_ex4.rds"))
 saveRDS(duplicates, here("data", "duplicates.rds"))
+saveRDS(partial_designs, here("data", "partial_designs.rds"))
