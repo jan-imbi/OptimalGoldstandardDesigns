@@ -139,14 +139,16 @@ bc_t3 <- lapply(eg(
   varP = 1,
   Delta = .2,
   lambda = seq(1, .1, by=-.1),
-  beta = c(.2, .1)
+  beta = c(.2, .1),
+  binding_futility = TRUE
 ), function(x)append(shared_params, x))
 bc_t4 <- lapply(eg(
   nr = 5,
   varP = 1,
   Delta = .2,
   kappa = seq(0, 3, by=.5),
-  beta = c(.2, .1)
+  beta = c(.2, .1),
+  binding_futility = TRUE
 ), function(x)append(shared_params, x))
 bc_t5 <- lapply(eg(
   nr = 5,
@@ -154,7 +156,8 @@ bc_t5 <- lapply(eg(
   Delta = .2,
   kappa = seq(0, 3, by=1),
   lambda = seq(1, .1, by=-.1),
-  beta = .2
+  beta = .2,
+  binding_futility = TRUE
 ), function(x)append(shared_params, x))
 
 bc_a1<- list()
