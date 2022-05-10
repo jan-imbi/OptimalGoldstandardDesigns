@@ -432,8 +432,8 @@ D_a4 <- c(opt_t2[1],
 # swap out duplicates
 duplicates[[length(duplicates)+1]]  <- D_a4[[2]]
 duplicates[[length(duplicates)+1]]  <- D_a4[[9]]
-D_a4[[2]] <- D_a3[[2]]
-D_a4[[10]] <- D_a3[[13]]
+D_a4[[2]] <- opt_a3[[1]]
+D_a4[[10]] <- opt_a3[[11]]
 
 D_a5 <- c(opt_t2[1],
           opt_a5[1:36])
