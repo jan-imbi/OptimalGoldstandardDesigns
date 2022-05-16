@@ -41,5 +41,3 @@ Various vignettes are hosted on this github site:
 
 It’s not very helpful yet, but will be filled with more information
 soon.
-
-# References

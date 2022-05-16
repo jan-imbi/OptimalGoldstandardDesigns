@@ -19,7 +19,7 @@ test_that(
       mean = c(0,0),
       sigma = D$Sigma[1:2, 1:2]
     )[1]
-    expect_lt(p1 + p2, D$type_I_error)
+    expect_lt(p1 + p2, D$type_I_error + 20*.Machine$double.eps)
     p3 <- pnorm(D$b[[1]][["TC"]][["efficacy"]], lower.tail = FALSE)
     p4 <- pmvnorm(
       lower = c(D$b[[1]][["TC"]][["futility"]], D$b[[2]][["TC"]][["efficacy"]]),
@@ -27,6 +27,6 @@ test_that(
       mean = c(0,0),
       sigma = D$Sigma[3:4, 3:4]
     )[1]
-    expect_lt(p3 + p4, D$type_I_error)
+    expect_lt(p3 + p4, D$type_I_error + 20*.Machine$double.eps)
   })
 
