@@ -1,0 +1,22 @@
+---
+title: "Design_adaptations_at_interim"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Design_adaptations_at_interim}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(OptimalGoldstandardDesigns)
+```
+
+
+TODO: Work in progress.

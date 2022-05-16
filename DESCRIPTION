@@ -1,26 +1,46 @@
 Package: OptimalGoldstandardDesigns
 Type: Package
-Title: Calculate optimal design parameters for two-stage group sequential
-    three-arm gold-standard non-inferiority designs
+Title: Design parameter optimization for gold-standard non-inferiority trials
 Version: 0.1.0
 Author: Jan Meis
 Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
-Description: Calculate optimal design parameters for two-stage group sequential gold-standard designs
+Description: This package contains methods to calculate optimal design parameters
+    for one- two-stage three-arm group-sequential gold-standard
+    non-inferiority designs
     with or without binding or nonbinding futility boundaries.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Suggests: 
-    testthat (>= 3.0.0),
-    tidyverse,
-    testthat,
-    fpCompare,
-    here,
 Depends:
+    R (>= 3.5)
+Imports:
     nloptr,
     mvtnorm,
+    cli,
+    dplyr,
+    tibble
+Suggests: 
+    testthat (>= 3.0.0),
+    here,
+    knitr,
+    rmarkdown,
+    covr,
+    fpCompare,
+    mnormt,
+    future,
     doFuture,
-    doRNG,
     foreach,
+    doRNG,
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
+Collate: 
+    'pmv_upper_smaller_slower_fix.R'
+    'conditional_probability_functions.R'
+    'design_display_functions.R'
+    'global_constants.R'
+    'design_helper_functions.R'
+    'objective_functions.R'
+    'optimization_methods.R'
+    'table_format_functions.R'
+VignetteBuilder: knitr
+URL: https://jan-imbi.github.io/OptimalGoldstandardDesigns/

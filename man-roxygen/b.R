@@ -1,0 +1,2 @@
+#' @param b list containing the futility and efficacy boundaries for the respective hypothesis tests and
+#' stages. b[[1]][["TP"]][["efficacy"]] is the first stage critical value for the superiority testing problem, etc.

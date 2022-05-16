@@ -1,0 +1,1 @@
+#' @param nC2 second stage sample size of the control group.

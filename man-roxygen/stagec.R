@@ -1,0 +1,2 @@
+#' @param stagec list containing the stagewise allocation ratios of the three groups, relative to the sample size of
+#' the treatmnet group of the first stage. stagec[[1]][["P"]] = n[[1]][["P"]] / n[[1]][["T"]], etc.

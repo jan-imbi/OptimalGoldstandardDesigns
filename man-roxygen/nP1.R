@@ -1,0 +1,1 @@
+#' @param nP1 first stage sample size of the placebo group.

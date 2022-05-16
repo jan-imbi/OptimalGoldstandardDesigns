@@ -1,105 +1,304 @@
-ccc_wrt_nmax <- function(ccc, maxn, n, singlestage = FALSE){
-  newfac <- n[[1]][["T"]] / maxn
-  erg <- lapply(ccc, function(x) lapply(x, function(x)x * newfac))
-  if (singlestage){
-    erg[[2]] <- list("T"=NA_real_, "P"=NA_real_,"C"=NA_real_)
+fr <- function(x, k=2){
+  format_single <- function(x){
+    if (is.character(x))
+      return(x)
+    else if (is.na(x))
+      return("")
+    else if (is.infinite(x))
+      if (x > 0){
+        return("$\\infty$")
+      } else{
+        return("$-\\infty$")
+      }
+    else return(format(round(x, k), nsmall=k))
   }
-  return(erg)
+  sapply(x, format_single)
 }
-
-# This should be called TP, typo...
-calc_prob_TC1E <- function(hypothesis = "H1", D, groups = "TP"){
-  A_ <- D$A_
-  mu_ <- D$mu_vec[[hypothesis]]
-  Sigma <- D$Sigma
+ri <- function(d1, d2){
+  scales::percent(
+    1 - d2$ASN$H1 /
+      d1$ASN$H1, accuracy=.1)
+}
+pTP1E <- function(D){
+  mu_ <- D$mu_vec[["H1"]]
   b <- D$b
-  if (dim(D$Sigma)[1]==2){
-    pmvnorm_(
-      mean = as.vector(mu_[1]),
-      sigma = Sigma[1,1],
-      lower = c(b[[1]][[groups]][["efficacy"]]),
-      upper = c(Inf),
-      algorithm = GenzBretz(maxpts = D$maxpts,
-                            abseps = D$tol / 2,
-                            releps = 0)
-    )[1]
-  } else{
-    pmvnorm_(
-      mean = as.vector(A_[[paste0(groups, "1")]] %*% mu_),
-      sigma =  A_[[paste0(groups, "1")]] %*% Sigma %*% t(A_[[paste0(groups, "1")]]),
-      lower = c(b[[1]][[groups]][["efficacy"]]),
-      upper = c(Inf),
-      algorithm = GenzBretz(maxpts = D$maxpts,
-                            abseps = D$tol / 2,
-                            releps = 0)
-    )[1]
-  }
+  scales::percent(
+  pnorm(b[[1]][["TP"]][["efficacy"]],
+        mean = mu_[[1]], sd=1, lower.tail = FALSE),
+  accuracy=.1)
+}
+pTP1E_TC1E <- function(D){
+  scales::percent(
+    D$final_state_probs$H1$TP1E_TC1E,
+    accuracy=.1)
 }
 
-calc_prob2 <- function(hypothesis = "H1", D, groups = "TP"){
-  A_ <- D$A_
-  mu_ <- D$mu_vec[[hypothesis]]
-  Sigma <- D$Sigma
-  b <- D$b
-  if (dim(D$Sigma)[1]==2){
-    pmvnorm_(
-      mean = as.vector(mu_[1]),
-      sigma = Sigma[1,1],
-      lower = c(b[[1]][[groups]][["efficacy"]]),
-      upper = c(Inf),
-      algorithm = GenzBretz(maxpts = D$maxpts,
-                            abseps = D$tol / 2,
-                            releps = 0)
-    )[1]
-  } else{
-    pmvnorm_(
-      mean = as.vector(A_[[paste0(groups, "12")]] %*% mu_),
-      sigma =  A_[[paste0(groups, "12")]] %*% Sigma %*% t(A_[[paste0(groups, "12")]]),
-      lower = c(b[[1]][[groups]][["futility"]], b[[2]][[groups]][["efficacy"]]),
-      upper = c(b[[1]][[groups]][["efficacy"]], Inf),
-      algorithm = GenzBretz(maxpts = D$maxpts,
-                            abseps = D$tol / 2,
-                            releps = 0)
-    )[1]
-  }
-}
-
-
-
-
-
-calc_futility_prob <- function(hypothesis = "H1",
-                               groups = "TP",
-                               D) {
-  if (dim(D$Sigma)[1] == 2) {
-    return(0)
-  } else{
-    A_ <- D$A_
-    mu_ <- D$mu_vec[[hypothesis]]
-    Sigma <- D$Sigma
-    b <- D$b
-    return(
-      pmvnorm_(
-        mean = as.vector(A_[[paste0(groups, "1")]] %*% mu_),
-        sigma =  A_[[paste0(groups, "1")]] %*% Sigma %*% t(A_[[paste0(groups, "1")]]),
-        lower = c(-Inf),
-        upper = c(b[[1]][[groups]][["futility"]]),
-        algorithm = GenzBretz(
-          maxpts = D$maxpts,
-          abseps = D$tol / toladjust,
-          releps = 0
-        )
-      )[1]
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows
+make_table_2 <- function(D_list){
+  # Map(fr, x=tmp, k=c(rep(0, 9), rep(2, 7)))
+  table_tib <- tibble(
+    `Design`         = numeric(),
+    `$n_{1, T}$`     = numeric(),
+    `$n_{1, P}$`     = numeric(),
+    `$n_{1, C}$`     = numeric(),
+    `$n_{2, T}$`     = numeric(),
+    `$n_{2, P}$`     = numeric(),
+    `$n_{2, C}$`     = numeric(),
+    `$n_{\\max}$`    = numeric(),
+    `$N_{H_1}$`      = numeric(),
+    `$CP_{\\min}$`   = numeric(),
+    `$b_{1, TP, f}$` = numeric(),
+    `$b_{1, TP, e}$` = numeric(),
+    `$b_{1, TC, f}$` = numeric(),
+    `$b_{1, TC, e}$` = numeric(),
+    `$b_{2, TP, e}$` = numeric(),
+    `$b_{2, TC, e}$` = numeric()
     )
+  for (i in seq_along(D_list)){
+    D <- D_list[[i]]
+    if ("OneStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+         `Design`         = if(!is.null(D$nr)) D$nr else NA_real_,
+         `$n_{1, T}$`     = D$n[[1]][["T"]],
+         `$n_{1, P}$`     = D$n[[1]][["P"]],
+         `$n_{1, C}$`     = D$n[[1]][["C"]],
+         `$n_{2, T}$`     = NA_real_,
+         `$n_{2, P}$`     = NA_real_,
+         `$n_{2, C}$`     = NA_real_,
+         `$n_{\\max}$`    = sum(unlist(D$n)),
+         `$N_{H_1}$`      = D$ASN[["H1"]],
+         `$CP_{\\min}$`   = NA_real_,
+         `$b_{1, TP, f}$` = NA_real_,
+         `$b_{1, TP, e}$` = D$b[[1]][["TP"]][["efficacy"]],
+         `$b_{1, TC, f}$` = NA_real_,
+         `$b_{1, TC, e}$` = D$b[[1]][["TC"]][["efficacy"]],
+         `$b_{2, TP, e}$` = NA_real_,
+         `$b_{2, TC, e}$` = NA_real_
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else if ("TwoStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+         `Design`         = if(!is.null(D$nr)) D$nr else NA_real_,
+         `$n_{1, T}$`     = D$cumn[[1]][["T"]],
+         `$n_{1, P}$`     = D$cumn[[1]][["P"]],
+         `$n_{1, C}$`     = D$cumn[[1]][["C"]],
+         `$n_{2, T}$`     = D$cumn[[2]][["T"]],
+         `$n_{2, P}$`     = D$cumn[[2]][["P"]],
+         `$n_{2, C}$`     = D$cumn[[2]][["C"]],
+         `$n_{\\max}$`    = sum(unlist(D$n)),
+         `$N_{H_1}$`      = D$ASN[["H1"]],
+         `$CP_{\\min}$`   = D$cp_min,
+         `$b_{1, TP, f}$` = D$b[[1]][["TP"]][["futility"]],
+         `$b_{1, TP, e}$` = D$b[[1]][["TP"]][["efficacy"]],
+         `$b_{1, TC, f}$` = D$b[[1]][["TC"]][["futility"]],
+         `$b_{1, TC, e}$` = D$b[[1]][["TC"]][["efficacy"]],
+         `$b_{2, TP, e}$` = D$b[[2]][["TP"]][["efficacy"]],
+         `$b_{2, TC, e}$` = D$b[[2]][["TC"]][["efficacy"]]
+        )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else{
+     stop("Wrong class.")
+    }
   }
+  return(table_tib)
 }
 
-#
-# cumn_wrt_nmax <- function(ccc, maxn, n, singlestage = FALSE){
-#   newfac <- n[[1]][["T"]] / maxn
-#   erg <- lapply(ccc, function(x) lapply(x, function(x)x * newfac))
-#   if (ss){
-#     erg[[2]] <- list("T"=NA_real_, "P"=NA_real_,"C"=NA_real_)
-#   }
-#   return(erg)
-# }
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows
+make_table_3 <- function(D_list){
+  # Map(fr, x=tmp, k=c(1, rep(0, 10), 2))
+  table_tib <- tibble(
+    `$\\lambda$`                 = numeric(),
+    `$n_{1, T}$`                 = numeric(),
+    `$n_{1, P}$`                 = numeric(),
+    `$n_{1, C}$`                 = numeric(),
+    `$n_{2, T}$`                 = numeric(),
+    `$n_{2, P}$`                 = numeric(),
+    `$n_{2, C}$`                 = numeric(),
+    `$n_{\\max}$`                = numeric(),
+    `$N_{H_0}$`                  = numeric(),
+    `$N_{H_1}$`                  = numeric(),
+    `$g_{\\lambda, \\kappa}(D)$` = numeric(),
+    `$CP_{\\min}$`               = numeric(),
+    `$b_{1, TP, f}$`             = numeric(),
+    `$b_{1, TC, f}$`             = numeric()
+    
+  )
+  for (i in seq_along(D_list)){
+    D <- D_list[[i]]
+    if ("OneStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+       `$\\lambda$`                 =  D$lambda,
+       `$n_{1, T}$`                 =  D$n[[1]][["T"]],
+       `$n_{1, P}$`                 =  D$n[[1]][["P"]],
+       `$n_{1, C}$`                 =  D$n[[1]][["C"]],
+       `$n_{2, T}$`                 =  NA_real_,
+       `$n_{2, P}$`                 =  NA_real_,
+       `$n_{2, C}$`                 =  NA_real_,
+       `$n_{\\max}$`                =  sum(unlist(D$n)),
+       `$N_{H_0}$`                  =  D$ASN[["H0"]],
+       `$N_{H_1}$`                  =  D$ASN[["H1"]],
+       `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
+       `$CP_{\\min}$`               =  NA_real_,
+       `$b_{1, TP, f}$`             =  D$b[[1]][["TP"]][["futility"]],
+       `$b_{1, TC, f}$`             =  D$b[[1]][["TC"]][["futility"]]
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else if ("TwoStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+        `$\\lambda$`                 =  D$lambda,
+        `$n_{1, T}$`                 =  D$cumn[[1]][["T"]],
+        `$n_{1, P}$`                 =  D$cumn[[1]][["P"]],
+        `$n_{1, C}$`                 =  D$cumn[[1]][["C"]],
+        `$n_{2, T}$`                 =  D$cumn[[2]][["T"]],
+        `$n_{2, P}$`                 =  D$cumn[[2]][["P"]],
+        `$n_{2, C}$`                 =  D$cumn[[2]][["C"]],
+        `$n_{\\max}$`                =  sum(unlist(D$n)),
+        `$N_{H_0}$`                  =  D$ASN[["H0"]],
+        `$N_{H_1}$`                  =  D$ASN[["H1"]],
+        `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
+        `$CP_{\\min}$`               =  D$cp_min,
+        `$b_{1, TP, f}$`             =  D$b[[1]][["TP"]][["futility"]],
+        `$b_{1, TC, f}$`             =  D$b[[1]][["TC"]][["futility"]]
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else{
+      stop("Wrong class.")
+    }
+  }
+  return(table_tib)
+}
+
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows
+make_table_4 <- function(D_list){
+  # Map(fr, x=tmp, k=c(1, rep(0, 12), 2))
+  table_tib <- tibble(
+    `$\\kappa$`                  = numeric(),
+    `$n_{1, T}$`                 = numeric(),
+    `$n_{1, P}$`                 = numeric(),
+    `$n_{1, C}$`                 = numeric(),
+    `$n_{2, T}$`                 = numeric(),
+    `$n_{2, P}$`                 = numeric(),
+    `$n_{2, C}$`                 = numeric(),
+    `$n_{\\max}$`                = numeric(),
+    `$N_{H_0}$`                  = numeric(),
+    `$N_{H_1}$`                  = numeric(),
+    `$N_{H_0}^{P}$`              = numeric(),
+    `$N_{H_1}^{P}$`              = numeric(),
+    `$g_{\\lambda, \\kappa}(D)$` = numeric(),
+    `$CP_{\\min}$`               = numeric()
+  )
+  for (i in seq_along(D_list)){
+    D <- D_list[[i]]
+    if ("OneStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+        `$\\kappa$`                  =  "",
+        `$n_{1, T}$`                 =  D$n[[1]][["T"]],
+        `$n_{1, P}$`                 =  D$n[[1]][["P"]],
+        `$n_{1, C}$`                 =  D$n[[1]][["C"]],
+        `$n_{2, T}$`                 =  NA_real_,
+        `$n_{2, P}$`                 =  NA_real_,
+        `$n_{2, C}$`                 =  NA_real_,
+        `$n_{\\max}$`                =  sum(unlist(D$n)),
+        `$N_{H_0}$`                  =  D$ASN[["H0"]],
+        `$N_{H_1}$`                  =  D$ASN[["H1"]],
+        `$N_{H_0}^{P}$`              =  D$ASNP[["H0"]],
+        `$N_{H_1}^{P}$`              =  D$ASNP[["H1"]],
+        `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
+        `$CP_{\\min}$`               =  NA_real_
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else if ("TwoStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+        `$\\kappa$`                  =  D$kappa,
+        `$n_{1, T}$`                 =  D$cumn[[1]][["T"]],
+        `$n_{1, P}$`                 =  D$cumn[[1]][["P"]],
+        `$n_{1, C}$`                 =  D$cumn[[1]][["C"]],
+        `$n_{2, T}$`                 =  D$cumn[[2]][["T"]],
+        `$n_{2, P}$`                 =  D$cumn[[2]][["P"]],
+        `$n_{2, C}$`                 =  D$cumn[[2]][["C"]],
+        `$n_{\\max}$`                =  sum(unlist(D$n)),
+        `$N_{H_0}$`                  =  D$ASN[["H0"]],
+        `$N_{H_1}$`                  =  D$ASN[["H1"]],
+        `$N_{H_0}^{P}$`              =  D$ASNP[["H0"]],
+        `$N_{H_1}^{P}$`              =  D$ASNP[["H1"]],
+        `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
+        `$CP_{\\min}$`               =  D$cp_min
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else{
+      stop("Wrong class.")
+    }
+  }
+  return(table_tib)
+}
+
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows
+make_table_5 <- function(D_list){
+  # Map(fr, x=tmp, k=c(1, 1, rep(0, 12), 2))
+  table_tib <- tibble(
+    `$\\lambda$`                 = numeric(),
+    `$\\kappa$`                  = numeric(),
+    `$n_{1, T}$`                 = numeric(),
+    `$n_{1, P}$`                 = numeric(),
+    `$n_{1, C}$`                 = numeric(),
+    `$n_{2, T}$`                 = numeric(),
+    `$n_{2, P}$`                 = numeric(),
+    `$n_{2, C}$`                 = numeric(),
+    `$n_{\\max}$              `  = numeric(),
+    `$N_{H_0}$`                  = numeric(),
+    `$N_{H_1}$`                  = numeric(),
+    `$N_{H_0}^{P}$`              = numeric(),
+    `$N_{H_1}^{P}$`              = numeric(),
+    `$g_{\\lambda, \\kappa}(D)$` = numeric(),
+    `$CP_{\\min}$`               = numeric()
+  )
+  for (i in seq_along(D_list)){
+    D <- D_list[[i]]
+    if ("OneStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+       `$\\lambda$`                 =   "",
+       `$\\kappa$`                  =   D$kappa,
+       `$n_{1, T}$`                 =   D$n[[1]][["T"]],
+       `$n_{1, P}$`                 =   D$n[[1]][["P"]],
+       `$n_{1, C}$`                 =   D$n[[1]][["C"]],
+       `$n_{2, T}$`                 =   NA_real_,
+       `$n_{2, P}$`                 =   NA_real_,
+       `$n_{2, C}$`                 =   NA_real_,
+       `$n_{\\max}$              `  =   sum(unlist(D$n)),
+       `$N_{H_0}$`                  =   D$ASN[["H0"]],
+       `$N_{H_1}$`                  =   D$ASN[["H1"]],
+       `$N_{H_0}^{P}$`              =   D$ASNP[["H0"]],
+       `$N_{H_1}^{P}$`              =   D$ASNP[["H1"]],
+       `$g_{\\lambda, \\kappa}(D)$` =   D$objective_val,
+       `$CP_{\\min}$`               =   NA_real_
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else if ("TwoStageGoldStandardDesign" %in% class(D)){
+      tmp <- tibble(
+        `$\\lambda$`                 =  D$lambda,
+        `$\\kappa$`                  =  D$kappa,
+        `$n_{1, T}$`                 =  D$cumn[[1]][["T"]],
+        `$n_{1, P}$`                 =  D$cumn[[1]][["P"]],
+        `$n_{1, C}$`                 =  D$cumn[[1]][["C"]],
+        `$n_{2, T}$`                 =  D$cumn[[2]][["T"]],
+        `$n_{2, P}$`                 =  D$cumn[[2]][["P"]],
+        `$n_{2, C}$`                 =  D$cumn[[2]][["C"]],
+        `$n_{\\max}$              `  =  sum(unlist(D$n)),
+        `$N_{H_0}$`                  =  D$ASN[["H0"]],
+        `$N_{H_1}$`                  =  D$ASN[["H1"]],
+        `$N_{H_0}^{P}$`              =  D$ASNP[["H0"]],
+        `$N_{H_1}^{P}$`              =  D$ASNP[["H1"]],
+        `$g_{\\lambda, \\kappa}(D)$` =  D$objective_val,
+        `$CP_{\\min}$`               =  D$cp_min
+      )
+      table_tib <- bind_rows(table_tib, tmp)
+    } else{
+      stop("Wrong class.")
+    }
+  }
+  return(table_tib)
+}

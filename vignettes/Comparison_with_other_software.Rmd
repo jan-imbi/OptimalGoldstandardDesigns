@@ -1,0 +1,21 @@
+---
+title: "Comparison_with_other_software"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comparison_with_other_software}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(OptimalGoldstandardDesigns)
+```
+
+TODO: Work in progress.
