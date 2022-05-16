@@ -1,3 +1,17 @@
+# Instructions (recommended):
+# git clone https://github.com/jan-imbi/OptimalGoldstandardDesigns
+# open the project and run the script from there.
+#
+# Instructions (alternative):
+# construct the following folder structure:
+# root
+# |-- R
+# |-- data
+# |-- |-- code
+#
+# Put reproduce_everything.R in root/data/code, and all other R scripts in root/R.
+# Open a project in the root directory and run reproduce_everything.R
+
 library(future.apply)
 library(here)
 library(mvtnorm)
@@ -71,7 +85,7 @@ shared_params <- list(
     # steps = 128,
     steps = 4097,
     checkCorr = FALSE,
-    maxval = 1000), 
+    maxval = 1000),
   nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX",
                      # xtol_abs = 1e-3,
                      # xtol_rel = 1e-2,

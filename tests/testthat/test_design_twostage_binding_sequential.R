@@ -22,7 +22,7 @@ test_that(
       mean = c(0,0),
       sigma = D$Sigma[1:2, 1:2]
     )[1]
-    expect_lt(p1 + p2, D$type_I_error)
+    expect_lt(p1 + p2, D$type_I_error + 20*.Machine$double.eps)
     p3 <- pnorm(D$b[[1]][["TC"]][["efficacy"]], lower.tail = FALSE)
     p4 <- pmvnorm(
       lower = c(D$b[[1]][["TC"]][["futility"]], D$b[[2]][["TC"]][["efficacy"]]),
@@ -30,7 +30,7 @@ test_that(
       mean = c(0,0),
       sigma = D$Sigma[3:4, 3:4]
     )[1]
-    expect_lt(p3 + p4, D$type_I_error)
+    expect_lt(p3 + p4, D$type_I_error + 20*.Machine$double.eps)
   })
 
 calc_prob_reject_both_sequential_testing <- function(mu_vec, D) {
@@ -81,7 +81,7 @@ D_bad <- optimize_design_twostage(
   bTC1f = 1.5,
   always_both_futility_tests = TRUE,
   binding_futility = TRUE,
-  print_progress = TRUE)
+  print_progress = FALSE)
 
 test_that(
   "Maximum type I error is inflated if sequential testing is employed in a design optimized under the assumption

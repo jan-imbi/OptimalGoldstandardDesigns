@@ -8,6 +8,8 @@
 [![Codecov test
 coverage](https://codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns?branch=master)
 [![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/workflows/R-CMD-check/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions)
+[![License](https://img.shields.io/github/license/jan-imbi/OptimalGoldstandardDesigns)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/blob/master/LICENSE.md)
+
 <!-- badges: end -->
 
 This package contains the code used in the calculations for our
@@ -34,8 +36,10 @@ remotes::install_github("jan-imbi/OptimalGoldstandardDesigns")
 
 ## Introduction
 
-Various vignettes are hosted on this github site: abc
+Various vignettes are hosted on this github site:
+[jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns)
 
-You can find the introductory vignette here: def
+It’s not very helpful yet, but will be filled with more information
+soon.
 
 # References

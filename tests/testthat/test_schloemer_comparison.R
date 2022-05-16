@@ -25,7 +25,7 @@ schloemer_reference_optimal_singlestage <- function(D) {
 test_that("Optimal single stage designs from Patrick Schloemer Dissertation agrees with our computation", {
   D <- optimize_design_onestage(print_progress = FALSE, round_n = FALSE)
   D_compare <- schloemer_reference_optimal_singlestage(D)
-  
+
   expect_equal(D$objective_val, D_compare$objective_val, tolerance = 1e-4)
   expect_equal(D$stagec, D_compare$stagec, tolerance = 1e-4)
 })
@@ -46,7 +46,7 @@ schloemer_reference_ASN <- function(D) {
 }
 
 test_that("ASN from Patrick Schloemer Dissertation agrees with our computation", {
-  D <- optimize_design_twostage(bTP1f = -Inf, bTC1f = -Inf, round_n = FALSE)
+  D <- optimize_design_twostage(bTP1f = -Inf, bTC1f = -Inf, round_n = FALSE, print_progress = FALSE)
   expect_equal(
     D$ASN[["H1"]], schloemer_reference_ASN(D)
   )
@@ -58,7 +58,7 @@ schloemer_ASN_wrt_WangDelta <- function(WangDeltas, D) {
   WangDeltaTC <- WangDeltas[2]
   WDTP <- WangTsiatis(2, D$type_I_error, WangDeltaTP)
   WDTC <- WangTsiatis(2, D$type_I_error, WangDeltaTC)
-  
+
   req_samplesize<- ThreeArmGroupSeqDesign(
     K = 2,
     thetaTP = D$alternative_TP,
@@ -72,7 +72,7 @@ schloemer_ASN_wrt_WangDelta <- function(WangDeltas, D) {
     type = "WT",
     WangDeltaTP,WangDeltaTC
   )
-  
+
   ThreeArmGroupSeqASN(
     K = 2,
     nT = req_samplesize$nT,
@@ -95,7 +95,7 @@ optimal_schloemer <- function(D){
                # upper=c(5,5),
                D=D
   )
-  
+
   bTP <- WangTsiatis(2, D$type_I_error,  opt$par[1])
   bTC <- WangTsiatis(2, D$type_I_error,  opt$par[2])
   return(c(bTP1 = bTP[1], bTP2 = bTP[2], bTC1 = bTC[1], bTC2 = bTC[2], ASN = opt$value))
@@ -114,11 +114,12 @@ compare_design2_with_schloemer <- function(D){
 test_that(
   "Optimal Schloemer design is similar to our design",
   {
-    D_s <- optimize_design_onestage(round_n = FALSE)
+    D_s <- optimize_design_onestage(round_n = FALSE, print_progress = FALSE)
     D <- optimize_design_twostage(bTP1f = -Inf, bTC1f = -Inf,
                                   cP1 = D_s$stagec[[1]]$P, cC1 = D_s$stagec[[1]]$P,
                                   cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1),
                                   round_n = FALSE,
+                                  print_progress = FALSE
     )
     D_compare <- optimal_schloemer(D)
     expect_equal(

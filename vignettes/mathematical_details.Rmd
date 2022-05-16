@@ -31,3 +31,6 @@ two hypothesis by Z_TP1 and Z_TC1, where Z_TC1 already incorporates
 the non-inferiority margin \eqn{\Delta}. The respective critical values are given by
 bTP1e, bTC1e, bTP2e and bTC2e. (The optimizer searches for the optimal values of bTP1e and
 bTC1e, while bTP2e and bTC2e are implicitly defined.)
+
+TODO: Work in progress.
+
