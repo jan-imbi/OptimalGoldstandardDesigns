@@ -18,8 +18,8 @@ three-arm gold-standard design for non-inferiority trials.
 
 ## Installation
 
-The recommended to access the code in this repository is by cloning the
-repository via git (download and install
+The recommended way to access the code in this repository is by cloning
+the repository via git (download and install
 [git](https://git-scm.com/download), open a git shell and type
 `git clone https://github.com/jan-imbi/OptimalGoldstandardDesigns`).
 

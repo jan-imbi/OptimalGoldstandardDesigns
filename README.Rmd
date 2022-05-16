@@ -29,7 +29,7 @@ of the two-stage group sequential three-arm gold-standard design for non-inferio
 
 ## Installation
 
-The recommended to access the code in this repository is by cloning the repository via git
+The recommended way to access the code in this repository is by cloning the repository via git
 (download and install [git](https://git-scm.com/download), open a git shell and type
 `git clone https://github.com/jan-imbi/OptimalGoldstandardDesigns`).
 
@@ -48,3 +48,4 @@ Various vignettes are hosted on this github site:
 [jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns)
 
 It's not very helpful yet, but will be filled with more information soon.
+
