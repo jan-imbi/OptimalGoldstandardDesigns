@@ -48,7 +48,7 @@ conditional_Sigma <- function(x_a, mu_a, mu_b, Sigma) {
 #'
 #' @return numeric value of the conditional power.
 #' @export
-#' @importFrom stats qnorm 
+#' @importFrom stats qnorm
 #'
 #' @examples
 #' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
@@ -133,6 +133,7 @@ calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
 #' @template Z_TP1
 #' @template Z_TC1
 #' @template D
+#' @template mu_vec
 #'
 #' @return named numeric vector with both conditional type I errors.
 #' @export
@@ -141,16 +142,16 @@ calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
 #' @examples
 #' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
 #' calc_conditional_local_rejection_probs(.2, .3, D)
-calc_conditional_local_rejection_probs <- function(Z_TP1, Z_TC1, D, mu = D$mu_vec$H0) {
+calc_conditional_local_rejection_probs <- function(Z_TP1, Z_TC1, D, mu_vec = D$mu_vec$H0) {
   if (!D$always_both_futility_tests){
     warning("Testing procedure not closed. Changing design characteristics at interim based on the conditional rejection probability princple may lead to inflated family-wise type I error if only local type I error rates are considered.")
   }
   b <- D$b
   Sigma <- D$Sigma
 
-  pInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = FALSE)
+  pInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail = FALSE)
   pInf <- list(list("TP" = pInf[1], "TC" = pInf[3]), list("TP" = pInf[2], "TC" = pInf[4]))
-  nInf <- qnorm(.Machine$double.eps, mean = mu, lower.tail = TRUE)
+  nInf <- qnorm(.Machine$double.eps, mean = mu_vec, lower.tail = TRUE)
   nInf <- list(list("TP" = nInf[1], "TC" = nInf[3]), list("TP" = nInf[2], "TC" = nInf[4]))
 
   for (i in seq_len(length(b))){
@@ -177,8 +178,8 @@ calc_conditional_local_rejection_probs <- function(Z_TP1, Z_TC1, D, mu = D$mu_ve
     } else if (b[[1]][[groups]][["efficacy"]] < Z) {
       alphas[[groups]] <- 1
     } else {
-      cmean <- as.vector(conditional_mean(c(Z), (permutation %*% mu)[1], (permutation %*% mu)[2], permutation %*% Sigma %*% t(permutation)))
-      csigma <- conditional_Sigma(c(Z), (permutation %*% mu)[1], (permutation %*% mu)[2], permutation %*% Sigma %*% t(permutation))
+      cmean <- as.vector(conditional_mean(c(Z), (permutation %*% mu_vec)[1], (permutation %*% mu_vec)[2], permutation %*% Sigma %*% t(permutation)))
+      csigma <- conditional_Sigma(c(Z), (permutation %*% mu_vec)[1], (permutation %*% mu_vec)[2], permutation %*% Sigma %*% t(permutation))
       alphas[[groups]] <- pmvnorm_(
         mean = cmean[[1]],
         sigma = csigma[1, 1],

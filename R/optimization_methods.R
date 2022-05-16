@@ -39,6 +39,8 @@
 #' @importFrom nloptr nloptr
 #' @importFrom mvtnorm Miwa
 #' @details
+#' TODO: Documentation is still work in progross...
+#'
 #' This function calculates optimal design parameters for a two-stage three-arm gold-standard
 #' non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
 #' to see details about the test statistics and testing procedure corresponding to this design.
@@ -402,6 +404,8 @@ optimize_design_twostage <-
 #' @export
 #' @importFrom nloptr nloptr
 #' @details
+#' TODO: Documentation is still work in progross...
+#'
 #' This function calculates optimal design parameters for a two-stage three-arm gold-standard
 #' non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
 #' to see details about the test statistics and testing procedure corresponding to this design.

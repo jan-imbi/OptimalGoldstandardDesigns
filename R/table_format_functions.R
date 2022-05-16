@@ -14,11 +14,13 @@ fr <- function(x, k=2){
   }
   sapply(x, format_single)
 }
+#' @importFrom scales percent
 ri <- function(d1, d2){
   scales::percent(
     1 - d2$ASN$H1 /
       d1$ASN$H1, accuracy=.1)
 }
+#' @importFrom stats pnorm
 pTP1E <- function(D){
   mu_ <- D$mu_vec[["H1"]]
   b <- D$b
@@ -27,6 +29,7 @@ pTP1E <- function(D){
         mean = mu_[[1]], sd=1, lower.tail = FALSE),
   accuracy=.1)
 }
+#' @importFrom stats pnorm
 pTP1E_TC1E <- function(D){
   scales::percent(
     D$final_state_probs$H1$TP1E_TC1E,
@@ -123,7 +126,7 @@ make_table_3 <- function(D_list){
     `$CP_{\\min}$`               = numeric(),
     `$b_{1, TP, f}$`             = numeric(),
     `$b_{1, TC, f}$`             = numeric()
-    
+
   )
   for (i in seq_along(D_list)){
     D <- D_list[[i]]
