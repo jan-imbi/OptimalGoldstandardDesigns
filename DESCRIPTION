@@ -1,7 +1,7 @@
 Package: OptimalGoldstandardDesigns
 Type: Package
 Title: Design parameter optimization for gold-standard non-inferiority trials
-Version: 0.1.0
+Version: 0.2.0
 Author: Jan Meis
 Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
 Description: This package contains methods to calculate optimal design parameters
@@ -18,7 +18,8 @@ Imports:
     mvtnorm,
     cli,
     dplyr,
-    tibble
+    tibble,
+    scales
 Suggests: 
     testthat (>= 3.0.0),
     here,
@@ -32,7 +33,7 @@ Suggests:
     foreach,
     doRNG,
 Config/testthat/edition: 3
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Collate: 
     'pmv_upper_smaller_slower_fix.R'
     'conditional_probability_functions.R'

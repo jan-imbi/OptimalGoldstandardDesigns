@@ -44,3 +44,4 @@ projection[["TP12_TC12"]] <- rbind(
   projection_components[[1]][["TC"]],
   projection_components[[2]][["TC"]]
 )
+.skip_slow_test <- TRUE

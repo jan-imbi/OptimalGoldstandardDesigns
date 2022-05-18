@@ -54,6 +54,8 @@ test_that(
 test_that(
   "Covariance matrix calculation is correct and works as expected.",
   {
+    skip_on_cran()
+    skip_if(.skip_slow_test, "Slow test skipped.")
     set.seed(123)
     D <- list()
     D$n <- list()
@@ -67,7 +69,7 @@ test_that(
     D$var[["T"]] <- runif(1)
     D$var[["P"]] <- runif(1)
     D$var[["C"]] <- runif(1)
-    
+
     # Calculate covariance matrix Sigma
     D$stagec <- calc_c(D)
     D$cumc <- calc_cumc(D)
@@ -77,20 +79,20 @@ test_that(
     D$alternative_TP <- 3
     D$alternative_TC <- 2
     D$Delta <- 1
-    
+
     nsim <- 10000000
     sd_TP1 <- sqrt(D$var[["T"]] / D$n[[1]][["T"]]  + D$var[["P"]] / D$n[[1]][["P"]])
     sd_TP2 <- sqrt(D$var[["T"]] / D$n[[2]][["T"]]  + D$var[["P"]] / D$n[[2]][["P"]])
     sd_TC1 <- sqrt(D$var[["T"]] / D$n[[1]][["T"]]  + D$var[["C"]] / D$n[[1]][["C"]])
     sd_TC2 <- sqrt(D$var[["T"]] / D$n[[2]][["T"]]  + D$var[["C"]] / D$n[[2]][["C"]])
-    
+
     sample1_T1 <- rnorm(nsim, 0, sqrt(D$var[["T"]] / D$n[[1]][["T"]]))
     sample1_T2 <- rnorm(nsim, 0, sqrt(D$var[["T"]] / D$n[[2]][["T"]]))
     sample1_P1 <- rnorm(nsim, 0, sqrt(D$var[["P"]] / D$n[[1]][["P"]]))
     sample1_P2 <- rnorm(nsim, 0, sqrt(D$var[["P"]] / D$n[[2]][["P"]]))
     sample1_C1 <- rnorm(nsim, 0, sqrt(D$var[["C"]] / D$n[[1]][["C"]]))
     sample1_C2 <- rnorm(nsim, 0, sqrt(D$var[["C"]] / D$n[[2]][["C"]]))
-    
+
     sample1_TP1 <-  sample1_T1 - sample1_P1
     sample1_TP2 <-
       sample1_T1 * D$n[[1]][["T"]]/D$cumn[[2]][["T"]] +
@@ -103,7 +105,7 @@ test_that(
       sample1_T2 * D$n[[2]][["T"]]/D$cumn[[2]][["T"]] -
       sample1_C1 * D$n[[1]][["C"]]/D$cumn[[2]][["C"]] -
       sample1_C2 * D$n[[2]][["C"]]/D$cumn[[2]][["C"]]
-    
+
     sample1_Z_TP1 <- sample1_TP1 / sd_TP1
     sample1_Z_TP2 <- sample1_TP2 / sqrt(
      D$var[["T"]] / D$n[[1]][["T"]] * (D$n[[1]][["T"]]/D$cumn[[2]][["T"]])^2 +
@@ -118,10 +120,10 @@ test_that(
         D$var[["C"]] / D$n[[1]][["C"]] * (D$n[[1]][["C"]]/D$cumn[[2]][["C"]])^2 +
         D$var[["C"]] / D$n[[2]][["C"]] * (D$n[[2]][["C"]]/D$cumn[[2]][["C"]])^2
     )
-    
+
     expect_equal(cov(data.frame(sample1_Z_TP1, sample1_Z_TP2, sample1_Z_TC1, sample1_Z_TC2)),
       D$Sigma, ignore_attr = TRUE, tolerance = 1e-3)
-    
+
     nsim <- 100000
     sample2_Z_TP1 <- numeric(nsim)
     sample2_Z_TP2 <- numeric(nsim)
@@ -141,7 +143,7 @@ test_that(
     }
     expect_equal(cov(data.frame(sample2_Z_TP1, sample2_Z_TP2, sample2_Z_TC1, sample2_Z_TC2)),
     D$Sigma, ignore_attr = TRUE, tolerance = 1e-2)
-    
+
   }
 )
 
