@@ -2,8 +2,6 @@
 
 S3method(print,OneStageGoldStandardDesign)
 S3method(print,TwoStageGoldStandardDesign)
-export(calc_conditional_local_rejection_probs)
-export(calc_conditional_power)
 export(optimize_design_onestage)
 export(optimize_design_twostage)
 importFrom(cli,console_width)

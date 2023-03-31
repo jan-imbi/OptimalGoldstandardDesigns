@@ -47,12 +47,8 @@ conditional_Sigma <- function(x_a, mu_a, mu_b, Sigma) {
 #' @template D
 #'
 #' @return numeric value of the conditional power.
-#' @export
 #' @importFrom stats qnorm
 #'
-#' @examples
-#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
-#' calc_conditional_power(.2, .3, D)
 calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
   b <- D$b
   mu <- D$mu_vec[["H1"]]
@@ -136,12 +132,8 @@ calc_conditional_power <- function(Z_TP1, Z_TC1, D) {
 #' @template mu_vec
 #'
 #' @return named numeric vector with both conditional type I errors.
-#' @export
 #' @importFrom stats qnorm
 #'
-#' @examples
-#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
-#' calc_conditional_local_rejection_probs(.2, .3, D)
 calc_conditional_local_rejection_probs <- function(Z_TP1, Z_TC1, D, mu_vec = D$mu_vec$H0) {
   if (!D$always_both_futility_tests){
     warning("Testing procedure not closed. Changing design characteristics at interim based on the conditional rejection probability princple may lead to inflated family-wise type I error if only local type I error rates are considered.")

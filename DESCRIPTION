@@ -5,12 +5,11 @@ Version: 0.2.0
 Author: Jan Meis
 Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
 Description: This package contains methods to calculate optimal design parameters
-    for one- two-stage three-arm group-sequential gold-standard
-    non-inferiority designs
+    for one- and two-stage three-arm group-sequential gold-standard
+    non-inferiority trial designs
     with or without binding or nonbinding futility boundaries.
 License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
 Depends:
     R (>= 3.5)
 Imports:
@@ -28,12 +27,9 @@ Suggests:
     covr,
     fpCompare,
     mnormt,
-    future,
-    doFuture,
-    foreach,
-    doRNG,
+    future.apply
 Config/testthat/edition: 3
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Collate: 
     'pmv_upper_smaller_slower_fix.R'
     'conditional_probability_functions.R'

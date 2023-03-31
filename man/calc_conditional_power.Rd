@@ -19,7 +19,3 @@ numeric value of the conditional power.
 \description{
 Calculate the conditional power to reject both hypothesis given both interim test statistics.
 }
-\examples{
-D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
-calc_conditional_power(.2, .3, D)
-}

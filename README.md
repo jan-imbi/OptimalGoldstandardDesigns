@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![doi](https://img.shields.io/badge/doi-10.1002%2Fsim.9630-blue)](https://doi.org/10.1002/sim.9630)
 [![Codecov test
 coverage](https://codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns?branch=master)
 [![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/workflows/R-CMD-check/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions)
