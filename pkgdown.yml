@@ -1,12 +1,9 @@
-pandoc: 2.7.3
-pkgdown: 2.0.3
+pandoc: 2.19.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  Comparison_with_other_software: Comparison_with_other_software.html
-  Design_adaptations_at_interim: Design_adaptations_at_interim.html
   Introduction: Introduction.html
-  mathematical_details: mathematical_details.html
-last_built: 2022-05-18T15:00Z
+last_built: 2023-04-03T09:34Z
 urls:
   reference: https://jan-imbi.github.io/OptimalGoldstandardDesigns/reference
   article: https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles
