@@ -3,7 +3,7 @@ Type: Package
 Title: Design Parameter Optimization for Gold-Standard Non-Inferiority Trials
 Version: 1.0.0
 Authors@R: c(person("Jan", "Meis", role = c("aut", "cre"), email="meis@imbi.uni-heidelberg.de", comment = c(ORCID = "0000-0001-5407-7220")))
-Description: This package contains methods to calculate optimal design parameters
+Description: Methods to calculate optimal design parameters
     for one- and two-stage three-arm group-sequential gold-standard
     non-inferiority trial designs
     with or without binding or nonbinding futility boundaries.
@@ -17,7 +17,8 @@ Imports:
     cli,
     dplyr,
     tibble,
-    scales
+    scales,
+    Rdpack
 Suggests: 
     testthat (>= 3.0.0),
     here,
@@ -30,6 +31,7 @@ Suggests:
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
+RdMacros: Rdpack
 Collate: 
     'pmv_upper_smaller_slower_fix.R'
     'conditional_probability_functions.R'

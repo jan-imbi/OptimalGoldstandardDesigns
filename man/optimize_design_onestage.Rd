@@ -83,7 +83,7 @@ Calculate optimal design parameters for a single-stage gold-standard design
 \details{
 This function calculates optimal design parameters for a two-stage three-arm gold-standard
 non-inferiority trial. Run \code{vignette("Introduction", package = "OptimalGoldstandardDesigns")}
-to see some examples related to the associated paper \href{https://doi.org/10.1002/sim.9630}{(Meis et al., 2023)}.
+to see some examples related to the associated paper \insertCite{meis2023optimization}{OptimalGoldstandardDesigns}.
 
 Parameters which can be optimized are the allocation ratios for all groups and stages and the
 futility and efficacy boundaries of the first stage. The allocation ratios are
@@ -131,4 +131,7 @@ optimize_design_onestage(
 )
 }
 
+}
+\references{
+\insertAllCited{}
 }

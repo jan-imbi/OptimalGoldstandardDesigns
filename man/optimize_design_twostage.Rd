@@ -84,7 +84,7 @@ optimize_design_twostage(
 \item{binding_futility}{(logical) controls if futility boundaries are binding.}
 
 \item{always_both_futility_tests}{(logical) if true, both futility tests are performed after the first stage. If false,
-a 'completely sequential' testing procedure is employed (see \href{https://doi.org/10.1002/sim.9630}{Appendix of paper}).}
+a 'completely sequential' testing procedure is employed (see Appendix of \insertCite{meis2023optimization}{OptimalGoldstandardDesigns}).}
 
 \item{round_n}{(logical) if TRUE, a design with integer valued sample sizes is returned.}
 
@@ -123,7 +123,7 @@ Calculate optimal design parameters for a two-stage gold-standard design
 \details{
 This function calculates optimal design parameters for a two-stage three-arm gold-standard
 non-inferiority trial. Run \code{vignette("Introduction", package = "OptimalGoldstandardDesigns")}
-to see some examples related to the associated paper \href{https://doi.org/10.1002/sim.9630}{(Meis et al., 2023)}.
+to see some examples related to the associated paper \insertCite{meis2023optimization}{OptimalGoldstandardDesigns}.
 
 Parameters which can be optimized are the allocation ratios for all groups and stages and the
 futility and efficacy boundaries of the first stage. The allocation ratios are
@@ -144,7 +144,7 @@ stage allocation ratios are equal.
 The design is optimized with respect to the objective criterion given by the parameter
 \code{objective}. The default objective function is described in the
 Subsection \emph{Optimizing group sequential gold-standard designs} in Section 2
-of \href{https://doi.org/10.1002/sim.9630}{the associated paper}. Additionally,
+of \insertCite{meis2023optimization}{OptimalGoldstandardDesigns}. Additionally,
 this objective includes a term to penalize the maximum sample size of a trial,
 which can be controlled by the parameter \code{nu} (default is \code{nu=0}).
 
@@ -177,7 +177,5 @@ optimize_design_twostage(
 }
 }
 \references{
-Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M. Optimization of the two-stage group
-sequential three-arm gold-standard design for non-inferiority trials. \emph{Statistics in Medicine.} 2023;
-42(4): 536– 558. \href{https://doi.org/10.1002/sim.9630}{doi:10.1002/sim.9630}.
+\insertAllCited{}
 }
