@@ -11,7 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = identical(Sys.getenv("NOT_CRAN"), "true")
+  eval = identical(Sys.getenv("NOT_CRAN"), "true"),
+  cache = TRUE
 )
 ```
 

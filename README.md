@@ -17,7 +17,7 @@ paper](https://doi.org/10.1002/sim.9630) on the optimization of the
 two-stage group sequential three-arm gold-standard design for
 non-inferiority trials.
 
-## Installation
+# Installation
 
 You can install the CRAN version of this package by typing the following
 command into your R console:
@@ -38,7 +38,7 @@ directly from github. This will give you access to the /data/
 subdirectory, which contains code to reproduce the examples from the
 paper.
 
-## Documentation
+# Documentation
 
 You can check out an online version of the documentation here:
 [jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/).
