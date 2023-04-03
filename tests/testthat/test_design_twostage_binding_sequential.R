@@ -1,5 +1,5 @@
 skip_on_cran()
-skip_if(.skip_slow_test, "Slow test skipped.")
+# skip_if(.skip_slow_test, "Slow test skipped.")
 D <- optimize_design_twostage(
   always_both_futility_tests = FALSE,
   binding_futility = TRUE,

@@ -1,9 +1,8 @@
 Package: OptimalGoldstandardDesigns
 Type: Package
 Title: Design parameter optimization for gold-standard non-inferiority trials
-Version: 0.2.0
-Author: Jan Meis
-Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
+Version: 1.0.0
+Authors@R: c(person("Jan", "Meis", role = c("aut", "cre"), email="meis@imbi.uni-heidelberg.de", comment = c(ORCID = "0000-0001-5407-7220")))
 Description: This package contains methods to calculate optimal design parameters
     for one- and two-stage three-arm group-sequential gold-standard
     non-inferiority trial designs
@@ -30,6 +29,7 @@ Suggests:
     future.apply
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 Collate: 
     'pmv_upper_smaller_slower_fix.R'
     'conditional_probability_functions.R'

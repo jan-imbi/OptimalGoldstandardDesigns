@@ -19,7 +19,7 @@
 #' @template varC
 #' @param binding_futility (logical) controls if futility boundaries are binding.
 #' @param always_both_futility_tests (logical) if true, both futility tests are performed after the first stage. If false,
-#' a 'completely sequential' testing procedure is employed (see Appendix of paper).
+#' a 'completely sequential' testing procedure is employed (see [Appendix of paper](https://doi.org/10.1002/sim.9630)).
 #' @template round_n
 #' @template lambda
 #' @template kappa
@@ -39,12 +39,9 @@
 #' @importFrom nloptr nloptr
 #' @importFrom mvtnorm Miwa
 #' @details
-#' TODO: Documentation is still work in progross...
-#'
 #' This function calculates optimal design parameters for a two-stage three-arm gold-standard
-#' non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
-#' to see details about the test statistics and testing procedure corresponding to this design.
-#'
+#' non-inferiority trial. Run \code{vignette("Introduction", package = "OptimalGoldstandardDesigns")}
+#' to see some examples related to the associated paper [(Meis et al., 2023)](https://doi.org/10.1002/sim.9630).
 #'
 #' Parameters which can be optimized are the allocation ratios for all groups and stages and the
 #' futility and efficacy boundaries of the first stage. The allocation ratios are
@@ -64,7 +61,11 @@
 #'
 #'
 #' The design is optimized with respect to the objective criterion given by the parameter
-#' \code{objective}. By default, ...
+#' \code{objective}. The default objective function is described in the
+#' Subsection *Optimizing group sequential gold-standard designs* in Section 2
+#' of [the associated paper](https://doi.org/10.1002/sim.9630). Additionally,
+#' this objective includes a term to penalize the maximum sample size of a trial,
+#' which can be controlled by the parameter `nu` (default is `nu=0`).
 #'
 #' Designs are calculated to fulfill the following constraints: the family-wise type I error
 #' rate is controlled at \code{alpha} under any combination of the two null hypotheses
@@ -83,7 +84,23 @@
 #'
 #'
 #' @examples
-#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+#' \dontrun{
+#' optimize_design_twostage(
+#'   beta = 0.2,
+#'   alternative_TP = 0.4,
+#'   alternative_TC = 0,
+#'   Delta = 0.2,
+#'   print_progress = FALSE,
+#'   binding_futility = TRUE,
+#'   lambda = .9,
+#'   kappa = 1
+#' )
+#' }
+#' @references
+#' Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M. Optimization of the two-stage group
+#' sequential three-arm gold-standard design for non-inferiority trials. *Statistics in Medicine.* 2023;
+#' 42(4): 536– 558. [doi:10.1002/sim.9630](https://doi.org/10.1002/sim.9630).
+#'
 optimize_design_twostage <-
   function(cT2   = NULL,
            cP1   = NULL,
@@ -404,11 +421,9 @@ optimize_design_twostage <-
 #' @export
 #' @importFrom nloptr nloptr
 #' @details
-#' TODO: Documentation is still work in progross...
-#'
 #' This function calculates optimal design parameters for a two-stage three-arm gold-standard
-#' non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
-#' to see details about the test statistics and testing procedure corresponding to this design.
+#' non-inferiority trial. Run \code{vignette("Introduction", package = "OptimalGoldstandardDesigns")}
+#' to see some examples related to the associated paper [(Meis et al., 2023)](https://doi.org/10.1002/sim.9630).
 #'
 #'
 #' Parameters which can be optimized are the allocation ratios for all groups and stages and the
@@ -429,7 +444,8 @@ optimize_design_twostage <-
 #'
 #'
 #' The design is optimized with respect to the objective criterion given by the parameter
-#' \code{objective}. By default, ...
+#' \code{objective}. By default, this is the overall sample size plus an optional
+#' penalty for the placebo group sample size, controlled by the parameter `kappa`.
 #'
 #' Designs are calculated to fulfill the following constraints: the family-wise type I error
 #' rate is controlled at \code{alpha} under any combination of the two null hypotheses
@@ -448,7 +464,17 @@ optimize_design_twostage <-
 #'
 #'
 #' @examples
-#' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+#' \dontrun{
+#' optimize_design_onestage(
+#'   alpha = .025,
+#'   beta = .2,
+#'   alternative_TP = .4,
+#'   alternative_TC = 0,
+#'   Delta = .2,
+#'   print_progress = FALSE
+#' )
+#' }
+#'
 optimize_design_onestage <-
   function(cP1   = NULL,
            cC1   = NULL,

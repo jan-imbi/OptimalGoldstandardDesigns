@@ -84,7 +84,7 @@ optimize_design_twostage(
 \item{binding_futility}{(logical) controls if futility boundaries are binding.}
 
 \item{always_both_futility_tests}{(logical) if true, both futility tests are performed after the first stage. If false,
-a 'completely sequential' testing procedure is employed (see Appendix of paper).}
+a 'completely sequential' testing procedure is employed (see \href{https://doi.org/10.1002/sim.9630}{Appendix of paper}).}
 
 \item{round_n}{(logical) if TRUE, a design with integer valued sample sizes is returned.}
 
@@ -121,12 +121,9 @@ Design object (a list) with optimized design parameters.
 Calculate optimal design parameters for a two-stage gold-standard design
 }
 \details{
-TODO: Documentation is still work in progross...
-
 This function calculates optimal design parameters for a two-stage three-arm gold-standard
-non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
-to see details about the test statistics and testing procedure corresponding to this design.
-
+non-inferiority trial. Run \code{vignette("Introduction", package = "OptimalGoldstandardDesigns")}
+to see some examples related to the associated paper \href{https://doi.org/10.1002/sim.9630}{(Meis et al., 2023)}.
 
 Parameters which can be optimized are the allocation ratios for all groups and stages and the
 futility and efficacy boundaries of the first stage. The allocation ratios are
@@ -144,9 +141,12 @@ parameters to solve a constrained optimization problem. For example, you can sup
 \code{cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1)} to ensure that the first and second
 stage allocation ratios are equal.
 
-
 The design is optimized with respect to the objective criterion given by the parameter
-\code{objective}. By default, ...
+\code{objective}. The default objective function is described in the
+Subsection \emph{Optimizing group sequential gold-standard designs} in Section 2
+of \href{https://doi.org/10.1002/sim.9630}{the associated paper}. Additionally,
+this objective includes a term to penalize the maximum sample size of a trial,
+which can be controlled by the parameter \code{nu} (default is \code{nu=0}).
 
 Designs are calculated to fulfill the following constraints: the family-wise type I error
 rate is controlled at \code{alpha} under any combination of the two null hypotheses
@@ -163,5 +163,21 @@ test for the treatment vs. control testing problem only needs to be done if the 
 treatment vs. placebo testing problem was rejected in the first stage.
 }
 \examples{
-D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+\dontrun{
+optimize_design_twostage(
+  beta = 0.2,
+  alternative_TP = 0.4,
+  alternative_TC = 0,
+  Delta = 0.2,
+  print_progress = FALSE,
+  binding_futility = TRUE,
+  lambda = .9,
+  kappa = 1
+)
+}
+}
+\references{
+Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M. Optimization of the two-stage group
+sequential three-arm gold-standard design for non-inferiority trials. \emph{Statistics in Medicine.} 2023;
+42(4): 536– 558. \href{https://doi.org/10.1002/sim.9630}{doi:10.1002/sim.9630}.
 }

@@ -55,7 +55,7 @@ test_that(
   "Covariance matrix calculation is correct and works as expected.",
   {
     skip_on_cran()
-    skip_if(.skip_slow_test, "Slow test skipped.")
+    # skip_if(.skip_slow_test, "Slow test skipped.")
     set.seed(123)
     D <- list()
     D$n <- list()

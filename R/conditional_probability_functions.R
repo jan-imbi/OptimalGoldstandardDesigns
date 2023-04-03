@@ -1,6 +1,6 @@
 #' Calculate the conditional mean of a multivariate normal distribution
 #'
-#' See e.g. chapter 8.1.2 in The Matrix Cookbook [1].
+#' See e.g. Chapter 8.1.2 in [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf).
 #'
 #' @template x_a
 #' @template mu_a
@@ -21,7 +21,7 @@ conditional_mean <- function(x_a, mu_a, mu_b, Sigma) {
 
 #' Calculate the conditional mean of a multivariate normal distribution
 #'
-#' See e.g. chapter 8.1.2 in The Matrix Cookbook [1].
+#' See e.g. Chapter 8.1.2 in [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf).
 #'
 #' @template x_a
 #' @template mu_a

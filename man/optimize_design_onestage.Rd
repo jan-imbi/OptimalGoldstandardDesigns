@@ -81,12 +81,9 @@ Design object (a list) with optimized design parameters.
 Calculate optimal design parameters for a single-stage gold-standard design
 }
 \details{
-TODO: Documentation is still work in progross...
-
 This function calculates optimal design parameters for a two-stage three-arm gold-standard
-non-inferiority trial. Run \code{vignette("mathematical_details", package = "OptimalGoldstandardDesigns")}
-to see details about the test statistics and testing procedure corresponding to this design.
-
+non-inferiority trial. Run \code{vignette("Introduction", package = "OptimalGoldstandardDesigns")}
+to see some examples related to the associated paper \href{https://doi.org/10.1002/sim.9630}{(Meis et al., 2023)}.
 
 Parameters which can be optimized are the allocation ratios for all groups and stages and the
 futility and efficacy boundaries of the first stage. The allocation ratios are
@@ -104,9 +101,9 @@ parameters to solve a constrained optimization problem. For example, you can sup
 \code{cT2 = 1, cP2 = quote(cP1), cC2 = quote(cC1)} to ensure that the first and second
 stage allocation ratios are equal.
 
-
 The design is optimized with respect to the objective criterion given by the parameter
-\code{objective}. By default, ...
+\code{objective}. By default, this is the overall sample size plus an optional
+penalty for the placebo group sample size, controlled by the parameter \code{kappa}.
 
 Designs are calculated to fulfill the following constraints: the family-wise type I error
 rate is controlled at \code{alpha} under any combination of the two null hypotheses
@@ -123,5 +120,15 @@ test for the treatment vs. control testing problem only needs to be done if the 
 treatment vs. placebo testing problem was rejected in the first stage.
 }
 \examples{
-D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
+\dontrun{
+optimize_design_onestage(
+  alpha = .025,
+  beta = .2,
+  alternative_TP = .4,
+  alternative_TC = 0,
+  Delta = .2,
+  print_progress = FALSE
+)
+}
+
 }

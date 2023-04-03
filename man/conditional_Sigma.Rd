@@ -19,7 +19,7 @@ conditional_Sigma(x_a, mu_a, mu_b, Sigma)
 numeric vector with the conditional covariance matrix
 }
 \description{
-See e.g. chapter 8.1.2 in The Matrix Cookbook [1].
+See e.g. Chapter 8.1.2 in \href{https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf}{The Matrix Cookbook}.
 }
 \references{
 Petersen, K. B., & Pedersen, M. S. (2008). The matrix cookbook. Technical University of Denmark, 7(15), 510.
