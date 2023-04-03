@@ -11,34 +11,43 @@ coverage](https://codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns/branch/maste
 [![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/workflows/R-CMD-check/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions)
 [![License](https://img.shields.io/github/license/jan-imbi/OptimalGoldstandardDesigns)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/blob/master/LICENSE.md)
 
+[![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-This package contains the code used in the calculations for our
-manuscript on the optimization of the two-stage group sequential
-three-arm gold-standard design for non-inferiority trials.
+This package contains the code used in the calculations for [our
+paper](https://doi.org/10.1002/sim.9630) on the optimization of the
+two-stage group sequential three-arm gold-standard design for
+non-inferiority trials.
 
 ## Installation
 
-The recommended way to access the code in this repository is by cloning
-the repository via git (download and install
-[git](https://git-scm.com/download), open a git shell and type
-`git clone https://github.com/jan-imbi/OptimalGoldstandardDesigns`).
+You can install the CRAN version of this package by typing the following
+command into your R console:
 
-You may then open the project in
-[Rstudio](https://www.rstudio.com/products/rstudio/download/#download)
-and install it by clicking on “Install and Restart” in the “Build” menu.
+``` r
+install.packages("OptimalGoldstandardDesigns")
+```
 
-If you do not wish to review the code and just want to use the functions
-within this package, you may install it via the following command:
+You can install the GitHub Version by typing:
 
 ``` r
 remotes::install_github("jan-imbi/OptimalGoldstandardDesigns")
 ```
 
-## Introduction
+You can also [clone this
+repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+directly from github. This will give you access to the /data/
+subdirectory, which contains code to reproduce the examples from the
+paper.
 
-Various vignettes are hosted on this github site:
-[jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns)
+## Documentation
 
-It’s not very helpful yet, but will be filled with more information
-soon.
+You can check out an online version of the documentation here:
+[jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/)
+
+# References
+
+Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M.
+Optimization of the two-stage group sequential three-arm gold-standard
+design for non-inferiority trials. *Statistics in Medicine.* 2023; 42(
+4): 536– 558. [doi:10.1002/sim.9630](https://doi.org/10.1002/sim.9630).
