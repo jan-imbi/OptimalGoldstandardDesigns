@@ -8,10 +8,8 @@
 [![doi](https://img.shields.io/badge/doi-10.1002%2Fsim.9630-blue)](https://doi.org/10.1002/sim.9630)
 [![Codecov test
 coverage](https://codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns?branch=master)
-[![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/workflows/R-CMD-check/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions)
-[![License](https://img.shields.io/github/license/jan-imbi/OptimalGoldstandardDesigns)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/blob/master/LICENSE.md)
-
 [![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions/workflows/R-CMD-check.yaml)
+[![License](https://img.shields.io/github/license/jan-imbi/OptimalGoldstandardDesigns)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/blob/master/LICENSE.md)
 <!-- badges: end -->
 
 This package contains the code used in the calculations for [our
@@ -43,7 +41,9 @@ paper.
 ## Documentation
 
 You can check out an online version of the documentation here:
-[jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/)
+[jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/).
+You may be interested in checking out the [*Usage guidance*
+article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html)
 
 # References
 
