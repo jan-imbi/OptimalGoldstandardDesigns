@@ -173,7 +173,8 @@
 
 <dt>always_both_futility_tests</dt>
 <dd><p>(logical) if true, both futility tests are performed after the first stage. If false,
-a 'completely sequential' testing procedure is employed (see <a href="https://doi.org/10.1002/sim.9630" class="external-link">Appendix of paper</a>).</p></dd>
+a 'completely sequential' testing procedure is employed (see Appendix of (Meis et al. 2023)
+).</p></dd>
 
 
 <dt>round_n</dt>
@@ -240,7 +241,8 @@ inside the objective function.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function calculates optimal design parameters for a two-stage three-arm gold-standard
 non-inferiority trial. Run <code><a href="../articles/Introduction.html">vignette("Introduction", package = "OptimalGoldstandardDesigns")</a></code>
-to see some examples related to the associated paper <a href="https://doi.org/10.1002/sim.9630" class="external-link">(Meis et al., 2023)</a>.</p>
+to see some examples related to the associated paper (Meis et al. 2023)
+.</p>
 <p>Parameters which can be optimized are the allocation ratios for all groups and stages and the
 futility and efficacy boundaries of the first stage. The allocation ratios are
 cT2 = nT2 / nT1, cP1 = nP1 / nT1,
@@ -258,7 +260,8 @@ stage allocation ratios are equal.</p>
 <p>The design is optimized with respect to the objective criterion given by the parameter
 <code>objective</code>. The default objective function is described in the
 Subsection <em>Optimizing group sequential gold-standard designs</em> in Section 2
-of <a href="https://doi.org/10.1002/sim.9630" class="external-link">the associated paper</a>. Additionally,
+of (Meis et al. 2023)
+. Additionally,
 this objective includes a term to penalize the maximum sample size of a trial,
 which can be controlled by the parameter <code>nu</code> (default is <code>nu=0</code>).</p>
 <p>Designs are calculated to fulfill the following constraints: the family-wise type I error
@@ -276,9 +279,11 @@ treatment vs. placebo testing problem was rejected in the first stage.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M. Optimization of the two-stage group
-sequential three-arm gold-standard design for non-inferiority trials. <em>Statistics in Medicine.</em> 2023;
-42(4): 536– 558. <a href="https://doi.org/10.1002/sim.9630" class="external-link">doi:10.1002/sim.9630</a>.</p>
+    <p>Meis J, Pilz M, Herrmann C, Bokelmann B, Rauch G, Kieser M (2023).
+“Optimization of the two-stage group sequential three-arm gold-standard design for non-inferiority trials.”
+<em>Statistics in Medicine</em>, <b>42</b>(4), 536-558.
+<a href="https://doi.org/10.1002/sim.9630" class="external-link">doi:10.1002/sim.9630</a>
+.</p>
     </div>
 
     <div class="section level2">

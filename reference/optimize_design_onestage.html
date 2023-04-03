@@ -178,7 +178,8 @@ inside the objective function.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function calculates optimal design parameters for a two-stage three-arm gold-standard
 non-inferiority trial. Run <code><a href="../articles/Introduction.html">vignette("Introduction", package = "OptimalGoldstandardDesigns")</a></code>
-to see some examples related to the associated paper <a href="https://doi.org/10.1002/sim.9630" class="external-link">(Meis et al., 2023)</a>.</p>
+to see some examples related to the associated paper (Meis et al. 2023)
+.</p>
 <p>Parameters which can be optimized are the allocation ratios for all groups and stages and the
 futility and efficacy boundaries of the first stage. The allocation ratios are
 cT2 = nT2 / nT1, cP1 = nP1 / nT1,
@@ -208,6 +209,14 @@ hypotheses are performed at interim, regardless of whether the treatment vs plac
 was successfully rejected. If <code>always_both_futility_tests</code> is <code>FALSE</code>, the futility
 test for the treatment vs. control testing problem only needs to be done if the null for the
 treatment vs. placebo testing problem was rejected in the first stage.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Meis J, Pilz M, Herrmann C, Bokelmann B, Rauch G, Kieser M (2023).
+“Optimization of the two-stage group sequential three-arm gold-standard design for non-inferiority trials.”
+<em>Statistics in Medicine</em>, <b>42</b>(4), 536-558.
+<a href="https://doi.org/10.1002/sim.9630" class="external-link">doi:10.1002/sim.9630</a>
+.</p>
     </div>
 
     <div class="section level2">
