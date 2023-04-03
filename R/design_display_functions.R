@@ -8,8 +8,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
 #' D
+#' }
 print.TwoStageGoldStandardDesign <- function(x, ...){
   if (x$round_n)
     f <- "%i"
@@ -89,8 +91,10 @@ print.TwoStageGoldStandardDesign <- function(x, ...){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' D <- optimize_design_onestage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
 #' D
+#' }
 print.OneStageGoldStandardDesign <- function(x, ...){
   if (x$round_n)
     f <- "%i"

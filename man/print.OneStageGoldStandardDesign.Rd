@@ -19,6 +19,8 @@ design characteristics to the screen.
 Printing method for optimal single-stage goldstandard designs
 }
 \examples{
+\dontrun{
 D <- optimize_design_onestage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
 D
+}
 }

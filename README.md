@@ -43,11 +43,11 @@ paper.
 You can check out an online version of the documentation here:
 [jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/).
 You may be interested in checking out the [*Usage guidance*
-article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html)
+article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html).
 
 # References
 
 Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M.
 Optimization of the two-stage group sequential three-arm gold-standard
 design for non-inferiority trials. *Statistics in Medicine.* 2023; 42(
-4): 536– 558. [doi:10.1002/sim.9630](https://doi.org/10.1002/sim.9630).
+4): 536– 558. .
