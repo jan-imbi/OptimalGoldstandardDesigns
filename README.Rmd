@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/workflows/R-CMD-check/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions)
 [![License](https://img.shields.io/github/license/jan-imbi/OptimalGoldstandardDesigns)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/blob/master/LICENSE.md)
 
+[![R-CMD-check](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This package contains the code used in the calculations for our manuscript on the optimization
