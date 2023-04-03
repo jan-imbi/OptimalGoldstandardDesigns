@@ -78,18 +78,10 @@ design characteristics to the screen.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="optimize_design_onestage.html">optimize_design_onestage</a></span><span class="op">(</span>nloptr_opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxeval <span class="op">=</span> <span class="fl">1</span>, algorithm <span class="op">=</span> <span class="st">"NLOPT_LN_SBPLX"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  iteration: 1/1                                                                      cP1 &lt;- x[1L] cC1 &lt;- x[2L]                                                           x = c(0.25, 1.00)                                                                  f(x) = 946.9105                                                              iteration: 2/1                                                                      cP1 &lt;- x[1L] cC1 &lt;- x[2L]                                                           x = c(0.25, 1.00)                                                                  f(x) = 946.9105                                                              iteration: 3/1                                                                      cP1 &lt;- x[1L] cC1 &lt;- x[2L]                                                           x = c(0.25, 1.00)                                                                  f(x) = 946.9105                                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Optimization finished. Calculating final design with greater accuracy...</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="optimize_design_onestage.html">optimize_design_onestage</a></span><span class="op">(</span>nloptr_opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxeval <span class="op">=</span> <span class="fl">1</span>, algorithm <span class="op">=</span> <span class="st">"NLOPT_LN_SBPLX"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">D</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sample sizes (stage 1): T: 421, P: 106, C: 421</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Efficacy boundaries (stage 1): Z_TP_e: 1.95996, Z_TC_e: 1.95996</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Maximum overall sample size: 948</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Placebo penalty at optimum (kappa * nP): 0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Objective function value: 948.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Type I error for TP testing: 2.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Type I error for TC testing: 2.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Power: 80.1%</span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
