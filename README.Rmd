@@ -55,9 +55,36 @@ give you access to the /data/ subdirectory, which contains code to reproduce
 the examples from the paper.
 
 # Documentation
-You can check out an online version of the documentation here:
-[jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/).
-You may be interested in checking out the [*Usage guidance* article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html).
+You can check out an online version of the documentation 
+[using this link.](https://jan-imbi.github.io/OptimalGoldstandardDesigns/).
+In particular, you might be interested in reading the [*Usage guidance* article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html).
+
+# Example
+## A one-stage desgin
+```{r}
+library(OptimalGoldstandardDesigns)
+optimize_design_onestage(
+  alpha = .025,
+  beta = .2,
+  alternative_TP = .4,
+  alternative_TC = 0,
+  Delta = .2,
+  print_progress = FALSE
+)
+```
+
+## A two-stage design
+```{r}
+optimize_design_twostage(
+  beta = 0.2,
+  alternative_TP = 0.4,
+  alternative_TC = 0,
+  Delta = 0.2,
+  print_progress = FALSE,
+  binding_futility = TRUE
+)
+```
+
 
 # References
 Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M. Optimization of the two-stage group
