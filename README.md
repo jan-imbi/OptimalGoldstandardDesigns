@@ -12,10 +12,16 @@ coverage](https://codecov.io/gh/jan-imbi/OptimalGoldstandardDesigns/branch/maste
 [![License](https://img.shields.io/github/license/jan-imbi/OptimalGoldstandardDesigns)](https://github.com/jan-imbi/OptimalGoldstandardDesigns/blob/master/LICENSE.md)
 <!-- badges: end -->
 
-This package contains the code used in the calculations for [our
-paper](https://doi.org/10.1002/sim.9630) on the optimization of the
+This package contains the code used in the calculations for our
+[paper](https://doi.org/10.1002/sim.9630) on the optimization of the
 two-stage group sequential three-arm gold-standard design for
 non-inferiority trials.
+
+It allows for the simultaneous optimization of the allocation ratios for
+both stages (in two-stage designs), the efficacy boundaries, and the
+futility boundaries. The optimization is performed under type I and II
+error constraints and the objective function is customizable by the
+user. Methods to optimize two- and one-stage designs are available.
 
 # Installation
 
@@ -50,4 +56,4 @@ article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduc
 Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M.
 Optimization of the two-stage group sequential three-arm gold-standard
 design for non-inferiority trials. *Statistics in Medicine.* 2023; 42(
-4): 536– 558. .
+4): 536– 558. [doi:10.1002/sim.9630](https://doi.org/10.1002/sim.9630).

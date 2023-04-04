@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  cache = TRUE
+  cache = FALSE
 )
 ```
 
@@ -25,9 +25,17 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 This package contains the code used in the calculations for
-[our paper](https://doi.org/10.1002/sim.9630)
+our [paper](https://doi.org/10.1002/sim.9630)
 on the optimization of the two-stage group sequential three-arm gold-standard
 design for non-inferiority trials.
+
+It allows for the simultaneous optimization of the
+allocation ratios for both stages (in two-stage designs),
+the efficacy boundaries, and the
+futility boundaries. The optimization is performed
+under type I and II error constraints and the objective function is
+customizable by the user.
+Methods to optimize two- and one-stage designs are available.
 
 # Installation
 You can install the CRAN version of this package by typing the following
@@ -49,7 +57,7 @@ the examples from the paper.
 # Documentation
 You can check out an online version of the documentation here:
 [jan-imbi.github.io/OptimalGoldstandardDesigns](https://jan-imbi.github.io/OptimalGoldstandardDesigns/).
-You may be interested in checking out the [*Usage guidance* article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html)
+You may be interested in checking out the [*Usage guidance* article](https://jan-imbi.github.io/OptimalGoldstandardDesigns/articles/Introduction.html).
 
 # References
 Meis, J, Pilz, M, Herrmann, C, Bokelmann, B, Rauch, G, Kieser, M. Optimization of the two-stage group
