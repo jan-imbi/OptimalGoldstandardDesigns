@@ -163,17 +163,8 @@ test for the treatment vs. control testing problem only needs to be done if the 
 treatment vs. placebo testing problem was rejected in the first stage.
 }
 \examples{
-\dontrun{
-optimize_design_twostage(
-  beta = 0.2,
-  alternative_TP = 0.4,
-  alternative_TC = 0,
-  Delta = 0.2,
-  print_progress = FALSE,
-  binding_futility = TRUE,
-  lambda = .9,
-  kappa = 1
-)
+# Should take about 15 seconds.
+\donttest{
 }
 }
 \references{

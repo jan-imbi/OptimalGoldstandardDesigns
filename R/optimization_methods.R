@@ -84,17 +84,23 @@
 #'
 #'
 #' @examples
-#' \dontrun{
-#' optimize_design_twostage(
-#'   beta = 0.2,
-#'   alternative_TP = 0.4,
-#'   alternative_TC = 0,
-#'   Delta = 0.2,
-#'   print_progress = FALSE,
-#'   binding_futility = TRUE,
-#'   lambda = .9,
-#'   kappa = 1
-#' )
+#' # Should take about 15 seconds.
+#' \donttest{
+# optimize_design_twostage(
+#   cT2 = 1,
+#   cP2 = quote(cP1),
+#   cC2 = quote(cC1),
+#   bTP1f = -Inf,
+#   bTC1f = -Inf,
+#   beta = 0.2,
+#   alternative_TP = 0.4,
+#   alternative_TC = 0,
+#   Delta = 0.2,
+#   binding_futility = TRUE,
+#   lambda = .9,
+#   kappa = 1,
+#   nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-01)
+# )
 #' }
 #' @references
 #' \insertAllCited{}
@@ -462,16 +468,17 @@ optimize_design_twostage <-
 #'
 #'
 #' @examples
-#' \dontrun{
+#' # Should take about 2 second with the chosen accuracy
 #' optimize_design_onestage(
 #'   alpha = .025,
 #'   beta = .2,
 #'   alternative_TP = .4,
 #'   alternative_TC = 0,
 #'   Delta = .2,
-#'   print_progress = FALSE
+#'   mvnorm_algorithm = mvtnorm::Miwa(steps = 512, checkCorr = FALSE, maxval = 1000),
+#'   nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-03, xtol_abs = 1e-08,
+#'                      xtol_rel = 1e-07, maxeval = 1000, print_level = 0)
 #' )
-#' }
 #'
 #' @references
 #' \insertAllCited{}

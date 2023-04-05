@@ -120,16 +120,17 @@ test for the treatment vs. control testing problem only needs to be done if the 
 treatment vs. placebo testing problem was rejected in the first stage.
 }
 \examples{
-\dontrun{
+# Should take about 2 second with the chosen accuracy
 optimize_design_onestage(
   alpha = .025,
   beta = .2,
   alternative_TP = .4,
   alternative_TC = 0,
   Delta = .2,
-  print_progress = FALSE
+  mvnorm_algorithm = mvtnorm::Miwa(steps = 512, checkCorr = FALSE, maxval = 1000),
+  nloptr_opts = list(algorithm = "NLOPT_LN_SBPLX", ftol_rel = 1e-03, xtol_abs = 1e-08,
+                     xtol_rel = 1e-07, maxeval = 1000, print_level = 0)
 )
-}
 
 }
 \references{
