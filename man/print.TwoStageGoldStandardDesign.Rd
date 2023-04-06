@@ -19,8 +19,7 @@ design characteristics to the screen.
 Printing method for optimal two-stage goldstandard designs
 }
 \examples{
-\dontrun{
-D <- optimize_design_twostage(nloptr_opts = list(maxeval = 1, algorithm = "NLOPT_LN_SBPLX"))
-D
+# Should take about 15 seconds.
+\donttest{
 }
 }
