@@ -6,7 +6,7 @@ objective_twostage <- function(D)
 {
   # this make cran check shut up.
   alpha_TC <- NA_real_
-  
+
   # Quote this because might need reevaluation when D$round_n == TRUE
   # Sets D$cumc, D$gamma, D$Sigma, D$mu_wo_nT1, D$b
   get_boundaries <- quote({
@@ -102,7 +102,7 @@ objective_twostage <- function(D)
   D$ASNP <- ASNP <- calc_ASNP(D)
   lambda <- D$lambda
   kappa <- D$kappa
-  nu <- D$nu
+  eta <- D$eta
 
   D$objective_val <- eval(D$objective)
 

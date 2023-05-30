@@ -23,7 +23,7 @@
 #' @template round_n
 #' @template lambda
 #' @template kappa
-#' @template nu
+#' @template eta
 #' @template objective
 #' @template inner_tol_objective
 #' @template mvnorm_algorithm
@@ -65,7 +65,7 @@
 #' Subsection *Optimizing group sequential gold-standard designs* in Section 2
 #' of \insertCite{meis2023optimization}{OptimalGoldstandardDesigns}. Additionally,
 #' this objective includes a term to penalize the maximum sample size of a trial,
-#' which can be controlled by the parameter `nu` (default is `nu=0`).
+#' which can be controlled by the parameter `eta` (default is `eta=0`).
 #'
 #' Designs are calculated to fulfill the following constraints: the family-wise type I error
 #' rate is controlled at \code{alpha} under any combination of the two null hypotheses
@@ -128,7 +128,7 @@ optimize_design_twostage <-
            round_n = TRUE,
            lambda = 1,
            kappa = 0,
-           nu = 0,
+           eta = 0,
            objective = quote(
              sqrt(lambda) ^ 2 * ASN[["H11"]] +
                (1 - sqrt(lambda)) * sqrt(lambda) * ASN[["H10"]] +
@@ -140,9 +140,9 @@ optimize_design_twostage <-
                    (1 - sqrt(lambda)) * sqrt(lambda) * ASNP[["H10"]] +
                    (1 - sqrt(lambda)) * sqrt(lambda) * ASNP[["H01"]] +
                    (1 - sqrt(lambda)) ^ 2 * ASNP[["H00"]] +
-                   nu * cumn[[2]][["P"]]
+                   eta * cumn[[2]][["P"]]
                ) +
-               nu * (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])
+               eta * (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])
              ),
            inner_tol_objective = .Machine$double.eps^0.25,
            mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1e3), # maxsteps = 4097
@@ -284,7 +284,7 @@ optimize_design_twostage <-
       round_n = FALSE,
       lambda = lambda,
       kappa = kappa,
-      nu = nu,
+      eta = eta,
       objective = objective,
       inner_tol_objective = inner_tol_objective,
       mvnorm_algorithm = mvnorm_algorithm,
