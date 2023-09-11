@@ -224,7 +224,7 @@ optimize_design_twostage(
   alternative_TC = 0,
   Delta = 0.2,
   print_progress = FALSE,
-  nu = 1
+  eta = 1
 )
 ```
 

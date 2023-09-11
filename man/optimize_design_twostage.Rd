@@ -27,13 +27,13 @@ optimize_design_twostage(
   round_n = TRUE,
   lambda = 1,
   kappa = 0,
-  nu = 0,
+  eta = 0,
   objective = quote(sqrt(lambda)^2 * ASN[["H11"]] + (1 - sqrt(lambda)) * sqrt(lambda) *
     ASN[["H10"]] + (1 - sqrt(lambda)) * sqrt(lambda) * ASN[["H01"]] + (1 -
     sqrt(lambda))^2 * ASN[["H00"]] + kappa * (sqrt(lambda)^2 * ASNP[["H11"]] + (1 -
     sqrt(lambda)) * sqrt(lambda) * ASNP[["H10"]] + (1 - sqrt(lambda)) * sqrt(lambda) *
-    ASNP[["H01"]] + (1 - sqrt(lambda))^2 * ASNP[["H00"]] + nu * cumn[[2]][["P"]]) + nu *
-    (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])),
+    ASNP[["H01"]] + (1 - sqrt(lambda))^2 * ASNP[["H00"]] + eta * cumn[[2]][["P"]]) + eta
+    * (cumn[[2]][["T"]] + cumn[[2]][["P"]] + cumn[[2]][["C"]])),
   inner_tol_objective = .Machine$double.eps^0.25,
   mvnorm_algorithm = mvtnorm::Miwa(steps = 128, checkCorr = FALSE, maxval = 1000),
   nloptr_x0 = NULL,
@@ -93,7 +93,7 @@ of the null hypothesis.}
 
 \item{kappa}{(numeric) penalty factor for placebo patients in the default objective function.}
 
-\item{nu}{(numeric) penalty factor for the maximum sample size in the default objective function.}
+\item{eta}{(numeric) penalty factor for the maximum sample size in the default objective function.}
 
 \item{objective}{(expression) objective criterion.}
 
@@ -146,7 +146,7 @@ The design is optimized with respect to the objective criterion given by the par
 Subsection \emph{Optimizing group sequential gold-standard designs} in Section 2
 of \insertCite{meis2023optimization}{OptimalGoldstandardDesigns}. Additionally,
 this objective includes a term to penalize the maximum sample size of a trial,
-which can be controlled by the parameter \code{nu} (default is \code{nu=0}).
+which can be controlled by the parameter \code{eta} (default is \code{eta=0}).
 
 Designs are calculated to fulfill the following constraints: the family-wise type I error
 rate is controlled at \code{alpha} under any combination of the two null hypotheses

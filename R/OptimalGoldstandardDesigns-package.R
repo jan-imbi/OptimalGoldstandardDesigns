@@ -12,4 +12,4 @@
 #' @references
 #' \insertAllCited{}
 #' @importFrom Rdpack reprompt
-NULL
+"_PACKAGE"

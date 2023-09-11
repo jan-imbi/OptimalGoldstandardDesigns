@@ -18,7 +18,6 @@ Imports:
     cli,
     dplyr,
     tibble,
-    scales,
     Rdpack
 Suggests: 
     testthat (>= 3.0.0),
@@ -34,7 +33,7 @@ RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 RdMacros: Rdpack
 Collate: 
-    'OptimalGoldstandardDesigns.R'
+    'OptimalGoldstandardDesigns-package.R'
     'pmv_upper_smaller_slower_fix.R'
     'conditional_probability_functions.R'
     'design_display_functions.R'
