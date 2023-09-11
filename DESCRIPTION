@@ -1,7 +1,7 @@
 Package: OptimalGoldstandardDesigns
 Type: Package
 Title: Design Parameter Optimization for Gold-Standard Non-Inferiority Trials
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(person("Jan", "Meis", role = c("aut", "cre"), email="meis@imbi.uni-heidelberg.de", comment = c(ORCID = "0000-0001-5407-7220")))
 Description: Methods to calculate optimal design parameters
     for one- and two-stage three-arm group-sequential gold-standard
