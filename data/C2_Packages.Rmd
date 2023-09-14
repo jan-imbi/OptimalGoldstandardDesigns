@@ -1,0 +1,93 @@
+---
+title: "Examples of the two packages"
+output: 
+    pdf_document: 
+      keep_tex:  true
+date: "2023-05-29"
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "Rmd_output") })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "R>",
+                      eval = FALSE)
+```
+
+## OptimalGoldstandardDesigns package
+
+```{r}
+library(OptimalGoldstandardDesigns)
+optimize_design_twostage(
+  alpha = 0.025,
+  beta = 0.2,
+  alternative_TP = 0.4,
+  alternative_TC = 0,
+  Delta = 0.2,
+  binding_futility = TRUE,
+  lambda = 0.9,
+  kappa = 1,
+  eta = 0.2
+)
+```
+
+## adestr package
+
+```{r}
+library(adoptr)
+H_0 <- PointMassPrior(.0, 1)
+H_1 <- PointMassPrior(.4, 1)
+design <- minimize(
+  ExpectedSampleSize(Normal(two_armed = FALSE), H_1),
+  subject_to(
+    Power(Normal(two_armed = FALSE), H_1) >= 0.8,
+    Power(Normal(two_armed = FALSE), H_0) <= .025),
+  get_initial_design(.4, .025, .2))$design
+```
+
+```{r, include=FALSE}
+options(digits = 1, scipen=99)
+```
+
+```{r}
+library(adestr)
+bias <- evaluate_estimator(
+  Bias(),
+  SampleMean(),
+  Normal(two_armed = FALSE),
+  design = design,
+  mu = seq(-1, 1, .5),
+  sigma = 1)
+```
+
+```{r}
+print(bias)
+```
+
+```{r, include=FALSE}
+options(digits = 3, scipen=99)
+```
+
+```{r}
+set.seed(18) # For reproducibility
+data1 <- data.frame(
+  endpoint = rnorm(28, mean = 0.4),
+  stage = rep(1, 28))
+n2(design, mean(data1$endpoint) * sqrt(28))
+
+data2 <- data.frame(
+  endpoint = rnorm(25, mean = 0.4),
+  stage = rep(2, 25))
+data <- rbind(data1, data2)
+
+analyze(
+  data,
+  c(SampleMean(),
+    MedianUnbiasedStagewiseCombinationFunctionOrdering(),
+    StagewiseCombinationFunctionOrderingCI(),
+    StagewiseCombinationFunctionOrderingPValue()),
+  Normal(two_armed = FALSE),
+  design = design,
+  sigma = 1)
+```
+
