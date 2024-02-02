@@ -43,4 +43,4 @@ Collate:
     'optimization_methods.R'
     'table_format_functions.R'
 VignetteBuilder: knitr
-URL: https://github.com/jan-imbi/OptimalGoldstandardDesigns
+URL: https://github.com/jan-imbi/OptimalGoldstandardDesigns, https://jan-imbi.github.io/OptimalGoldstandardDesigns/
